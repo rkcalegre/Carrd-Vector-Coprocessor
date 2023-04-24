@@ -53,10 +53,23 @@ module v_sequencer #(
     logic [11:0] function_unit_status [0:3];                                 // functional unit status block
     logic [31:0] register_status;                                            // register result status block
     
+    assign fifo_full = (fifo_count == NO_OF_SLOTS-1);
 
     // WRITES TO INSTR_STATUS_TABLE
     // TO BE ADDED: initial begin for reset
     // TO BE ADDED: reset values
-    instr_status_table[fifo_count] <= {op_instr, 3'b000};
+    // TO BE ADDED: Updating Instruction stage
+
+    // FIFO Count Condition
+    always @(posedge clk) begin
+        if (!fifo_full) begin
+            fifo_count <= fifo_count + 1;
+        end
+    end
+
+    // Write to Instruction Status Table
+    always @(posedge clk) begin
+        instr_status_table[fifo_count] <= {op_instr, 3'b000};
+    end
 
 endmodule
