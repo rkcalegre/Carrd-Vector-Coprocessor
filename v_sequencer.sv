@@ -23,7 +23,7 @@ module v_sequencer #(
 )(
     input clk,
     input nrst,
-    input [5:0] op_instr, // see line 21 regarding issues with the # of bits to be placed in IST
+    input [5:0] op_instr,                   // see line 21 regarding issues with the # of bits to be placed in IST
     input [3:0] instr_status
 );
 
@@ -56,9 +56,16 @@ module v_sequencer #(
     assign fifo_full = (fifo_count == NO_OF_SLOTS-1);
 
     // WRITES TO INSTR_STATUS_TABLE
-    // TO BE ADDED: initial begin for reset
-    // TO BE ADDED: reset values
+    // TO BE ADDED: Stall Conditions
     // TO BE ADDED: Updating Instruction stage
+
+
+    initial begin
+        for (int i = 0; i < NO_OF_SLOTS; i++) begin
+            fifo_count[i] <= 2'b00;
+            instr_status_table[i] <= {IST_ENTRY_BITS{1'b0}};
+        end 
+    end
 
     // FIFO Count Condition
     always @(posedge clk) begin
@@ -69,7 +76,14 @@ module v_sequencer #(
 
     // Write to Instruction Status Table
     always @(posedge clk) begin
-        instr_status_table[fifo_count] <= {op_instr, 3'b000};
+        if (!nrst) begin
+            for (int i = 0; i < NO_OF_SLOTS; i++) begin
+                fifo_count[i] <= 2'b00;
+                instr_status_table[i] <= {IST_ENTRY_BITS{1'b0}};
+            end
+        end else begin
+            instr_status_table[fifo_count] <= {op_instr, 3'b000};
+        end
     end
 
 endmodule
