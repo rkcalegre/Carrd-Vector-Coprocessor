@@ -27,8 +27,7 @@ typedef enum logic [1:0] {
 typedef enum logic [6:0] {
     OPC_LTYPE  = 7'b0000111,           // Vector Load Instructions
     OPC_STYPE  = 7'b0100111,           // Vector Store Instructions
-    OPC_RTYPE  = 7'b1010111           // Vector Arithmetic Instructions
-    //OPC_SET    = 7'b1010111            // Vector Configuration Instructions
+    OPC_RTYPE  = 7'b1010111           // Vector Arithmetic Instructions and Configuration Instructions
 } opcode;
 
  //vector addressing modes for load and store instructions
@@ -47,7 +46,8 @@ typedef enum logic [2:0] {
     OPI_VI = 3'b011,
     OPI_VX = 3'b100,
     OPF_VF = 3'b101,
-    OPM_VX = 3'b110
+    OPM_VX = 3'b110,
+    OP_SET = 3'b111
 } funct3;
 
 // vector arithmetic logic unit (VALU) integer arithmetic instructions

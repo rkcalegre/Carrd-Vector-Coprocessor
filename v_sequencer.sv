@@ -20,6 +20,7 @@ module v_sequencer #(
     // DOUBLE-CHECK
     parameter int IST_ENTRY_BITS = 9;       // For Instruction Status Table: 6 bits (maybe for opcode?) + 3 bits (instr_status)
     parameter int NO_OF_SLOTS = 8;
+    parameter int FU_ENTRY_BITS = 5;
 )(
     input clk,
     input nrst,
@@ -36,21 +37,15 @@ module v_sequencer #(
     // 3'b010 - execution stage (vEX)
     // 3'b011 - writes results stage 
     // 3'b100 - ?? default value? or empty slot?
-    //  v1 Format of Table: (this might be easier than version2)
+    // Format of Table:
     // 	==============================================
     //  | Instruction[7:0] | Instruction Stage[2:0] | 
     // 	==============================================
-    // OR
-    //  v2 Format of Table:
-    // 	====================================================================
-    //  | Instruction#0 | Instruction#1 | Instruction#... | Instruction#7 |
-    //  |  instr_status | instr_status  |  instr_status   | instr_status  |
-    // 	====================================================================
 
     // uses v1 format of table
     logic [IST_ENTRY_BITS-1:0] instr_status_table [0:NO_OF_SLOTS-1];         // instruction status table
     logic [2:0] fifo_count;                                                  // keeps track of # of instructions currently in the table
-    logic [11:0] function_unit_status [0:3];                                 // functional unit status block
+    logic [11:0] function_unit_status [0:FU_ENTRY_BITS-1];                                 // functional unit status block
     logic [31:0] register_status;                                            // register result status block
     
     assign fifo_full = (fifo_count == NO_OF_SLOTS-1);

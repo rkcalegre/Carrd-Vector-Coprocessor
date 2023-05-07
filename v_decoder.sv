@@ -27,12 +27,14 @@ module v_decoder #(
     output logic [5:0] v_lsu_op,
     output logic [5:0] v_sldu_op,
     output logic [5:0] v_red_op,
+    output logic is_vconfig,
 
     output logic [4:0] vrs1,
     output logic [4:0] vrs2,
     output logic [4:0] imm,
     output logic [4:0] vd,
-    output logic [4:0] rs2          //for load and store strided instructions
+    output logic [4:0] rs2,          // for load and store strided instructions
+    output logc [10:0] zimm          // for config instructions
 
 );
     import v_pkg::*;
@@ -47,6 +49,7 @@ module v_decoder #(
     logic [4:0] temp_imm;
     logic [4:0] temp_vd;
     logic [5:0] temp_op;
+    logic [10:0] temp_zimm;     // To be edited: for config instructions only
 
     //for load and store instructions
     //logic width_instr; //specifies size of memory elements, and distinguishes from FP scalar
@@ -161,13 +164,50 @@ module v_decoder #(
                     temp_imm = 0;
                     temp_op = funct6;
                 end
+                OP_SET: begin
+                    casez (instr[31:30])
+                        /*
+                        // vsetvl rd, rs1, rs2  (rd = new vl, rs1 = AVL, rs2 = new vtype value)
+                        2'b10: begin
+                            temp_vd = instr[11:7];
+                            temp_vrs1 = instr[19:15];
+                            temp_vrs2 = instr[24:20];
+                        end
+                        // vsetivli rd, uimm, vtypei (rd = new vl, uimm = AVL, vtypei = new vtype setting)
+                        2'b11: begin
+                            temp_vd = instr[11:7];
+                            temp_vrs1 = instr[19:15];
+                            zimm = {1'b0, instr[29:20]};
+                        end
+                        */
+                        // vsetvli rd, rs1, vtypei (rd = new vl, rs1 = AVL, vtypei = new vtype setting)
+                        2'b0?: begin
+                            temp_vd = instr[11:7];
+                            temp_vrs1 = instr[19:15];
+                            temp_zimm = instr[30:20];
+                            temp_vrs2 = 0;
+                            temp_rs2 = 0;    
+                            temp_imm = 0;
+                            temp_op = funct6;
+                        end
+                        /*
+                        default: begin
+                            rd = 0;
+                            rs1 = 0;
+                            rs2 = 0;
+                            uimm = 0;
+                            zimm = 0;
+                        end
+                        */
+                    endcase
+                end
                 default: begin //for non-implemented instructions //copied from OPM_VV //CAN BE DELETED
                     temp_vd = instr[11:7];          // vd
                     temp_vrs1 = instr[19:15];       // rs1
                     temp_vrs2 = instr[24:20];       // vs2
                     temp_rs2 = 0;    
                     temp_imm = 0;
-                    temp_op = funct6; 
+                    temp_op = 0;
                 end
             endcase
         end
@@ -179,6 +219,7 @@ module v_decoder #(
     assign vrs2 = temp_vrs2;
     assign rs2 = temp_rs2;
     assign imm = temp_imm;
+    assign zimm = temp_zimm;            // for config
     assign v_alu_op = (opcode == OPC_RTYPE)? temp_op : OFF_SIGNAL;  // determine anong bit dapat ang magiindicate na no operation ang VALU + IADD NA UNG RED INSTR sa structs na file
     assign v_mul_op = (opcode == OPC_RTYPE)? temp_op : OFF_SIGNAL;  // RTYPE DIN AND MUL HMMM; di ko pa sila na ttake into account sa vstructs keme
     assign v_lsu_op = (opcode == OPC_LTYPE || opcode == OPC_STYPE)? temp_op : OFF_SIGNAL;  
