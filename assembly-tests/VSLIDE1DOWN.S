@@ -1,0 +1,1 @@
+# vslide1down.vx vd, vs2, rs1, vm   ( vd[i] = vs2[i+1], vd[vl-1] = x[rs1] )

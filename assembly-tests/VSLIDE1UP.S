@@ -1,0 +1,1 @@
+# vslid1eup.vx vd, vs2, rs1, vm   ( vd[0] = x[rs1], vd[i+1] = vs2[i] )
