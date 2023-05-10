@@ -38,6 +38,12 @@ typedef enum logic [1:0] {
     MOP_INDEXED_ORDERED  = 2'b11        // indexed-ordered
 } mop; 
 
+typedef enum logic [2:0] {
+    WIDTH_8  = 3'b000,
+    WIDTH_16 = 3'b101,
+    WIDTH_32 = 3'b110
+} width;
+
 // funct3 - encodes the operand type (VV: vector-vector, VI: vector-immediate, VX: vector-scalar)
 typedef enum logic [2:0] {
     OPI_VV = 3'b000,
@@ -109,6 +115,21 @@ typedef enum logic [2:0] {
     VSLDU_VSLIDE1DOWN  = 3'd4,
     VSLDU_VMV          = 3'd5
 } vsldu_op;
+
+typedef enum logic [3:0] {
+    VLSU_VLE8   = 4'd1,
+    VLSU_VLE16  = 4'd2,
+    VLSU_VLE32  = 4'd3,
+    VLSU_VLSE8  = 4'd4,
+    VLSU_VLSE16 = 4'd5,
+    VLSU_VLSE32 = 4'd6,
+    VLSU_VSE8   = 4'd7,
+    VLSU_VSE16  = 4'd8,
+    VLSU_VSE32  = 4'd9,
+    VLSU_VSSE8  = 4'd10,
+    VLSU_VSSE16 = 4'd11,
+    VLSU_VSSE32 = 4'd12
+} vlsu_op;
 
 
 endpackage
