@@ -25,8 +25,8 @@ typedef enum logic [1:0] {
 
 
 typedef enum logic [6:0] {
-    OPC_LTYPE  = 7'b0000111,           // Vector Load Instructions
-    OPC_STYPE  = 7'b0100111,           // Vector Store Instructions
+    OPC_LTYPE  = 7'b0000111,          // Vector Load Instructions
+    OPC_STYPE  = 7'b0100111,          // Vector Store Instructions
     OPC_RTYPE  = 7'b1010111           // Vector Arithmetic Instructions and Configuration Instructions
 } opcode;
 
@@ -50,43 +50,21 @@ typedef enum logic [2:0] {
     OP_SET = 3'b111
 } funct3;
 
-// vector arithmetic logic unit (VALU) integer arithmetic instructions
-/*
-typedef enum logic [5:0] {
-    VADD       = 6'b000000,        VREDSUM      = 6'b000000,
-    VSUB       = 6'b000010,
-    VMIN       = 6'b000101,
-    VMAX       = 6'b000111,       
-    VAND       = 6'b001001,
-    VOR        = 6'b001010,
-    VXOR       = 6'b001011,
-    VSLIDEUP   = 6'b001110,        VSLIDE1UP    = 6'b001110,
-    VSLIDEDOWN = 6'b001111,        VSLIDE1DOWN  = 6'b001111,
-    VSLL       = 6'b100101,        VMUL         = 6'b100101,     
-                                   VMULH        = 6'b100111, 
-    VSRL       = 6'b101000,
-    VSRA       = 6'b100101,
-    VMERGE     = 6'b010111,
-    VMSEQ      = 6'b011000,
-    VMSNE      = 6'b011001,
-    VMSLT      = 6'b011011,
-    VMSLE      = 6'b011101,
-    VMSGT      = 6'b011111
-} funct6_alu;
-*/
-
 typedef enum logic [5:0] {
     VREDSUM = 6'b000000,
     VREDMAX = 6'b000111
 } funct6_red;
 
 typedef enum logic [5:0] {
-    VMOVE = 6'b010111,
+    VMOVE      = 6'b010111,
     VSLIDEUP   = 6'b001110,        
-    VSLIDE1UP    = 6'b101110,
     VSLIDEDOWN = 6'b001111,        
-    VSLIDE1DOWN  = 6'b101111
 } funct6_sldu;
+
+typedef enum logic [5:0] {        
+    VSLIDE1UP    = 6'b001110,      
+    VSLIDE1DOWN  = 6'b001111
+} funct6_sldu1;
 
 
 typedef enum logic [5:0] {
@@ -99,13 +77,38 @@ typedef enum logic [5:0] {
     VXOR       = 6'b001011,
     VSLL       = 6'b100101,
     VSRL       = 6'b101000,
-    VSRA       = 6'b101001,
-    VMERGE     = 6'b010111,
-    VMSEQ      = 6'b011000,
-    VMSNE      = 6'b011001,
-    VMSLT      = 6'b011011,
-    VMSLE      = 6'b011101,
-    VMSGT      = 6'b011111
+    VSRA       = 6'b101001
 } funct6_alu;
+
+typedef enum logic {
+    VMUL = 6'b100101
+} funct6_mul;
+
+typedef enum logic [3:0] {
+    VALU_VADD = 4'd1,
+    VALU_VSUB = 4'd2,
+    VALU_VAND = 4'd3,
+    VALU_VOR  = 4'd4,
+    VALU_VXOR = 4'd5,
+    VALU_VSLL = 4'd6,
+    VALU_VSRL = 4'd7,
+    VALU_VSRA = 4'd8,
+    VALU_VMIN = 4'd9,
+    VALU_VMAX = 4'd10
+} valu_op;
+
+typedef enum logic [2:0] {
+    VRED_VREDSUM = 3'd1,
+    VRED_VREDMAX = 3'd2
+} vred_op;
+
+typedef enum logic [2:0] { 
+    VSLDU_VSLIDEUP     = 3'd1,
+    VSLDU_VSLIDEDOWN   = 3'd2,
+    VSLDU_VSLIDE1UP    = 3'd3,
+    VSLDU_VSLIDE1DOWN  = 3'd4,
+    VSLDU_VMV          = 3'd5
+} vsldu_op;
+
 
 endpackage
