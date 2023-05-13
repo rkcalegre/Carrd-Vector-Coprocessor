@@ -75,7 +75,7 @@ module v_decoder #(
     //  0  - OFF
     //  1  - vmul
 
-    assign is_mul = (opcode == OPC_RTYPE && funct6 == VMUL) ? 1'b1 : OFF;
+    assign is_mul = (opcode == OPC_RTYPE && funct6 == VMUL && (funct3 == OPM_VV || funct3 == OPM_VX)) ? 1'b1 : OFF;
 
     //  v_red_op
     //  1  - vredsum
