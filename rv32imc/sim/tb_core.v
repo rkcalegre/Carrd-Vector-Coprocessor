@@ -310,8 +310,8 @@ module tb_core();
 		if(!nrst)
 			max_data_addr <= 0;
 		else if(!done) 
-			if((CORE.exe_is_stype && |CORE.exe_dm_write && CORE.exe_ALUout[12:2] > max_data_addr) && (CORE.exe_ALUout[12:2] < 11'h400))
-				max_data_addr <= CORE.exe_ALUout[12:2];
+			if((CORE.exe_is_stype && |CORE.exe_dm_write && CORE.exe_ALUout[14:2] > max_data_addr) && (CORE.exe_ALUout[14:2] < 13'h1d))
+				max_data_addr <= CORE.exe_ALUout[14:2];
 	end
 
 	// For simulating int_sig

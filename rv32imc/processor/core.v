@@ -33,9 +33,20 @@ module core(
 	input [3:0] con_write,				// Write enable signal
 	input [`DATAMEM_BITS-1:0] con_addr,	// Word-aligned data address
 	input [`DATAMEM_WIDTH-1:0] con_in,		// Input data from Protocol controllers
-	output [`DATAMEM_WIDTH-1:0] con_out	// Ouput of DATAMEM connected to Protocol controllers
+	output [`DATAMEM_WIDTH-1:0] con_out,	// Ouput of DATAMEM connected to Protocol controllers
+
+	// Signals routed to Vector Coprocessor
+	input [`REGFILE_BITS-1:0] v_rd_xreg_addr, // For Vector-Scalar Instructions that require reads from the scalar regfile
+	output [`WORD_WIDTH-1:0] xreg_out,			// Data read from scalar register
+	output [`WORD_WIDTH-1:0] v_instr			// Input to vector decoder
+
 );
 	
+// Assigns to Vector Datapath Signals
+
+	assign v_instr = id_inst;
+	assign xreg_out = id_rfoutV;
+
 /******************************** DECLARING WIRES *******************************/
 
 // IF stage ======================================================================
@@ -89,13 +100,13 @@ module core(
 	//////////////////////////////////////////////////////////////////////////////
 
 	// Inputs to ID/EXE Pipereg 														
-	wire [`WORD_WIDTH-1:0] id_rfoutA, id_rfoutB;	// Regfile outputs 								
-	wire [`WORD_WIDTH-1:0] id_imm;					// Output of SHIFT, SIGN EXT, AND SHUFFLE block
+	wire [`WORD_WIDTH-1:0] id_rfoutA, id_rfoutB, id_rfoutV;	// Regfile outputs 								
+	wire [`WORD_WIDTH-1:0] id_imm;							// Output of SHIFT, SIGN EXT, AND SHUFFLE block
 
-	wire [`WORD_WIDTH-1:0] id_branchtarget;			// Computed branch target
+	wire [`WORD_WIDTH-1:0] id_branchtarget;					// Computed branch target
 
-	wire [`WORD_WIDTH-1:0] id_fwdopA, id_fwdopB;	// Selected operands based on forwarded data
-	wire [`WORD_WIDTH-1:0] id_fwdstore;				// Selected input to STOREBLOCK based on forwarded data
+	wire [`WORD_WIDTH-1:0] id_fwdopA, id_fwdopB;			// Selected operands based on forwarded data
+	wire [`WORD_WIDTH-1:0] id_fwdstore;						// Selected input to STOREBLOCK based on forwarded data
 // &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
 
@@ -647,8 +658,8 @@ module core(
 		.wr_data(wb_wr_data),
 		.dest_addr(wb_rd),
 
-		.src1_addr(id_rsA),		.src2_addr(id_rsB),
-		.src1_out(id_rfoutA),	.src2_out(id_rfoutB)
+		.src1_addr(id_rsA),		.src2_addr(id_rsB),		.srcV_addr(v_rd_xreg_addr),
+		.src1_out(id_rfoutA),	.src2_out(id_rfoutB), 	.srcV_out(id_rfoutV)
 	);
 
 	shiftsignshuff SHIFTSIGNSHUFF(

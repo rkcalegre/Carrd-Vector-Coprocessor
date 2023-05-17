@@ -39,7 +39,12 @@ module top(
 	input ck_io8,		// UART_DEC
 
 	inout ck_io38,		// Tristate buffer/I2C SCL
-	inout ck_io39		// Tristate buffer/I2C SDA
+	inout ck_io39,		// Tristate buffer/I2C SDA
+
+	// Signals Routed to Vector Coprocessor
+	input [`REGFILE_BITS-1:0] v_rd_xreg_addr, // For Vector-Scalar Instructions that require reads from the scalar regfile
+	output [`WORD_WIDTH-1:0] xreg_out,			// Data read from scalar register
+	output [`WORD_WIDTH-1:0] v_instr
 );
 
 // DECLARING WIRES
@@ -124,7 +129,11 @@ module top(
 		.con_addr(con_addr),
 		.con_in(con_in),
 
-		.con_out(con_out)
+		.con_out(con_out),
+
+		.v_rd_xreg_addr(v_rd_xreg_addr),
+		.xreg_out(v_rd_xreg_addr),
+		.v_instr(v_rd_xreg_addr)
 	);
 
 	// Protocol controllers
