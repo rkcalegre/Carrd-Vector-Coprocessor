@@ -292,7 +292,7 @@ module carrd_integrated#(
         .result_valu_4(result_valu_4),
         .result_vmul_1(result_vmul_1), 
         .result_vmul_2(result_vmul_2), 
-        .result_vmul_3(result_vmul_2), 
+        .result_vmul_3(result_vmul_3), 
         .result_vmul_4(result_vmul_4), 
         .result_vsldu(result_vsldu),
         .result_vred(result_vred),
