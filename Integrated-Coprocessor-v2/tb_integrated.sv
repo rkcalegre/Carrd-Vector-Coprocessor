@@ -152,36 +152,438 @@ carrd_integrated integrated(
         op_instr_base =  32'b00000000001000000111000001010111 ;
         #200;
 
-        force integrated.op_A = 32'h98765432;
-        $display("===========|| Testing SLDU|| ===========");
+        //force integrated.op_A = 32'h98765432;
+
+
+/*          $display("===========|| Testing SLDU|| ==========="); //Tested //Commented for backup
         //Testing VMOVE
         op_instr_base =  32'b01011100000000000100010001010111 ;
-        #200;
+        #40;
 
         //Testing VSLIDEUP
         op_instr_base =  32'b00111000010000000110011001010111 ;
-        #200;
+        #80;
 
         //Testing VSLIDE1UP
         op_instr_base =  32'b00111000000000000100100001010111 ;
-        #200;
+        #80;
 
         //Testing VSLIDEDOWN
         op_instr_base =  32'b00111100010000000110101001010111 ;
-        #200;
+        #80;
 
         //Testing VSLIDE1DOWN
         op_instr_base =  32'b00111100000000000100110001010111 ;
-        #200;
-        release integrated.op_A;
-        // $display("===========|| Testing VRED|| ===========");
-        // //Testing VREDSUM
-        // op_instr_base =  32'b00000000000000000000000001010111 ;
-        // #200;
+        #80; 
 
-        // //Testing VREDMAX
-        // op_instr_base =  32'b00011100000000000000000001010111 ;
-        // #200;
+        
+        $display("===========|| Testing VRED|| ===========");
+        //Testing VREDSUM
+        op_instr_base =  32'b00000000000000000010010001010111 ;
+        #280;
+
+        //Testing VREDMAX
+        op_instr_base =  32'b00011100010000000010011001010111 ;
+        #280; 
+
+        $display("===========|| Testing MUL|| ===========");
+        //Testing VMUL
+        op_instr_base =  32'b10010100000000000010010001010111 ;
+        #200;
+
+        //Testing VMUL
+        op_instr_base =  32'b10010100010000000110011001010111 ;
+        #200;
+
+        //Testing VMUL
+        op_instr_base =  32'b10010100000000000010100001010111 ;
+        #200;
+
+        //Testing VREDMAX
+        op_instr_base =  32'b00011100010000000010011001010111 ;
+        #280;  */
+
+        /* $display("===========|| Testing CONFIGURATION INSTRUCTION|| ==========="); // From Python Code
+        op_instr_base =  32'b00000000001000000111000001010111 ;
+        #200;
+
+        $display("===========|| Testing ARITHMETIC OPERATIONS|| ===========");
+        $display("===========|| Testing VRED|| ===========");
+        //Testing VREDSUM
+        op_instr_base =  32'b00000000000000000010010001010111 ;
+        #280;
+
+        //Testing VREDMAX
+        op_instr_base =  32'b00011100010000000010011001010111 ;
+        #280;
+
+        $display("===========|| Testing SLDU|| ===========");
+        //Testing VMOVE
+        op_instr_base =  32'b01011100000000000100010001010111 ;
+        #80;
+
+        //Testing VSLIDEUP
+        op_instr_base =  32'b00111000010000000011011001010111 ;
+        #80;
+
+        //Testing VSLIDEUP
+        op_instr_base =  32'b00111000000000000011100001010111 ;
+        #80;
+
+        //Testing VSLIDEDOWN
+        op_instr_base =  32'b00111100010000000011101001010111 ;
+        #80;
+
+        //Testing VSLIDEDOWN
+        op_instr_base =  32'b00111100000000000011110001010111 ;
+        #80;
+
+        //Testing VMOVE
+        op_instr_base =  32'b01011100010000000100011001010111 ;
+        #80;
+
+        //Testing VSLIDEUP
+        op_instr_base =  32'b00111000000000000100100001010111 ;
+        #80;
+
+        //Testing VSLIDEUP
+        op_instr_base =  32'b00111000010000000100101001010111 ;
+        #80;
+
+        //Testing VSLIDEDOWN
+        op_instr_base =  32'b00111100000000000100110001010111 ;
+        #80;
+
+        //Testing VSLIDEDOWN
+        op_instr_base =  32'b00111100010000000100111001010111 ;
+        #80;
+
+        $display("===========|| Testing ALU|| ===========");
+        //Testing VADD
+        op_instr_base =  32'b00000000000000000000010001010111 ;
+        #200;
+
+        //Testing VSUB
+        op_instr_base =  32'b00001000010000000000011001010111 ;
+        #200;
+
+        //Testing VMIN
+        op_instr_base =  32'b00010100000000000000100001010111 ;
+        #200;
+
+        //Testing VMAX
+        op_instr_base =  32'b00011100010000000000101001010111 ;
+        #200;
+
+        //Testing VAND
+        op_instr_base =  32'b00100100000000000000110001010111 ;
+        #200;
+
+        //Testing VOR
+        op_instr_base =  32'b00101000010000000000111001010111 ;
+        #200;
+
+        //Testing VXOR
+        op_instr_base =  32'b00101100000000000000010001010111 ;
+        #200;
+
+        //Testing VSLL
+        op_instr_base =  32'b10010100010000000000011001010111 ;
+        #200;
+
+        //Testing VSRL
+        op_instr_base =  32'b10100000000000000000100001010111 ;
+        #200;
+
+        //Testing VSRA
+        op_instr_base =  32'b10100100010000000000101001010111 ;
+        #200;
+
+        $display("===========|| Testing ALU|| ===========");
+        //Testing VADD
+        op_instr_base =  32'b00000000000000000100010001010111 ;
+        #200;
+
+        //Testing VSUB
+        op_instr_base =  32'b00001000010000000100011001010111 ;
+        #200;
+
+        //Testing VMIN
+        op_instr_base =  32'b00010100000000000100100001010111 ;
+        #200;
+
+        //Testing VMAX
+        op_instr_base =  32'b00011100010000000100101001010111 ;
+        #200;
+
+        //Testing VAND
+        op_instr_base =  32'b00100100000000000100110001010111 ;
+        #200;
+
+        //Testing VOR
+        op_instr_base =  32'b00101000010000000100111001010111 ;
+        #200;
+
+        //Testing VXOR
+        op_instr_base =  32'b00101100000000000100010001010111 ;
+        #200;
+
+        //Testing VSLL
+        op_instr_base =  32'b10010100010000000100011001010111 ;
+        #200;
+
+        //Testing VSRL
+        op_instr_base =  32'b10100000000000000100100001010111 ;
+        #200;
+
+        //Testing VSRA
+        op_instr_base =  32'b10100100010000000100101001010111 ;
+        #200;
+
+        $display("===========|| Testing ALU|| ===========");
+        //Testing VADD
+        op_instr_base =  32'b00000000000000000011010001010111 ;
+        #200;
+
+        //Testing VSUB
+        op_instr_base =  32'b00001000010000000011011001010111 ;
+        #200;
+
+        //Testing VMIN
+        op_instr_base =  32'b00010100000000000011100001010111 ;
+        #200;
+
+        //Testing VMAX
+        op_instr_base =  32'b00011100010000000011101001010111 ;
+        #200;
+
+        //Testing VAND
+        op_instr_base =  32'b00100100000000000011110001010111 ;
+        #200;
+
+        //Testing VOR
+        op_instr_base =  32'b00101000010000000011111001010111 ;
+        #200;
+
+        //Testing VXOR
+        op_instr_base =  32'b00101100000000000011010001010111 ;
+        #200;
+
+        //Testing VSLL
+        op_instr_base =  32'b10010100010000000011011001010111 ;
+        #200;
+
+        //Testing VSRL
+        op_instr_base =  32'b10100000000000000011100001010111 ;
+        #200;
+
+        //Testing VSRA
+        op_instr_base =  32'b10100100010000000011101001010111 ;
+        #200;
+
+        $display("===========|| Testing MUL|| ===========");
+        //Testing VMUL
+        op_instr_base =  32'b10010100000000000010010001010111 ;
+        #200;
+
+        //Testing VMUL
+        op_instr_base =  32'b10010100010000000110011001010111 ;
+        #200;
+
+        //Testing VMUL
+        op_instr_base =  32'b10010100000000000010100001010111 ;
+        #200; */
+
+        //Instructions are random
+        $display("===========|| Testing CONFIGURATION INSTRUCTION|| ===========");
+        op_instr_base =  32'b00000000001000000111000001010111 ;
+        #200;
+
+        $display("===========|| Testing ARITHMETIC OPERATIONS|| ===========");
+
+        //Testing VMUL
+        op_instr_base =  32'b10010100000000000010100001010111 ;
+        #200;
+
+        //Testing VSLIDEDOWN
+        op_instr_base =  32'b00111100000000000011110001010111 ;
+        #80;
+
+        //Testing VADD
+        op_instr_base =  32'b00000000000000000000010001010111 ;
+        #200;
+
+        //Testing VSUB
+        op_instr_base =  32'b00001000010000000000011001010111 ;
+        #200;
+
+        //Testing VMIN
+        op_instr_base =  32'b00010100000000000000100001010111 ;
+        #200;
+
+        //Testing VSLIDEDOWN
+        op_instr_base =  32'b00111100010000000100111001010111 ;
+        #80;
+
+        //Testing VMAX
+        op_instr_base =  32'b00011100010000000000101001010111 ;
+        #200;
+
+        //Testing VAND
+        op_instr_base =  32'b00100100000000000000110001010111 ;
+        #200;
+
+        //Testing VOR
+        op_instr_base =  32'b00101000010000000000111001010111 ;
+        #200;
+
+        //Testing VXOR
+        op_instr_base =  32'b00101100000000000000010001010111 ;
+        #200;
+
+        //Testing VSLL
+        op_instr_base =  32'b10010100010000000000011001010111 ;
+        #200;
+
+        //Testing VSRL
+        op_instr_base =  32'b10100000000000000000100001010111 ;
+        #200;
+
+        //Testing VSRA
+        op_instr_base =  32'b10100100010000000000101001010111 ;
+        #200;
+
+        //Testing VADD
+        op_instr_base =  32'b00000000000000000100010001010111 ;
+        #200;
+
+        //Testing VSUB
+        op_instr_base =  32'b00001000010000000100011001010111 ;
+        #200;
+
+        //Testing VMIN
+        op_instr_base =  32'b00010100000000000100100001010111 ;
+        #200;
+
+        //Testing VMAX
+        op_instr_base =  32'b00011100010000000100101001010111 ;
+        #200;
+
+        //Testing VSLIDEDOWN
+        op_instr_base =  32'b00111100000000000100110001010111 ;
+        #80;
+
+
+        //Testing VAND
+        op_instr_base =  32'b00100100000000000100110001010111 ;
+        #200;
+
+        //Testing VOR
+        op_instr_base =  32'b00101000010000000100111001010111 ;
+        #200;
+
+        //Testing VXOR
+        op_instr_base =  32'b00101100000000000100010001010111 ;
+        #200;
+
+        //Testing VMOVE
+        op_instr_base =  32'b01011100010000000100011001010111 ;
+        #80;
+
+        //Testing VSLL
+        op_instr_base =  32'b10010100010000000100011001010111 ;
+        #200;
+
+        //Testing VSRL
+        op_instr_base =  32'b10100000000000000100100001010111 ;
+        #200;
+
+        //Testing VMOVE
+        op_instr_base =  32'b01011100000000000100010001010111 ;
+        #80;
+
+        //Testing VSRA
+        op_instr_base =  32'b10100100010000000100101001010111 ;
+        #200;
+
+        //Testing VSLIDEUP
+        op_instr_base =  32'b00111000000000000100100001010111 ;
+        #80;
+
+        //Testing VADD
+        op_instr_base =  32'b00000000000000000011010001010111 ;
+        #200;
+
+        //Testing VMUL
+        op_instr_base =  32'b10010100010000000110011001010111 ;
+        #200;
+
+        //Testing VSUB
+        op_instr_base =  32'b00001000010000000011011001010111 ;
+        #200;
+
+        //Testing VMIN
+        op_instr_base =  32'b00010100000000000011100001010111 ;
+        #200;
+
+        //Testing VMAX
+        op_instr_base =  32'b00011100010000000011101001010111 ;
+        #200;
+
+        //Testing VREDSUM
+        op_instr_base =  32'b00000000000000000010010001010111 ;
+        #280;
+
+        //Testing VAND
+        op_instr_base =  32'b00100100000000000011110001010111 ;
+        #200;
+
+        //Testing VOR
+        op_instr_base =  32'b00101000010000000011111001010111 ;
+        #200;
+
+        //Testing VREDMAX
+        op_instr_base =  32'b00011100010000000010011001010111 ;
+        #280;
+        //Testing VSLIDEUP
+        op_instr_base =  32'b00111000010000000011011001010111 ;
+        #80;
+
+        //Testing VXOR
+        op_instr_base =  32'b00101100000000000011010001010111 ;
+        #200;
+
+        //Testing VSLL
+        op_instr_base =  32'b10010100010000000011011001010111 ;
+        #200;
+
+        //Testing VSLIDEUP
+        op_instr_base =  32'b00111000010000000100101001010111 ;
+        #80;
+
+        //Testing VSRL
+        op_instr_base =  32'b10100000000000000011100001010111 ;
+        #200;
+
+        //Testing VSRA
+        op_instr_base =  32'b10100100010000000011101001010111 ;
+        #200;
+
+        //Testing VSLIDEUP
+        op_instr_base =  32'b00111000000000000011100001010111 ;
+        #80;
+
+        //Testing VMUL
+        op_instr_base =  32'b10010100000000000010010001010111 ;
+        #200;
+        
+        //Testing VSLIDEDOWN
+        op_instr_base =  32'b00111100010000000011101001010111 ;
+        #80;
+
+
+
+        //release integrated.op_A;
 
         #10;	
 		$finish;

@@ -13,17 +13,18 @@ module v_red (
     output logic done,
     output logic [31:0] result
 );
-    
+
+import v_pkg::*;    
 logic [511:0] vec_regB; 
-logic red_mode;
+//logic red_mode;
 
 assign vec_regB ={vec_regB_4,vec_regB_3,vec_regB_2,vec_regB_1};
-assign red_mode = (op_instr != 0)? 1: 0;
+//assign red_mode = (op_instr ==1)? 0: 1; //asssuming redmode = 0 is vredsum
 
 logic [255:0] current_reg;
 logic [2:0] step;
 
-always@( clk)
+always@(posedge clk)
 if (!nrst)
 begin
     step = 0;
@@ -31,8 +32,8 @@ begin
 end
 else
 begin
-    case(red_mode)
-    1'b0:
+    case(op_instr)
+    VRED_VREDSUM:
     begin
         case(step)
         default:
@@ -281,7 +282,7 @@ begin
         end
         endcase
     end
-    1'b1:
+    VRED_VREDMAX:
     begin
         case(step)
         default:
@@ -529,7 +530,9 @@ begin
         end
         endcase
     end
+    default: ;
     endcase
+
 end
 endmodule
 

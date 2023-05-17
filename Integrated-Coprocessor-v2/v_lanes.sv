@@ -59,9 +59,7 @@ module v_lanes(
     logic [127:0] result_vmul_32b_2;
 
     bit [1:0] step;
-    bit [1:0] step_rt;
-    
-    assign step_rt = step;
+
     genvar i;
     generate
         for (i = 0; i < 4; i++) begin
@@ -73,8 +71,8 @@ module v_lanes(
                 .nrst(nrst),
                 .op_instr(op_instr_alu),
                 .vsew(vsew),
-                .op_A((step_rt == 2'd0)? op_A_1[(i*32)+32-1:i*32] : (step_rt == 2'd1)? op_A_2[(i*32)+32-1:i*32] : (step_rt == 2'd2)? op_A_3[(i*32)+32-1:i*32] : op_A_4[(i*32)+32-1:i*32]),
-                .op_B((step_rt == 2'd0)? op_B_1[(i*32)+32-1:i*32] : (step_rt == 2'd1)? op_B_2[(i*32)+32-1:i*32] : (step_rt == 2'd2)? op_B_3[(i*32)+32-1:i*32] : op_B_4[(i*32)+32-1:i*32]),
+                .op_A((step == 2'd0)? op_A_1[(i*32)+32-1:i*32] : (step == 2'd1)? op_A_2[(i*32)+32-1:i*32] : (step == 2'd2)? op_A_3[(i*32)+32-1:i*32] : op_A_4[(i*32)+32-1:i*32]),
+                .op_B((step == 2'd0)? op_B_1[(i*32)+32-1:i*32] : (step == 2'd1)? op_B_2[(i*32)+32-1:i*32] : (step == 2'd2)? op_B_3[(i*32)+32-1:i*32] : op_B_4[(i*32)+32-1:i*32]),
                 .result(result_valu_32b_1[(i*32)+32-1:i*32])
 
             );
@@ -86,8 +84,8 @@ module v_lanes(
                 .nrst(nrst),
                 .is_mul(is_mul),
                 .sew(vsew),
-                .op_A((step_rt == 2'd0)? op_A_1[(i*32)+32-1:i*32] : (step_rt == 2'd1)? op_A_2[(i*32)+32-1:i*32] : (step_rt == 2'd2)? op_A_3[(i*32)+32-1:i*32] : op_A_4[(i*32)+32-1:i*32]),
-                .op_B((step_rt == 2'd0)? op_B_1[(i*32)+32-1:i*32] : (step_rt == 2'd1)? op_B_2[(i*32)+32-1:i*32] : (step_rt == 2'd2)? op_B_3[(i*32)+32-1:i*32] : op_B_4[(i*32)+32-1:i*32]),
+                .op_A((step == 2'd0)? op_A_1[(i*32)+32-1:i*32] : (step == 2'd1)? op_A_2[(i*32)+32-1:i*32] : (step == 2'd2)? op_A_3[(i*32)+32-1:i*32] : op_A_4[(i*32)+32-1:i*32]),
+                .op_B((step == 2'd0)? op_B_1[(i*32)+32-1:i*32] : (step == 2'd1)? op_B_2[(i*32)+32-1:i*32] : (step == 2'd2)? op_B_3[(i*32)+32-1:i*32] : op_B_4[(i*32)+32-1:i*32]),
                 .result(result_vmul_32b_1[(i*32)+32-1:i*32])
             );
 
@@ -96,7 +94,7 @@ module v_lanes(
             always @(posedge clk) begin 
                 case (step)
                         2'd0: begin
-                            if (i == 3) begin
+                            if (i == 3 && (op_instr_alu !=0 || is_mul==1)) begin
                                     //done = 1;
                                     done = (lanes == 2'b00 && lmul==3'b01)? 0: (lanes == 2'b00 && lmul==3'b10)? 0 : (lanes == 2'b01 && lmul==3'b10)? 0: 1; //LMUL==2'b11 returns 1
                                     step = (lanes == 2'b00 && lmul==3'b01)? 1: (lanes == 2'b00 && lmul==3'b10)? 2'd1 : (lanes == 2'b01 && lmul==3'b10)? 2'd2: 0;
@@ -109,7 +107,7 @@ module v_lanes(
                             // result_valu_1[(i*32)+32-1:i*32] = 32'h050607a1;
                         end 
                         2'd1: begin
-                            if (i == 3) begin
+                            if (i == 3&& (op_instr_alu !=0 || is_mul==1)) begin
                                     done = (lmul==2'b01)? 1: 0;
                                     step = (lmul==3'b10)? 2'd2 : 2'd0;                             
                             end
@@ -121,7 +119,7 @@ module v_lanes(
 
                         end 
                         2'd2: begin
-                            if (i == 3) begin
+                            if (i == 3 && (op_instr_alu !=0 || is_mul==1)) begin
                                 done = (lanes == 2'b01 && lmul==3'b10)? 1:0;
                                 step = (lanes == 2'b01 && lmul==3'b10)? 0: 2'd3;       
                             end
@@ -135,7 +133,7 @@ module v_lanes(
 
                         end 
                         2'd3: begin
-                            if (i == 3) begin
+                            if (i == 3 && (op_instr_alu !=0 || is_mul==1)) begin
                                 done = (lmul==2'b10)? 1: 0;
                                 step = 2'd0;                           
                             end
@@ -144,25 +142,7 @@ module v_lanes(
                             result_valu_4[(i*32)+32-1:i*32] = result_valu_32b_1[(i*32)+32-1:i*32];
                             // result_vmul_4[(i*32)+32-1:i*32] = 32'h010202b4 ;
                             // result_valu_4[(i*32)+32-1:i*32] = 32'h010202a4 ;
- 
-
-
                         end
-                        default:  begin //assume step = 0
-                            if (i == 3) begin
-                                    //done = 1;
-                                    done = (lanes == 2'b00 && lmul==3'b01)? 0: (lanes == 2'b00 && lmul==3'b10)? 0 : (lanes == 2'b01 && lmul==3'b10)? 0: 1; //LMUL==2'b11 returns 1
-                                    step = (lanes == 2'b00 && lmul==3'b01)? 1: (lanes == 2'b00 && lmul==3'b10)? 2'd1 : (lanes == 2'b01 && lmul==3'b10)? 2'd2: 0;
-                                    //step = 1;                                   
-                            end
-
-                            result_vmul_1[(i*32)+32-1:i*32] = result_vmul_32b_1[(i*32)+32-1:i*32];
-                            result_valu_1[(i*32)+32-1:i*32] = result_valu_32b_1[(i*32)+32-1:i*32];
-                            // result_vmul_1[(i*32)+32-1:i*32] = 32'h010203b1 ;
-                            // result_valu_1[(i*32)+32-1:i*32] = 32'h050607a1;
-
-
-                        end 
                 endcase                                  
             end
         end
