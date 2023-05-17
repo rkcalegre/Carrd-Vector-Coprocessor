@@ -172,6 +172,12 @@ module top(
 		.int_sig(int_sig)
 	);
 
+	carrd_integrated integrated(
+		.clk(CLKIP_OUT),
+		.nrst(nrst & locked),
+		.op_instr_base(v_instr)
+	);
+
 	// For Vivado ILA Capture control; Remove if not needed
 	// (* dont_touch = "yes" *) reg [31:0] ila_ctr = 0;
 	// always@(posedge CLK_BUF) begin
