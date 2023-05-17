@@ -114,7 +114,6 @@ module datamem(
 		      num_cycles_addr_reg <= (data_addr == 14'h2010);
 		end
 	end
-	
 	assign data_out = core_sel_reg ?  
 	                  ( num_cycles_addr_reg ? num_cycles_out : protocolmem_douta) 
 	                  : coremem_douta;

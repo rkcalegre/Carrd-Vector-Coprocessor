@@ -9,7 +9,7 @@ module tb_datamem();
 	wire [31:0] data_out;
 	
 	datamem uut(
-		.core_clk(clk),
+		.clk(clk),
 		.dm_write(dm_write),
 		.data_addr(data_addr),
 		.data_in(data_in),
@@ -79,14 +79,6 @@ module tb_datamem();
 		data_addr = 10'h6;
 		data_in = 32'hc1c1c1c1;
 		#20;
-
-		for (int i = 0; i < 7; i = i+1) begin
-			dm_write = 4'b1111;
-			data_addr = i;
-			data_in = $urandom(2**(32-1));
-			$display("data_in at %d: %X", data_addr, data_in);
-			#20;
-		end
 
 		$display("AFTER WRITES:");
 		$display("0x%X: %X", 10'h0, uut.memory[10'h0]);
