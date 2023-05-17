@@ -56,6 +56,8 @@ module carrd_writeback(
 
     always @(clk) begin
 
+        reg_wr_addr = dest_addr_in;
+
         if (v_alu_op inside {[1:10]}) begin
             v_reg_wr_en = (v_sel_dest==1 && done_vlanes==1) ? 1: 0;
             x_reg_wr_en = (v_sel_dest==2 && done_vlanes==1) ? 1: 0;
