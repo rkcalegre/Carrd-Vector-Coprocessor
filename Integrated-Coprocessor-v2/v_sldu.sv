@@ -31,6 +31,7 @@ module v_sldu #(
     input logic [VECTOR_LENGTH-1:0] vs2_3,//vs2
     input logic [VECTOR_LENGTH-1:0] vs2_4,//vs2 to accomodate lmul=4
     input logic [VECTOR_LENGTH-1:0] rs1,//rs1     redefine limit of range (currently VECTOR_LENGTH)
+    output bit done_vsldu,
     output logic [4*VECTOR_LENGTH-1:0] result //vd
 );
 
@@ -43,7 +44,11 @@ module v_sldu #(
 
     assign vector ={vs2_4,vs2_3,vs2_2,vs2_1};
 
-    always_comb begin
+    always @(op_instr, vs2_4,vs2_3,vs2_2,vs2_1, rs1) begin
+        done_vsldu = 0;
+    end
+
+    always @(posedge clk) begin
         // vslideup, vslidedown, vslide1up, vslide1down, vmv
         case (op_instr)
             VSLDU_VSLIDE1UP: begin //VSLIDE1UP
@@ -53,6 +58,7 @@ module v_sldu #(
                     3'b010: result = {{vector[479:0]},{rs1[31:0]}}; //sew = 32
                     default: result = {{vector[503:0]},{rs1[7:0]}}; //sew = 8
                 endcase
+                done_vsldu = 1;
             end
 
             VSLDU_VSLIDEUP: begin
@@ -185,6 +191,7 @@ module v_sldu #(
 	               endcase
 	            end
                 endcase
+                done_vsldu = 1;
             end
 
             /*
@@ -233,6 +240,7 @@ module v_sldu #(
                     endcase
                 end //result = {{rs1[ELEMENT_WIDTH-1:0]},{vector[511:ELEMENT_WIDTH]}};
                 endcase
+                done_vsldu = 1;
             end               
 
             VSLDU_VSLIDEDOWN: begin
@@ -519,6 +527,7 @@ module v_sldu #(
 	                   endcase
 	               endcase
 	           endcase
+                done_vsldu = 1;
             end
 
             VSLDU_VMV: begin  //vmove
@@ -529,16 +538,18 @@ module v_sldu #(
                     3'b010: result = {{480{1'b0}},{rs1[31:0]}}; //sew = 32
                     default: result = {{504{1'b0}},{rs1[7:0]}}; //sew = 8
                 endcase
-                
+                done_vsldu = 1;
             end
             default: begin  //vmove
                 //result = {{(512-ELEMENT_WIDTH){1'b0}},{rs1[ELEMENT_WIDTH-1:0]}};
-                case (sew)
+/*                 case (sew)
                     3'b000: result = {{504{1'b0}},{rs1[7:0]}}; //sew = 8
                     3'b001: result = {{496{1'b0}},{rs1[15:0]}}; //sew = 16
                     3'b010: result = {{480{1'b0}},{rs1[31:0]}}; //sew = 32
                     default: result = {{504{1'b0}},{rs1[7:0]}}; //sew = 8
                 endcase
+                done_vsldu = 1;
+                 */
                 
             end
         endcase

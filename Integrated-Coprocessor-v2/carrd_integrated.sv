@@ -192,6 +192,7 @@ module carrd_integrated#(
     // logic [127:0] vs2_4;//vs4 to accomodate lmul=4
     //logic [127:0] rs1;//rs1     redefine limit of range (currently VECTOR_LENGTH)
     logic [511:0] result_vsldu; //vd
+    logic done_vsldu;
     
 	v_sldu vsldu(
 	.clk(clk),
@@ -204,6 +205,7 @@ module carrd_integrated#(
 	.vs2_3(op_B[383:256]),
 	.vs2_4(op_B[511:384]),
 	.rs1(op_A[127:0]),
+    .done_vsldu(done_vsldu),
 	.result(result_vsldu)
 	);
 
@@ -282,7 +284,8 @@ module carrd_integrated#(
         .v_sldu_op(v_sldu_op),
         .v_red_op(v_red_op),
         .done_vlanes(done_vlanes),
-        .done_vred(done_vred),        
+        .done_vred(done_vred),
+        .done_vsldu(done_vsldu),        
         .result_vlsu(result_vlsu),
         .result_valu_1(result_valu_1),
         .result_valu_2(result_valu_2),

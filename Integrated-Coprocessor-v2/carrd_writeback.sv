@@ -29,6 +29,7 @@ module carrd_writeback(
     input [2:0] v_red_op,
     input done_vlanes,
     input done_vred,
+    input done_vsldu,
     input logic [31:0] result_vlsu,
     input logic [127:0] result_valu_1,
     input logic [127:0] result_valu_2,
@@ -80,8 +81,8 @@ module carrd_writeback(
             reg_wr_data_3 = result_vlsu;
             reg_wr_data_4 = result_vlsu;  
         end else if (v_sldu_op inside {[1:5]}) begin
-            v_reg_wr_en = (v_sel_dest==1) ? 1: 0;
-            x_reg_wr_en = (v_sel_dest==2) ? 1: 0;
+            v_reg_wr_en = (v_sel_dest==1 && done_vsldu==1) ? 1: 0;
+            x_reg_wr_en = (v_sel_dest==2 && done_vsldu==1) ? 1: 0;
             reg_wr_data = result_vsldu[127:0];
             reg_wr_data_2 = result_vsldu[255:128];
             reg_wr_data_3 = result_vsldu[383:256];
