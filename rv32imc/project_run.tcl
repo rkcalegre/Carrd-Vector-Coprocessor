@@ -11,7 +11,7 @@ add_files ./memory/instmem.mem
 add_files ./memory/isr_mem.mem
 
 #Add constraints
-add_files -fileset constrs_1 ./constraints/arty7_a35t.xdc
+# add_files -fileset constrs_1 ./constraints/arty7_a35t.xdc
 
 #Add testbench and answer key
 add_files -fileset sim_1 ./sim/tb_top.v
