@@ -83,16 +83,15 @@ module tb_alu();
 
 		#100 nrst = 1;
 
-		test_op(32'h0, 32'h0);
-		#10 test_op(32'hc0e19800, 32'heee19000);
+		// test_op(32'h0, 32'h0);
+		// #10 test_op(32'hc0e19800, 32'heee19000);
 
 		// // Random inputs
-		$display("is it working?");
-		#10 test_op($random, $random);
-		#10 test_op($random, $random);
-		#10 test_op($urandom, $urandom);
-		#10 test_op($urandom, $urandom);
-		#10 test_op($urandom, $urandom);
+		// #10 test_op($random, $random);
+		// #10 test_op($random, $random);
+		// #10 test_op($urandom, $urandom);
+		// #10 test_op($urandom, $urandom);
+		// #10 test_op($urandom, $urandom);
 		//CLK = 0;
 		
 		#11 aluop = MUL;

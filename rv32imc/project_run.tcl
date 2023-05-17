@@ -1,5 +1,5 @@
 # Set Current Directory to point to Github Repo directory (where project_run.tcl should be located)
-set SRCDIR "D:/Thesis Files/Reference Codes/RV32IMC_Revised"
+set SRCDIR "D:\Coding Projects\Carrd-Vector-Coprocessor\rv32imc"
 
 cd $SRCDIR
 
@@ -11,7 +11,7 @@ add_files ./memory/instmem.mem
 add_files ./memory/isr_mem.mem
 
 #Add constraints
-add_files -fileset constrs_1 ./constraints/arty7_a35t.xdc
+# add_files -fileset constrs_1 ./constraints/arty7_a35t.xdc
 
 #Add testbench and answer key
 add_files -fileset sim_1 ./sim/tb_top.v
@@ -39,7 +39,7 @@ add_files	{./vivado-ip-src/blk_mem_gen_datamem/blk_mem_gen_datamem.xci	\
 # add_files -fileset sim_1 ./wcfg
 
 # Set arty7_a35t.xdc as target constraints file
-set_property target_constrs_file [format %s%s $SRCDIR "/constraints/arty7_a35t.xdc"] [current_fileset -constrset]
+# set_property target_constrs_file [format %s%s $SRCDIR "/constraints/arty7_a35t.xdc"] [current_fileset -constrset]
 
 #Generate output products so that instmem.coe and datamem.coe will not be read-only files
 #generate_target synthesis [get_files blk_mem_gen_instmem.xci]
