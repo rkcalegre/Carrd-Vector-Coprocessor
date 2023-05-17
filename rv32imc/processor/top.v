@@ -132,8 +132,8 @@ module top(
 		.con_out(con_out),
 
 		.v_rd_xreg_addr(v_rd_xreg_addr),
-		.xreg_out(v_rd_xreg_addr),
-		.v_instr(v_rd_xreg_addr)
+		.xreg_out(xreg_out),
+		.v_instr(v_instr)
 	);
 
 	// Protocol controllers
