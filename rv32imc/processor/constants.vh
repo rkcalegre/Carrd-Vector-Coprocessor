@@ -51,6 +51,10 @@
 `define DATAMEM_DEPTH 8208  	// ~1024~ NEW -- 8192 (COREMEM) + 16(PROTOCOLMEM) Block Memory Depth
 `define DATAMEM_BITS `ceilLog2(`DATAMEM_DEPTH)
 
+//`define WORD_WIDTH           32   // Word width of 32bits; Used for Instructions, operands, and immediates
+`define V_REGS 32   //32 vector registers as defined by RVV
+`define VLEN 128    //unit:bits ; constant parameter chosen by the implementor [VLEN=VL*SEW]
+
 `define REGFILE_SIZE 32         // Can be changed if implementing RISC-V Floating point extensions,
 								// but read up on the RISC-V specifications to be sure.
 
