@@ -112,35 +112,35 @@ carrd_integrated integrated(
         //Check opcode
         #20;
         force integrated.reg_wr_en = 1;
-        force integrated.vd = 5'b0;
+        force integrated.dest_addr = 5'b0;
         force integrated.reg_wr_data = 128'h012345678901234567890123456789a1;
         #40;
-        force integrated.vd = 5'b1;
+        force integrated.dest_addr = 5'b1;
         force integrated.reg_wr_data = 128'h012345678901234567890123456789a2;
         #40;
-        force integrated.vd = 5'd2;
+        force integrated.dest_addr = 5'd2;
         force integrated.reg_wr_data = 128'h012345678901234567890123456789a3;
         #40;
-        force integrated.vd = 5'd3;
+        force integrated.dest_addr = 5'd3;
         force integrated.reg_wr_data = 128'h012345678901234567890123456789a4;
         #40;
-        force integrated.vd = 5'd4;
+        force integrated.dest_addr = 5'd4;
         force integrated.reg_wr_data = 128'h012345678901234567890123456789a5;
         #40;
-        force integrated.vd = 5'd5;
+        force integrated.dest_addr = 5'd5;
         force integrated.reg_wr_data = 128'h012345678901234567890123456789a6;
         #40;
-        force integrated.vd = 5'd6;
+        force integrated.dest_addr = 5'd6;
         force integrated.reg_wr_data = 128'h012345678901234567890123456789a7;
         #40;
-        force integrated.vd = 5'd7;
+        force integrated.dest_addr = 5'd7;
         force integrated.reg_wr_data = 128'h012345678901234567890123456789a8;
         #40;
         // integrated.reg_wr_en = 0;
         // force integrated.reg_wr_en = 0;
         #20;
         release integrated.reg_wr_en;
-        release integrated.vd;
+        release integrated.dest_addr;
         release integrated.reg_wr_data;
         release integrated.reg_wr_data_2;
         release integrated.reg_wr_data_3;
@@ -152,7 +152,7 @@ carrd_integrated integrated(
         op_instr_base =  32'b00000000001000000111000001010111 ;
         #200;
 
-        //force integrated.op_A = 32'h98765432;
+        force integrated.x_reg_data = 32'h98765432;
 
 
 /*          $display("===========|| Testing SLDU|| ==========="); //Tested //Commented for backup
@@ -401,9 +401,22 @@ carrd_integrated integrated(
 
         $display("===========|| Testing ARITHMETIC OPERATIONS|| ===========");
 
+/*         //Testing VMUL
+        op_instr_base =  32'b10010100000000000010100001010111 ;
+        #200; */
+
+        //Testing VMUL
+        op_instr_base =  32'b10010100000000000010010001010111 ;
+        #200;
+
+        //Testing VMUL
+        op_instr_base =  32'b10010100010000000010011001010111 ;
+        #200;
+
         //Testing VMUL
         op_instr_base =  32'b10010100000000000010100001010111 ;
         #200;
+
 
         //Testing VSLIDEDOWN
         op_instr_base =  32'b00111100000000000011110001010111 ;
@@ -583,7 +596,7 @@ carrd_integrated integrated(
 
 
 
-        //release integrated.op_A;
+        release integrated.x_reg_data;
 
         #10;	
 		$finish;
