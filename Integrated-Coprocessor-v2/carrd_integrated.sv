@@ -40,22 +40,20 @@ module carrd_integrated#(
     logic [2:0] vsew;
     logic [4:0] el_wr_addr;
 	logic  [4:0] el_addr_1, el_addr_2;
-	//logic [3:0][32-1:0] el_wr_data, el_data_out_1, el_data_out_2 ;
 	logic [32-1:0] el_data_out_1, el_data_out_2 ;
 	logic [127:0] el_wr_data;
-	logic [4:0] el_reg_wr_addr, reg_wr_addr,el_rd_addr_1,el_rd_addr_2,mask_src,reg_rd_addr_v1,reg_rd_addr_v2;
+	logic [4:0] el_reg_wr_addr, el_rd_addr_1,el_rd_addr_2,mask_src;
     logic [127:0]  reg_wr_data,reg_wr_data_2,reg_wr_data_3,reg_wr_data_4;
 	logic [127:0]  mask;
 	logic [127:0] reg_data_out_v1_a,reg_data_out_v1_b,reg_data_out_v1_c,reg_data_out_v1_d;
 	logic [127:0] reg_data_out_v2_a,reg_data_out_v2_b,reg_data_out_v2_c,reg_data_out_v2_d;
 
-    logic [4:0] vs1, vs2, vd;
+    logic [4:0] vs1, vs2, dest_addr;
     logic [31:0] instr;
 
     assign instr = op_instr_base; //From Base Processor
     assign vs1 = instr[19:15];
     assign vs2 = instr[24:20];
-    assign vd = instr[11:7];
 
 
 	v_regfile vregfile(
@@ -68,7 +66,7 @@ module carrd_integrated#(
         .el_reg_wr_addr(el_reg_wr_addr),
         .el_wr_data(el_wr_data),
         .reg_wr_en(reg_wr_en),
-        .reg_wr_addr(vd),
+        .reg_wr_addr(dest_addr),
         .reg_wr_data(reg_wr_data), //from results of blocks
         .reg_wr_data_2(reg_wr_data_2),
         .reg_wr_data_3(reg_wr_data_3),
@@ -205,7 +203,7 @@ module carrd_integrated#(
 	.vs2_2(op_B[255:128]),
 	.vs2_3(op_B[383:256]),
 	.vs2_4(op_B[511:384]),
-	.rs1(op_A[31:0]),
+	.rs1(op_A[127:0]),
 	.result(result_vsldu)
 	);
 

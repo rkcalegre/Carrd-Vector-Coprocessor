@@ -89,6 +89,10 @@ module v_lanes(
                 .result(result_vmul_32b_1[(i*32)+32-1:i*32])
             );
 
+            always @(op_instr_alu, is_mul, op_A_1,op_A_2,op_A_3,op_A_4,op_B_1,op_B_2,op_B_3,op_B_4) begin
+                step = 0;
+                done = 0;
+            end
 
             //always @(step,result_valu_32b_1,result_vmul_32b_1) begin 
             always @(posedge clk) begin 

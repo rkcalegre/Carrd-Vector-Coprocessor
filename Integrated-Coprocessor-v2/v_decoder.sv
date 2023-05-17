@@ -67,7 +67,8 @@ module v_decoder #(
                     (opcode == OPC_RTYPE && (funct3 == OPI_VV || funct3 == OPI_VX || funct3 == OPI_VI) && funct6 == VOR)   ? VALU_VOR  :
                     (opcode == OPC_RTYPE && (funct3 == OPI_VV || funct3 == OPI_VX || funct3 == OPI_VI) && funct6 == VXOR)  ? VALU_VXOR :
                     (opcode == OPC_RTYPE && (funct3 == OPI_VV || funct3 == OPI_VX || funct3 == OPI_VI) && funct6 == VSLL)  ? VALU_VSLL :
-                    (opcode == OPC_RTYPE && (funct3 == OPI_VV || funct3 == OPI_VX || funct3 == OPI_VI) && funct6 == VSRL)  ? VALU_VSRA :
+                    (opcode == OPC_RTYPE && (funct3 == OPI_VV || funct3 == OPI_VX || funct3 == OPI_VI) && funct6 == VSRL)  ? VALU_VSRL :
+                    (opcode == OPC_RTYPE && (funct3 == OPI_VV || funct3 == OPI_VX || funct3 == OPI_VI) && funct6 == VSRA)  ? VALU_VSRA :
                     (opcode == OPC_RTYPE && (funct3 == OPI_VV || funct3 == OPI_VX || funct3 == OPI_VI) && funct6 == VMIN)  ? VALU_VMIN :
                     (opcode == OPC_RTYPE && (funct3 == OPI_VV || funct3 == OPI_VX || funct3 == OPI_VI) && funct6 == VMAX)  ? VALU_VMAX : OFF;
 

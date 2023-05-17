@@ -50,7 +50,7 @@ module v_alu #(
     wire CE = (op_instr == VALU_VADD || op_instr == VALU_VSUB)? 1'b1 : 1'b0;
     wire [2:0] carry;
 
-    always @(*) begin
+    always_comb begin
         if (op_instr == VALU_VADD || op_instr == VALU_VSUB) begin
             case (vsew)     // SIGN EXTEND
                 VSEW_8: begin
