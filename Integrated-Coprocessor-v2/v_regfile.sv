@@ -85,7 +85,8 @@ module v_regfile (
     assign el_reg_wr_addr_oh   = (1 << el_reg_wr_addr); //
     
     //Store new Data
-    always_ff @(posedge clk) begin : memManage
+    //always_ff @(posedge clk) begin : memManage
+    always_ff @(clk) begin : memManage
 
         if(!nrst) begin //reset regfile; set regfile to 0 
             for (int i = 0; i < `V_REGS; i++) begin

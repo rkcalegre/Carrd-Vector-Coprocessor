@@ -20,13 +20,16 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 `timescale 1ns / 1ps
+`include "constants.vh"
 
 module carrd_integrated#(
     parameter int LANES = 0
 )(
 	input clk,
 	input nrst,
-    input logic [31:0] op_instr_base
+    input logic [31:0] op_instr_base,
+	output [`REGFILE_BITS-1:0] v_rd_xreg_addr, // For Vector-Scalar Instructions that require reads from the scalar regfile
+	input [`WORD_WIDTH-1:0] xreg_out			// Data read from scalar register
     );
 
     import v_pkg::*;
@@ -48,12 +51,13 @@ module carrd_integrated#(
 	logic [127:0] reg_data_out_v1_a,reg_data_out_v1_b,reg_data_out_v1_c,reg_data_out_v1_d;
 	logic [127:0] reg_data_out_v2_a,reg_data_out_v2_b,reg_data_out_v2_c,reg_data_out_v2_d;
 
-    logic [4:0] vs1, vs2, dest_addr;
+    logic [4:0] vs1, vs2, vd;
     logic [31:0] instr;
 
-    assign instr = op_instr_base; //From Base Processor
-    assign vs1 = instr[19:15];
-    assign vs2 = instr[24:20];
+    //From Base Processor
+    assign instr = op_instr_base; 
+    assign x_reg_data = xreg_out;
+    assign v_rd_xreg_addr = vs1;
 
 
 	v_regfile vregfile(
@@ -66,7 +70,7 @@ module carrd_integrated#(
         .el_reg_wr_addr(el_reg_wr_addr),
         .el_wr_data(el_wr_data),
         .reg_wr_en(reg_wr_en),
-        .reg_wr_addr(dest_addr),
+        .reg_wr_addr(vd),
         .reg_wr_data(reg_wr_data), //from results of blocks
         .reg_wr_data_2(reg_wr_data_2),
         .reg_wr_data_3(reg_wr_data_3),
@@ -96,7 +100,7 @@ module carrd_integrated#(
     // logic [31:0] vl_in;
     // logic [31:0] vtype_in;
     logic [31:0] vl_out;
-    logic [31:0] vtype_out;
+    logic [10:0] vtype_out;
 
     assign vlmul = vtype_out[2:0]; //RISC-V Defintion
     assign vsew = vtype_out[5:3];  //RISC-V Defintion
@@ -132,6 +136,8 @@ module carrd_integrated#(
 
 	v_decoder vdecoder(
     .instr(instr),
+    .v_reg_wr_en(reg_wr_en),
+    .x_reg_wr_en(x_reg_wr_en),
     .is_vconfig(is_vconfig),
     .v_alu_op(v_alu_op),
     .is_mul(is_mul),
@@ -140,22 +146,29 @@ module carrd_integrated#(
     .v_red_op(v_red_op),
     .v_op_sel_A(v_op_sel_A),
     .v_op_sel_B(v_op_sel_B),
-    .v_sel_dest(v_sel_dest)
+    .v_sel_dest(v_sel_dest),
+    .vd(vd),
+    .vs1(vs1),
+    .vs2(vs2),
+    .imm(imm),
+    .zimm(zimm)
 
 
 	);
     logic [511:0] op_A;
     logic [31:0] x_reg_data;
+    logic [4:0] imm;
+    logic [10:0] zimm;
 
     assign op_A = (v_op_sel_A == 1)? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,reg_data_out_v1_a}:  //vs1 data
                   (v_op_sel_A == 2)? {{480{1'b0}}, x_reg_data}:  //rs1 data
-                  (v_op_sel_A == 3)? {{507{1'b0}},instr[19:15]} : 0 ;  //immediate data
+                  (v_op_sel_A == 3)? {{507{1'b0}}, imm} : 0 ;  //immediate data
 
     logic [511:0] op_B;
 
     assign op_B = (v_op_sel_B == 1)? {reg_data_out_v2_d,reg_data_out_v2_c,reg_data_out_v2_b,reg_data_out_v2_a}:  //vs2 data
                   (v_op_sel_B == 2)? {{480{1'b0}}, x_reg_data}:  //rs2 data
-                  (v_op_sel_B == 3)? {{501{1'b0}},instr[30:20]} : 0 ;  //zimmediate data
+                  (v_op_sel_B == 3)? {{501{1'b0}}, zimm} : 0 ;  //zimmediate data
 
     //Reduction
     //logic [5:0] op_instr;
@@ -297,12 +310,10 @@ module carrd_integrated#(
         .result_vmul_4(result_vmul_4), 
         .result_vsldu(result_vsldu),
         .result_vred(result_vred),
-        .dest_addr_in(instr[11:7]), //can be deleted //vd = instr[11:7]
         .v_sel_dest(v_sel_dest), 
         .v_reg_wr_en(reg_wr_en),
         .x_reg_wr_en(x_reg_wr_en),
         .el_wr_en(el_wr_en), 
-        .reg_wr_addr(dest_addr),  
         .reg_wr_data(reg_wr_data),
         .reg_wr_data_2(reg_wr_data_2), 
         .reg_wr_data_3(reg_wr_data_3), 
