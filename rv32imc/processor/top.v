@@ -197,7 +197,7 @@ module top(
 		.int_sig(int_sig)
 	);
 
-	carrd_integrated integrated(
+	carrd_integrated CARRD(
 		.clk(CLKIP_OUT),
 		.nrst(nrst & locked),
 		.op_instr_base(v_instr),
