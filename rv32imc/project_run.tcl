@@ -1,5 +1,5 @@
 # Set Current Directory to point to Github Repo directory (where project_run.tcl should be located)
-set SRCDIR "C:/Users/Manal/Documents/VivadoProjects/Carrd-Vector-Coprocessor/rv32imc"
+set SRCDIR "C:/Users/Manal/Desktop/Fourth Year/ECE 199/carrdv2-accomodate-nop/rv32imc"
 
 cd $SRCDIR
 

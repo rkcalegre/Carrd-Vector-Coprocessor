@@ -41,12 +41,10 @@ module carrd_writeback(
     input logic [127:0] result_vmul_4,
     input logic [511:0] result_vsldu,
     input logic [31:0] result_vred,
-    input logic [4:0] dest_addr_in,
     input logic [1:0] v_sel_dest,
     output logic v_reg_wr_en,
     output logic x_reg_wr_en,
     output logic el_wr_en,
-    output logic [4:0] reg_wr_addr,
     output logic [127:0]  reg_wr_data,
     output logic [127:0]  reg_wr_data_2,
     output logic [127:0]  reg_wr_data_3,
@@ -56,8 +54,6 @@ module carrd_writeback(
 
 
     always @(clk) begin
-
-        reg_wr_addr = dest_addr_in;
 
         if (v_alu_op inside {[1:10]}) begin
             v_reg_wr_en = (v_sel_dest==1 && done_vlanes==1) ? 1: 0;

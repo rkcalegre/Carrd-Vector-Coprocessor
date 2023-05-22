@@ -1,1 +1,3 @@
 rv32imc/vivado-ip-src/
+rv32imc/vivado-ip-src/blk_mem_gen_protocol.xcix
+rv32imc/vivado-ip-src/blk_mem_gen_datamem.xcix
