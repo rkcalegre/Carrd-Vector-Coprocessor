@@ -42,14 +42,15 @@
 `define ISR_DEPTH 512           // ISR
 `define MEM_WIDTH 16            // Halfwords
 `define WORD_WIDTH 32           // Word width of 32bits; Used for Instructions, operands, and immediates
+`define BANK_DEPTH 2048         // For a 32kB Data Memory, we have a 8192 Block Memory Depth. So, each bank should have a depth of 2048 (8192/4 banks)
 
-`define PC_ADDR_BITS 14         // For addressing 16kB Instruction memory
+`define PC_ADDR_BITS 14         // For addressing 32kB Instruction memory four-way interleaved
 
 // If changing any of the parameters below, double check datamem.v, since some signals
 // there don't use parameters.
-`define DATAMEM_WIDTH 32        // Block Memory Width; Can be changed with WORD_WIDTH
-`define DATAMEM_DEPTH 8208  	// ~1024~ NEW -- 8192 (COREMEM) + 16(PROTOCOLMEM) Block Memory Depth
-`define DATAMEM_BITS `ceilLog2(`DATAMEM_DEPTH)
+`define DATAMEM_WIDTH 32                                // Block Memory Width; Can be changed with WORD_WIDTH
+`define DATAMEM_DEPTH `BANK_DEPTH + 16 	                // 2048 (COREMEM) + 16(PROTOCOLMEM) Block Memory Depth
+`define DATAMEM_BITS `ceilLog2(`DATAMEM_DEPTH) + 2      // The extra 2 bits are for bank number selection
 
 //`define WORD_WIDTH           32   // Word width of 32bits; Used for Instructions, operands, and immediates
 `define V_REGS 32   //32 vector registers as defined by RVV

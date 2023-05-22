@@ -30,16 +30,29 @@ module core(
 	input [`INT_SIG_WIDTH-1:0] int_sig,
 
 	// inputs from protocol controllers
-	input [3:0] con_write,				// Write enable signal
-	input [`DATAMEM_BITS-1:0] con_addr,	// Word-aligned data address
-	input [`DATAMEM_WIDTH-1:0] con_in,		// Input data from Protocol controllers
-	output [`DATAMEM_WIDTH-1:0] con_out,	// Ouput of DATAMEM connected to Protocol controllers
+	input [3:0] con_write,							// Write enable signal
+	input [`DATAMEM_BITS-1:0] con_addr,				// Word-aligned data address
+	input [`DATAMEM_WIDTH-1:0] con_in,				// Input data from Protocol controllers
+	output [`DATAMEM_WIDTH-1:0] con_out,			// Ouput of DATAMEM connected to Protocol controllers
 
 	// Signals routed to Vector Coprocessor
-	input [`REGFILE_BITS-1:0] v_rd_xreg_addr, // For Vector-Scalar Instructions that require reads from the scalar regfile
-	output [`WORD_WIDTH-1:0] xreg_out,			// Data read from scalar register
-	output [`WORD_WIDTH-1:0] v_instr			// Input to vector decoder
+	input [`REGFILE_BITS-1:0] v_rd_xreg_addr, 		// For Vector-Scalar Instructions that require reads from the scalar regfile
+	output [`WORD_WIDTH-1:0] xreg_out,				// Data read from scalar register
+	output [`WORD_WIDTH-1:0] v_instr,				// Input to vector decoder
 
+	// Memory Data buses from Vector Coprocessor
+	input [3:0] v_lsu_op,
+	// For Vector Store Operations
+	input [`DATAMEM_BITS-1:0] v_store_data_0,
+	input [`DATAMEM_BITS-1:0] v_store_data_1,
+	input [`DATAMEM_BITS-1:0] v_store_data_2,
+	input [`DATAMEM_BITS-1:0] v_store_data_3,
+
+	// For Vector Load Operations
+	output [`DATAMEM_BITS-1:0] v_load_data_0,
+	output [`DATAMEM_BITS-1:0] v_load_data_1,
+	output [`DATAMEM_BITS-1:0] v_load_data_2,
+	output [`DATAMEM_BITS-1:0] v_load_data_3
 );
 	
 // Assigns to Vector Datapath Signals
@@ -180,15 +193,23 @@ module core(
 
 	// Control signals
 	wire [3:0] mem_dm_write;				// For MEM stage
+	wire [3:0] v_dm_write;					// For Vector MEM writes
 	wire mem_wr_en;							// For WB stage
 	wire [2:0] mem_dm_select;				// For MEM stage
 	wire [2:0] mem_sel_data;				// For WB stage
 
 	// MEM Stage Datapath Signals
-	wire[`WORD_WIDTH-1:0] mem_DATAMEMout;	// Output of DATAMEM
+	wire [`WORD_WIDTH-1:0] mem_DATAMEMout;	// Output of DATAMEM
 
 	// Inputs to MEM/WB Pipereg
 	wire [`WORD_WIDTH-1:0] mem_loaddata;	// Output of LOAD BLOCK
+
+	// Signals from Vector Coprocessor
+	wire [`DATAMEM_BITS-1:0] mem_data_addr;	// Data Address
+	wire [`WORD_WIDTH-1:0] storedata_0;
+	wire [`WORD_WIDTH-1:0] storedata_1;
+	wire [`WORD_WIDTH-1:0] storedata_2;
+	wire [`WORD_WIDTH-1:0] storedata_3;
 // &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
 
@@ -877,20 +898,33 @@ module core(
 
 
 // MEM Stage =====================================================================
-	datamem DATAMEM(
+	assign mem_data_addr = (v_dm_write) ? v_data_addr : exe_ALUout[`DATAMEM_BITS+1:2];
+	assign storedata_0 = (v_dm_write) ? v_store_data_0: exe_storedata;		// scalar data is stored by default in bank 0
+	assign storedata_1 = (v_dm_write) ? v_store_data_1 : 32'b0;
+	assign storedata_2 = (v_dm_write) ? v_store_data_2 : 32'b0;
+	assign storedata_3 = (v_dm_write) ? v_store_data_3 : 32'b0;
+	assign v_load_data_0 = (v_dm_write == 0) ? mem_DATAMEMout : 32'b0;
+
+	v_datamem VDATAMEM(
 		.core_clk(mem_clk),
 		.con_clk(CLK_BUF),
 		.nrst(nrst),
 
 		.dm_write(exe_dm_write),
-		.data_addr(exe_ALUout[`DATAMEM_BITS+1:2]),
-		.data_in(exe_storedata),
+		.data_addr(mem_data_addr),
+		.data_in_0(storedata_0),
+		.data_in_1(storedata_1),
+		.data_in_2(storedata_2),
+		.data_in_3(storedata_3),
 
 		.con_write(con_write),
 		.con_addr(con_addr),
 		.con_in(con_in),
 
-		.data_out(mem_DATAMEMout),
+		.data_out_0(mem_DATAMEMout),
+		.data_out_1(v_load_data_1),
+		.data_out_2(v_load_data_2),
+		.data_out_3(v_load_data_3),
 		.con_out(con_out)
 	);
 

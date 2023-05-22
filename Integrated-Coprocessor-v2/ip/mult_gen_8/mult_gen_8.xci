@@ -73,7 +73,7 @@
         "OUTPUTDIR": [ { "value": "../../../../carrd_integrated3.gen/sources_1/ip/mult_gen_8" } ],
         "SELECTEDSIMMODEL": [ { "value": "" } ],
         "SHAREDDIR": [ { "value": "." } ],
-        "SWVERSION": [ { "value": "2022.2.2" } ],
+        "SWVERSION": [ { "value": "2022.2" } ],
         "SYNTHESISFLOW": [ { "value": "OUT_OF_CONTEXT" } ]
       }
     },

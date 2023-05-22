@@ -39,13 +39,27 @@ module top(
 	input ck_io8,		// UART_DEC
 
 	inout ck_io38,		// Tristate buffer/I2C SCL
-	inout ck_io39,		// Tristate buffer/I2C SDA
+	inout ck_io39		// Tristate buffer/I2C SDA
+);
 
 	// Signals Routed to Vector Coprocessor
-	input [`REGFILE_BITS-1:0] v_rd_xreg_addr, // For Vector-Scalar Instructions that require reads from the scalar regfile
-	output [`WORD_WIDTH-1:0] xreg_out,			// Data read from scalar register
-	output [`WORD_WIDTH-1:0] v_instr
-);
+	wire [`REGFILE_BITS-1:0] v_rd_xreg_addr; 			// For Vector-Scalar Instructions that require reads from the scalar regfile
+	wire [`WORD_WIDTH-1:0] xreg_out;					// Data read from scalar register
+	wire [`WORD_WIDTH-1:0] v_instr;
+
+	// Memory Data buses from Vector Coprocessor
+	wire [3:0] v_lsu_op;
+	// For Vector Store Operations
+	wire [`DATAMEM_BITS-1:0] v_store_data_0;
+	wire [`DATAMEM_BITS-1:0] v_store_data_1;
+	wire [`DATAMEM_BITS-1:0] v_store_data_2;
+	wire [`DATAMEM_BITS-1:0] v_store_data_3;
+
+	// For Vector Load Operations
+	wire [`DATAMEM_BITS-1:0] v_load_data_0;
+	wire [`DATAMEM_BITS-1:0] v_load_data_1;
+	wire [`DATAMEM_BITS-1:0] v_load_data_2;
+	wire [`DATAMEM_BITS-1:0] v_load_data_3;
 
 // DECLARING WIRES
 	wire CLKIP_OUT;			// Output of CLKIP module
@@ -133,7 +147,16 @@ module top(
 
 		.v_rd_xreg_addr(v_rd_xreg_addr),
 		.xreg_out(xreg_out),
-		.v_instr(v_instr)
+		.v_instr(v_instr),
+		.v_lsu_op(v_lsu_op),
+		.v_store_data_0(v_store_data_0),
+		.v_store_data_1(v_store_data_1),
+		.v_store_data_2(v_store_data_2),
+		.v_store_data_3(v_store_data_3),
+		.v_load_data_0(v_load_data_0),
+		.v_load_data_1(v_load_data_1),
+		.v_load_data_2(v_load_data_2),
+		.v_load_data_3(v_load_data_3)
 	);
 
 	// Protocol controllers
@@ -175,7 +198,17 @@ module top(
 	carrd_integrated integrated(
 		.clk(CLKIP_OUT),
 		.nrst(nrst & locked),
-		.op_instr_base(v_instr)
+		.op_instr_base(v_instr),
+		.v_lsu_op(v_lsu_op),
+		.v_store_data_0(v_store_data_0),
+		.v_store_data_1(v_store_data_1),
+		.v_store_data_2(v_store_data_2),
+		.v_store_data_3(v_store_data_3),
+
+		.v_load_data_0(v_load_data_0),
+		.v_load_data_1(v_load_data_1),
+		.v_load_data_2(v_load_data_2),
+		.v_load_data_3(v_load_data_3)
 	);
 
 	// For Vivado ILA Capture control; Remove if not needed

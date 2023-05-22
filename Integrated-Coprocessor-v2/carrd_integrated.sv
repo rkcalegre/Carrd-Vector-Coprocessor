@@ -20,13 +20,28 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 `timescale 1ns / 1ps
+`include "constants.vh"
 
 module carrd_integrated#(
     parameter int LANES = 0
 )(
 	input clk,
 	input nrst,
-    input logic [31:0] op_instr_base
+    input logic [31:0] op_instr_base,
+    
+    // Memory Data buses from Vector Coprocessor
+	output [3:0] v_lsu_op,
+	// For Vector Store Operations
+	output [`DATAMEM_BITS-1:0] v_store_data_0,
+	output [`DATAMEM_BITS-1:0] v_store_data_1,
+	output [`DATAMEM_BITS-1:0] v_store_data_2,
+	output [`DATAMEM_BITS-1:0] v_store_data_3,
+	// For Vector Load Operations
+	input [`DATAMEM_BITS-1:0] v_load_data_0,
+	input [`DATAMEM_BITS-1:0] v_load_data_1,
+	input [`DATAMEM_BITS-1:0] v_load_data_2,
+	input [`DATAMEM_BITS-1:0] v_load_data_3
+
     );
 
     import v_pkg::*;
