@@ -196,10 +196,13 @@ module v_datamem(
 		      num_cycles <= num_cycles + `WORD_WIDTH'd1;
 	    end
 	end
+	/*
 	wire [`DATAMEM_WIDTH-1:0] con_out_little_e = protocol_sel_reg? protocolmem_doutb : (data_addr[1:0] == 2'b00)? coremem_doutb_0 :
 																					   (data_addr[1:0] == 2'b01)? coremem_doutb_1 :
 																					   (data_addr[1:0] == 2'b10)? coremem_doutb_2 :
 																					   (data_addr[1:0] == 2'b11)? coremem_doutb_3;
+	*/
+	wire [`DATAMEM_WIDTH-1:0] con_out_little_e = protocol_sel_reg? protocolmem_doutb : coremem_doutb_0;
 																					   
 	assign con_out = {con_out_little_e[7:0], con_out_little_e[15:8], con_out_little_e[23:16], con_out_little_e[31:24]};
 endmodule

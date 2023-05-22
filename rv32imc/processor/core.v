@@ -42,6 +42,7 @@ module core(
 
 	// Memory Data buses from Vector Coprocessor
 	input [3:0] v_lsu_op,
+	input [13:0] v_data_addr,
 	// For Vector Store Operations
 	input [`DATAMEM_BITS-1:0] v_store_data_0,
 	input [`DATAMEM_BITS-1:0] v_store_data_1,
@@ -54,11 +55,6 @@ module core(
 	output [`DATAMEM_BITS-1:0] v_load_data_2,
 	output [`DATAMEM_BITS-1:0] v_load_data_3
 );
-	
-// Assigns to Vector Datapath Signals
-
-	assign v_instr = id_inst;
-	assign xreg_out = id_rfoutV;
 
 /******************************** DECLARING WIRES *******************************/
 
@@ -233,9 +229,12 @@ module core(
 	wire [`WORD_WIDTH-1:0] wb_wr_data;
 // &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
+// Assigns to Vector Datapath Signals ============================================
 
+	assign v_instr = id_inst;
+	assign xreg_out = id_rfoutV;
 
-
+// &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
 // Signals for BHT ===============================================================
 	wire if_prediction;						// Input to sel_PC mux

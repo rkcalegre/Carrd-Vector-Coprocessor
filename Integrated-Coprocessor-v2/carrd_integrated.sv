@@ -28,10 +28,10 @@ module carrd_integrated#(
 	input clk,
 	input nrst,
     input logic [31:0] op_instr_base,
-<<<<<<< HEAD
     
     // Memory Data buses from Vector Coprocessor
 	output [3:0] v_lsu_op,
+    output [13:0] v_data_addr,
 	// For Vector Store Operations
 	output [`DATAMEM_BITS-1:0] v_store_data_0,
 	output [`DATAMEM_BITS-1:0] v_store_data_1,
@@ -43,10 +43,8 @@ module carrd_integrated#(
 	input [`DATAMEM_BITS-1:0] v_load_data_2,
 	input [`DATAMEM_BITS-1:0] v_load_data_3,
 
-=======
 	output [`REGFILE_BITS-1:0] v_rd_xreg_addr, // For Vector-Scalar Instructions that require reads from the scalar regfile
 	input [`WORD_WIDTH-1:0] xreg_out			// Data read from scalar register
->>>>>>> c7ca28f95504d258918d44b3836493581074c098
     );
 
     import v_pkg::*;
@@ -75,6 +73,7 @@ module carrd_integrated#(
     assign instr = op_instr_base; 
     assign x_reg_data = xreg_out;
     assign v_rd_xreg_addr = vs1;
+    //assign v_data_addr = // address of data mem
 
 
 	v_regfile vregfile(

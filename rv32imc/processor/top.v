@@ -49,6 +49,7 @@ module top(
 
 	// Memory Data buses from Vector Coprocessor
 	wire [3:0] v_lsu_op;
+	wire [13:0] v_data_addr;
 	// For Vector Store Operations
 	wire [`DATAMEM_BITS-1:0] v_store_data_0;
 	wire [`DATAMEM_BITS-1:0] v_store_data_1;
@@ -149,6 +150,7 @@ module top(
 		.xreg_out(xreg_out),
 		.v_instr(v_instr),
 		.v_lsu_op(v_lsu_op),
+		.v_data_addr(v_data_addr),
 		.v_store_data_0(v_store_data_0),
 		.v_store_data_1(v_store_data_1),
 		.v_store_data_2(v_store_data_2),
@@ -200,6 +202,7 @@ module top(
 		.nrst(nrst & locked),
 		.op_instr_base(v_instr),
 		.v_lsu_op(v_lsu_op),
+		.v_data_addr(v_data_addr),
 		.v_store_data_0(v_store_data_0),
 		.v_store_data_1(v_store_data_1),
 		.v_store_data_2(v_store_data_2),
