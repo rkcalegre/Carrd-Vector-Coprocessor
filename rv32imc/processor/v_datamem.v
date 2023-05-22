@@ -50,7 +50,7 @@ module v_datamem(
 
 	// Outputs
 	output [`DATAMEM_WIDTH-1:0] data_out_0,	// data output to the RISC-V core OR data word 0 output to the Vector Coprocessor Core
-	output [`DATAMEM_WIDTH-1:0] data_out_1	// data word 1 output to the Vector Coprocessor Core
+	output [`DATAMEM_WIDTH-1:0] data_out_1,	// data word 1 output to the Vector Coprocessor Core
 	output [`DATAMEM_WIDTH-1:0] data_out_2,	// data word 2 output to the Vector Coprocessor Core
 	output [`DATAMEM_WIDTH-1:0] data_out_3,	// data word 3 output to the Vector Coprocessor Core
 	output [`DATAMEM_WIDTH-1:0] con_out		// data output to protocol controller
@@ -169,19 +169,19 @@ module v_datamem(
 		end
 	end
 	assign data_out_0 = core_sel_reg ?  
-	                  ( num_cycles_addr_reg ? num_cycles_out : protocolmem_douta_0) 
+	                  ( num_cycles_addr_reg ? num_cycles_out : protocolmem_douta) 
 	                  : coremem_douta_0;
 
 	assign data_out_1 = core_sel_reg ?  
-	                  ( num_cycles_addr_reg ? num_cycles_out : protocolmem_douta_1) 
+	                  ( num_cycles_addr_reg ? num_cycles_out : protocolmem_douta) 
 	                  : coremem_douta_1;
 
 	assign data_out_2 = core_sel_reg ?  
-	                  ( num_cycles_addr_reg ? num_cycles_out : protocolmem_douta_2) 
+	                  ( num_cycles_addr_reg ? num_cycles_out : protocolmem_douta) 
 	                  : coremem_douta_2;
 	
 	assign data_out_3 = core_sel_reg ?  
-	                  ( num_cycles_addr_reg ? num_cycles_out : protocolmem_douta_3) 
+	                  ( num_cycles_addr_reg ? num_cycles_out : protocolmem_douta) 
 	                  : coremem_douta_3;
 
 	// Assigning con_out
