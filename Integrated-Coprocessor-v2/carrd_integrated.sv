@@ -280,7 +280,7 @@ module carrd_integrated#(
     .data_out_4(data_out_4),
     .l_done(l_done),
     .s_done(s_done)
-    ); 
+    ); */
 
     //V_LANES
     logic done_vlanes;
