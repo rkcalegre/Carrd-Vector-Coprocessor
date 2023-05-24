@@ -28,29 +28,32 @@ module carrd_integrated#(
 	0 - 4 lanes
 	1 - 8 lanes
 	2 - 16 lanes **/
-    parameter int LANES = 0 //To be set before synthesizing the project. 
+    parameter int LANES = 0                     // To be set before synthesizing the project. 
 )(
 	input clk,
 	input nrst,
-	input logic [31:0] op_instr_base, //The instruction from the base processor
+	input logic [31:0] op_instr_base,           //The instruction from the base processor
     
-    	// Memory Data buses from Vector Coprocessor
-	output [3:0] v_lsu_op,
-    	output [13:0] v_data_addr,
+    // Memory Data buses from Vector Coprocessor
+	output is_vstype,
+    output [`DATAMEM_BITS-1:0] v_data_addr,
+
 	// For Vector Store Operations
 	output [`DATAMEM_BITS-1:0] v_store_data_0,
 	output [`DATAMEM_BITS-1:0] v_store_data_1,
 	output [`DATAMEM_BITS-1:0] v_store_data_2,
 	output [`DATAMEM_BITS-1:0] v_store_data_3,
+
 	// For Vector Load Operations
 	input [`DATAMEM_BITS-1:0] v_load_data_0,
 	input [`DATAMEM_BITS-1:0] v_load_data_1,
 	input [`DATAMEM_BITS-1:0] v_load_data_2,
 	input [`DATAMEM_BITS-1:0] v_load_data_3,
 
-	output [`REGFILE_BITS-1:0] v_rd_xreg_addr, // For Vector-Scalar Instructions that require reads from the scalar regfile
-	input [`WORD_WIDTH-1:0] xreg_out	   // Data read from scalar register
-    );
+    // For Vector-Scalar Instructions that require reads from the scalar regfile
+	output [`REGFILE_BITS-1:0] v_rd_xreg_addr,  
+	input [`WORD_WIDTH-1:0] xreg_out	        // Data read from scalar register
+);
 
     import v_pkg::*;
 
@@ -157,6 +160,7 @@ module carrd_integrated#(
     .v_alu_op(v_alu_op),
     .is_mul(is_mul),
     .v_lsu_op(v_lsu_op),
+    .is_vstype(is_vstype),
     .v_sldu_op(v_sldu_op),
     .v_red_op(v_red_op),
     .v_op_sel_A(v_op_sel_A),
@@ -225,6 +229,7 @@ module carrd_integrated#(
 	);
 
 /*     //VLSU
+
     logic [2:0] ld_store_op;
     //logic [2:0] vsew;
     logic [1:0] stride;
@@ -233,6 +238,11 @@ module carrd_integrated#(
     logic [31:0] loaddata;
     //logic [31:0] data_out; 
     logic [31:0] result_vlsu; 
+
+    assign v_store_data_0 = data_in1;
+    assign v_store_data_1 = data_in2;
+    assign v_store_data_2 = data_in3;
+    assign v_store_data_3 = data_in4;
 
     v_lsu vlsu(
 	.clk(clk),

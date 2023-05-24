@@ -41,8 +41,9 @@ module core(
 	output [`WORD_WIDTH-1:0] v_instr,				// Input to vector decoder
 
 	// Memory Data buses from Vector Coprocessor
-	input [3:0] v_lsu_op,
-	input [13:0] v_data_addr,
+	input is_vstype,
+	input [`PC_ADDR_BITS-1:0] v_data_addr,
+
 	// For Vector Store Operations
 	input [`DATAMEM_BITS-1:0] v_store_data_0,
 	input [`DATAMEM_BITS-1:0] v_store_data_1,
@@ -162,16 +163,23 @@ module core(
 	wire [1:0] exe_div_op;					// For EXE stage
 	wire exe_is_stype;						// For EXE stage
 	wire [3:0] exe_dm_write;				// For MEM stage
+	wire [3:0] exe_dm_write_1;				// For MEM stage
+	wire [3:0] exe_dm_write_2;				// For MEM stage
+	wire [3:0] exe_dm_write_3;				// For MEM stage
 	wire exe_wr_en;							// For WB stage
 	wire [2:0] exe_dm_select;				// For MEM stage
 	wire [2:0] exe_sel_data;				// For WB stage
 	wire [1:0] exe_store_select;			// For EXE stage
 	wire exe_sel_opBR;						// For EXE stage
+	wire [`DATAMEM_BITS-1:0] exe_data_addr;	// Input DATAMEM for Vector Load/Store Instructions
 
 	// Inputs to EXE/MEM Pipereg
 	wire [`WORD_WIDTH-1:0] exe_ALUout;		// ALU output
 	wire [`WORD_WIDTH-1:0] exe_DIVout;		// Divider output
 	wire [`WORD_WIDTH-1:0] exe_storedata;	// Output of STORE BLOCK
+	wire [`WORD_WIDTH-1:0] exe_storedata_1;	// Output of STORE BLOCK
+	wire [`WORD_WIDTH-1:0] exe_storedata_2;	// Output of STORE BLOCK
+	wire [`WORD_WIDTH-1:0] exe_storedata_3;	// Output of STORE BLOCK
 // &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
 
@@ -196,6 +204,9 @@ module core(
 
 	// MEM Stage Datapath Signals
 	wire [`WORD_WIDTH-1:0] mem_DATAMEMout;	// Output of DATAMEM
+	wire [`WORD_WIDTH-1:0] mem_DATAMEMout1;	// Output of DATAMEM
+	wire [`WORD_WIDTH-1:0] mem_DATAMEMout2;	// Output of DATAMEM
+	wire [`WORD_WIDTH-1:0] mem_DATAMEMout3;	// Output of DATAMEM
 
 	// Inputs to MEM/WB Pipereg
 	wire [`WORD_WIDTH-1:0] mem_loaddata;	// Output of LOAD BLOCK
@@ -870,8 +881,29 @@ module core(
 		.byte_offset(exe_ALUout[1:0]),
 		.store_select(exe_store_select),
 		.is_stype(exe_is_stype),
-		.data(exe_storedata),
-		.dm_write(exe_dm_write)
+
+		.is_vstype(is_vstype),
+
+		.data_in_0(v_store_data_0),
+		.data_in_1(v_store_data_1),
+		.data_in_2(v_store_data_2),
+		.data_in_3(v_store_data_3),
+
+		.data_addr0(),
+		.data_addr1(),
+		.data_addr2(),
+		.data_addr3(),
+		.data_addr(exe_data_addr),
+
+		.dm_write_0(exe_dm_write),
+		.dm_write_1(exe_dm_write_1),
+		.dm_write_2(exe_dm_write_2),
+		.dm_write_3(exe_dm_write_3),
+
+		.data0(exe_storedata),
+		.data1(exe_storedata_1),
+		.data2(exe_storedata_2),
+		.data3(exe_storedata_3)
 	);
 	
 	pipereg_exe_mem EXE_MEM(
@@ -897,33 +929,32 @@ module core(
 
 
 // MEM Stage =====================================================================
-	assign mem_data_addr = (v_dm_write) ? v_data_addr : exe_ALUout[`DATAMEM_BITS+1:2];
-	assign storedata_0 = (v_dm_write) ? v_store_data_0: exe_storedata;		// scalar data is stored by default in bank 0
-	assign storedata_1 = (v_dm_write) ? v_store_data_1 : 32'b0;
-	assign storedata_2 = (v_dm_write) ? v_store_data_2 : 32'b0;
-	assign storedata_3 = (v_dm_write) ? v_store_data_3 : 32'b0;
-	assign v_load_data_0 = (v_dm_write == 0) ? mem_DATAMEMout : 32'b0;
+	assign mem_data_addr = (is_vstype) ? exe_data_addr : exe_ALUout[`DATAMEM_BITS+1:2];
 
 	v_datamem VDATAMEM(
 		.core_clk(mem_clk),
 		.con_clk(CLK_BUF),
 		.nrst(nrst),
 
-		.dm_write(exe_dm_write),
+		.dm_write_0(exe_dm_write),
+		.dm_write_1(exe_dm_write_1),
+		.dm_write_2(exe_dm_write_2),
+		.dm_write_3(exe_dm_write_3),
+
 		.data_addr(mem_data_addr),
-		.data_in_0(storedata_0),
-		.data_in_1(storedata_1),
-		.data_in_2(storedata_2),
-		.data_in_3(storedata_3),
+		.data_in_0(exe_storedata),
+		.data_in_1(exe_storedata_1),
+		.data_in_2(exe_storedata_2),
+		.data_in_3(exe_storedata_3),
 
 		.con_write(con_write),
 		.con_addr(con_addr),
 		.con_in(con_in),
 
 		.data_out_0(mem_DATAMEMout),
-		.data_out_1(v_load_data_1),
-		.data_out_2(v_load_data_2),
-		.data_out_3(v_load_data_3),
+		.data_out_1(mem_DATAMEMout1),
+		.data_out_2(mem_DATAMEMout2),
+		.data_out_3(mem_DATAMEMout3),
 		.con_out(con_out)
 	);
 
