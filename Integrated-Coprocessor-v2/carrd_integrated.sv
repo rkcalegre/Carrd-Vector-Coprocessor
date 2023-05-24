@@ -234,10 +234,17 @@ module carrd_integrated#(
     //logic [2:0] vsew;
     logic [1:0] stride;
     logic [31:0] addr;
+     //VLSU
+    logic is_load, is_store;
+    //logic [6:0] v_lsu_op;
+    logic [3:0] write_en;
+    logic [2:0] width;
+    //logic [1:0] stride;
+    logic [31:0] l_addr,s_addr1, s_addr2, s_addr3, s_addr4;
     logic [31:0] data_in1, data_in2, data_in3, data_in4; 
-    logic [31:0] loaddata;
-    //logic [31:0] data_out; 
-    logic [31:0] result_vlsu; 
+    logic [511:0] loaddata, storedata, result_vlsu;
+    logic [31:0] data_out_1, data_out_2, data_out_3, data_out_4; 
+    //logic [31:0] result_vlsu; 
 
     assign v_store_data_0 = data_in1;
     assign v_store_data_1 = data_in2;
@@ -247,16 +254,30 @@ module carrd_integrated#(
     v_lsu vlsu(
 	.clk(clk),
 	.nrst(nrst),
-    .ld_store_op(ld_store_op),  // v_lsu_op
-    .vsew(vsew),
-    .addr(addr),
     .data_in1(data_in1),
     .data_in2(data_in2),
     .data_in3(data_in3),
     .data_in4(data_in4),
+    .v_lsu_op(v_lsu_op),  // v_lsu_op
+    .width(width),
+    .lmul(vlmul),
+    .l_addr(l_addr),
+    .s_addr1(s_addr1),
+    .s_addr2(s_addr2),
+    .s_addr3(s_addr3),
+    .s_addr4(s_addr4),
+    .storedata(storedata),
+    .is_load(is_load),
+    .is_store(is_store),
+    .write_en(write_en),
     .loaddata(loaddata),
-    .data_out(result_vlsu)
-    ); */
+    .data_out_1(data_out_1),
+    .data_out_2(data_out_2),
+    .data_out_3(data_out_3),
+    .data_out_4(data_out_4),
+    .l_done(l_done),
+    .s_done(s_done)
+    ); 
 
     //V_LANES
     logic done_vlanes;
