@@ -42,7 +42,10 @@ module core(
 
 	// Memory Data buses from Vector Coprocessor
 	input is_vstype,
-	input [`PC_ADDR_BITS-1:0] v_data_addr,
+	input [`PC_ADDR_BITS-1:0] v_data_addr0,
+	input [`PC_ADDR_BITS-1:0] v_data_addr1,
+	input [`PC_ADDR_BITS-1:0] v_data_addr2,
+	input [`PC_ADDR_BITS-1:0] v_data_addr3,
 
 	// For Vector Store Operations
 	input [`DATAMEM_BITS-1:0] v_store_data_0,
@@ -889,10 +892,10 @@ module core(
 		.data_in_2(v_store_data_2),
 		.data_in_3(v_store_data_3),
 
-		.data_addr0(),
-		.data_addr1(),
-		.data_addr2(),
-		.data_addr3(),
+		.data_addr0(v_data_addr0),
+		.data_addr1(v_data_addr1),
+		.data_addr2(v_data_addr2),
+		.data_addr3(v_data_addr3),
 		.data_addr(exe_data_addr),
 
 		.dm_write_0(exe_dm_write),
@@ -930,6 +933,10 @@ module core(
 
 // MEM Stage =====================================================================
 	assign mem_data_addr = (is_vstype) ? exe_data_addr : exe_ALUout[`DATAMEM_BITS+1:2];
+	assign v_load_data_0 = mem_DATAMEMout;
+	assign v_load_data_1 = mem_DATAMEMout1;
+	assign v_load_data_2 = mem_DATAMEMout2;
+	assign v_load_data_3 = mem_DATAMEMout3;
 
 	v_datamem VDATAMEM(
 		.core_clk(mem_clk),

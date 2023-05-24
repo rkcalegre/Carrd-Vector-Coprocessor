@@ -36,7 +36,10 @@ module carrd_integrated#(
     
     // Memory Data buses from Vector Coprocessor
 	output is_vstype,
-    output [`DATAMEM_BITS-1:0] v_data_addr,
+    output [`PC_ADDR_BITS-1:0] data_addr0,
+    output [`PC_ADDR_BITS-1:0] data_addr1,
+    output [`PC_ADDR_BITS-1:0] data_addr2,
+    output [`PC_ADDR_BITS-1:0] data_addr3,
 
 	// For Vector Store Operations
 	output [`DATAMEM_BITS-1:0] v_store_data_0,

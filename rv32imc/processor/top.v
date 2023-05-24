@@ -49,7 +49,10 @@ module top(
 
 	// Memory Data buses from Vector Coprocessor
 	wire is_vstype;
-	wire [`PC_ADDR_BITS-1:0] v_data_addr;
+	wire [`PC_ADDR_BITS-1:0] v_data_addr0;
+	wire [`PC_ADDR_BITS-1:0] v_data_addr1;
+	wire [`PC_ADDR_BITS-1:0] v_data_addr2;
+	wire [`PC_ADDR_BITS-1:0] v_data_addr3;
 	// For Vector Store Operations
 	wire [`DATAMEM_BITS-1:0] v_store_data_0;
 	wire [`DATAMEM_BITS-1:0] v_store_data_1;
@@ -151,7 +154,10 @@ module top(
 		.v_instr(v_instr),
 
 		.is_vstype(is_vstype),
-		.v_data_addr(v_data_addr),
+		.v_data_addr0(v_data_addr0),
+		.v_data_addr1(v_data_addr1),
+		.v_data_addr2(v_data_addr2),
+		.v_data_addr3(v_data_addr3),
 
 		.v_store_data_0(v_store_data_0),
 		.v_store_data_1(v_store_data_1),
@@ -206,7 +212,10 @@ module top(
 		.op_instr_base(v_instr),
 
 		.is_vstype(is_vstype),
-		.v_data_addr(v_data_addr),
+		.data_addr0(v_data_addr0),
+		.data_addr1(v_data_addr1),
+		.data_addr2(v_data_addr2),
+		.data_addr3(v_data_addr3),
 
 		.v_store_data_0(v_store_data_0),
 		.v_store_data_1(v_store_data_1),
