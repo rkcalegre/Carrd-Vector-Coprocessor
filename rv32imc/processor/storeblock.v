@@ -67,7 +67,7 @@ module storeblock(
 	assign data1 = data_in_1;
 	assign data2 = data_in_2;
 	assign data3 = data_in_3;
-	assign data_addr = data_addr0[`DATAMEM_BITS+2:2];
+	assign data_addr = data_addr0[`DATAMEM_BITS+1:2];
     
     // Original implementation was big-endian [b+3, b+2, b+1, b]
     // Changed to little-endian to accomodate RISC-V GNU Assembler Output [b, b+1, b+2, b+3]
@@ -104,10 +104,11 @@ module storeblock(
 		// Write to Bank 2 if data_addr[1:0] == 2'b10     //
 		// Write to Bank 3 if data_addr[1:0] == 2'b11     //
 		// =================================================
-		dm_write_0 <= (is_vstype && data_addr0[1:0] == 2'b00) ? 4'b1111 : 4'b0000;
-		dm_write_1 <= (is_vstype && data_addr1[1:0] == 2'b01) ? 4'b1111 : 4'b0000;
-		dm_write_2 <= (is_vstype && data_addr2[1:0] == 2'b10) ? 4'b1111 : 4'b0000;
-		dm_write_3 <= (is_vstype && data_addr3[1:0] == 2'b11) ? 4'b1111 : 4'b0000;
-
+		if (is_vstype) begin
+			dm_write_0 <= (data_addr0[1:0] == 2'b00) ? 4'b1111 : 4'b0000;
+			dm_write_1 <= (data_addr1[1:0] == 2'b01) ? 4'b1111 : 4'b0000;
+			dm_write_2 <= (data_addr2[1:0] == 2'b10) ? 4'b1111 : 4'b0000;
+			dm_write_3 <= (data_addr3[1:0] == 2'b11) ? 4'b1111 : 4'b0000;
+		end
 	end
 endmodule
