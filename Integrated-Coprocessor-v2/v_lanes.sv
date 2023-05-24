@@ -36,8 +36,8 @@ module v_lanes(
     output logic [127:0] result_vmul_2,
     output logic [127:0] result_vmul_3,
     output logic [127:0] result_vmul_4,
-    output bit done_alu,
-    output bit done_mul,
+    output bit done_valu,
+    output bit done_vmul,
 
 
 	input logic [127:0] op_A_1,
@@ -57,7 +57,10 @@ module v_lanes(
     logic [127:0] result_valu_32b_2;
     logic [127:0] result_vmul_32b_2;
 
-    logic [511:0] input_alu, input_mul;
+	logic [127:0] alu_op_A_1, alu_op_A_2, alu_op_A_3, alu_op_A_4;
+	logic [127:0] alu_op_B_1, alu_op_B_2, alu_op_B_3, alu_op_B_4;
+	logic [127:0] mul_op_A_1, mul_op_A_2, mul_op_A_3, mul_op_A_4;
+	logic [127:0] mul_op_B_1, mul_op_B_2, mul_op_B_3, mul_op_B_4;
 
     bit [1:0] step_alu, step_mul;
 
@@ -72,8 +75,8 @@ module v_lanes(
                 .nrst(nrst),
                 .op_instr(op_instr_alu),
                 .vsew(vsew),
-                .op_A((step_alu == 2'd0)? op_A_1[(i*32)+32-1:i*32] : (step_alu == 2'd1)? op_A_2[(i*32)+32-1:i*32] : (step_alu == 2'd2)? op_A_3[(i*32)+32-1:i*32] : op_A_4[(i*32)+32-1:i*32]),
-                .op_B((step_alu == 2'd0)? op_B_1[(i*32)+32-1:i*32] : (step_alu == 2'd1)? op_B_2[(i*32)+32-1:i*32] : (step_alu == 2'd2)? op_B_3[(i*32)+32-1:i*32] : op_B_4[(i*32)+32-1:i*32]),
+                .op_A((step_alu == 2'd0)? alu_op_A_1[(i*32)+32-1:i*32] : (step_alu == 2'd1)? alu_op_A_2[(i*32)+32-1:i*32] : (step_alu == 2'd2)? alu_op_A_3[(i*32)+32-1:i*32] : alu_op_A_4[(i*32)+32-1:i*32]),
+                .op_B((step_alu == 2'd0)? alu_op_B_1[(i*32)+32-1:i*32] : (step_alu == 2'd1)? alu_op_B_2[(i*32)+32-1:i*32] : (step_alu == 2'd2)? alu_op_B_3[(i*32)+32-1:i*32] : alu_op_B_4[(i*32)+32-1:i*32]),
                 .result(result_valu_32b_1[(i*32)+32-1:i*32])
 
             );
@@ -85,115 +88,110 @@ module v_lanes(
                 .nrst(nrst),
                 .is_mul(is_mul),
                 .sew(vsew),
-                .op_A((step_mul == 2'd0)? op_A_1[(i*32)+32-1:i*32] : (step_mul == 2'd1)? op_A_2[(i*32)+32-1:i*32] : (step_mul == 2'd2)? op_A_3[(i*32)+32-1:i*32] : op_A_4[(i*32)+32-1:i*32]),
-                .op_B((step_mul == 2'd0)? op_B_1[(i*32)+32-1:i*32] : (step_mul == 2'd1)? op_B_2[(i*32)+32-1:i*32] : (step_mul == 2'd2)? op_B_3[(i*32)+32-1:i*32] : op_B_4[(i*32)+32-1:i*32]),
+                .op_A((step_mul == 2'd0)? mul_op_A_1[(i*32)+32-1:i*32] : (step_mul == 2'd1)? mul_op_A_2[(i*32)+32-1:i*32] : (step_mul == 2'd2)? mul_op_A_3[(i*32)+32-1:i*32] : mul_op_A_4[(i*32)+32-1:i*32]),
+                .op_B((step_mul == 2'd0)? mul_op_B_1[(i*32)+32-1:i*32] : (step_mul == 2'd1)? mul_op_B_2[(i*32)+32-1:i*32] : (step_mul == 2'd2)? mul_op_B_3[(i*32)+32-1:i*32] : mul_op_B_4[(i*32)+32-1:i*32]),
                 .result(result_vmul_32b_1[(i*32)+32-1:i*32])
             );
 
             always @(op_instr_alu, is_mul, op_A_1,op_A_2,op_A_3,op_A_4,op_B_1,op_B_2,op_B_3,op_B_4) begin
-                if (op_instr_alu != 0) begin
+                if (op_instr_alu inside {[1:10]}) begin
+                    alu_op_A_1 = op_A_1;
+                    alu_op_A_2 = op_A_2;
+                    alu_op_A_3 = op_A_3;
+                    alu_op_A_4 = op_A_4;
+                    alu_op_B_1 = op_B_1;
+                    alu_op_B_2 = op_B_2;
+                    alu_op_B_3 = op_B_3;
+                    alu_op_B_4 = op_B_4;
                     step_alu = 0;
-                    done_alu = 0;                    
-                end else if (is_mul != 0) begin
-                    step_mul = 0;
-                    done_mul = 0;                     
+                end else begin
+                    step_alu = 0;
+                    done_valu = 0;                     
                 end
+                if (is_mul == 1) begin
+                    mul_op_A_1 = op_A_1;
+                    mul_op_A_2 = op_A_2;
+                    mul_op_A_3 = op_A_3;
+                    mul_op_A_4 = op_A_4;
+                    mul_op_B_1 = op_B_1;
+                    mul_op_B_2 = op_B_2;
+                    mul_op_B_3 = op_B_3;
+                    mul_op_B_4 = op_B_4;  
+                    step_mul = 0;               
+                end else begin
+                    step_mul = 0;
+                    done_vmul = 0;                     
+                end               
             end
 
             always @(posedge clk) begin 
-                case (step)
+                case (step_alu)
                         2'd0: begin
-                            if (i == 3 && (op_instr_alu !=0 || is_mul==1)) begin
-                                    done = (lanes == 2'b00 && lmul==3'b01)? 0: (lanes == 2'b00 && lmul==3'b10)? 0 : (lanes == 2'b01 && lmul==3'b10)? 0: 1; //LMUL==2'b11 returns 1
-                                    step = (lanes == 2'b00 && lmul==3'b01)? 1: (lanes == 2'b00 && lmul==3'b10)? 2'd1 : (lanes == 2'b01 && lmul==3'b10)? 2'd2: 0;                                  
+                            if (i == 3 && (op_instr_alu !=0)) begin
+                                    done_valu = (lanes == 2'b00 && lmul==3'b01)? 0: (lanes == 2'b00 && lmul==3'b10)? 0 : (lanes == 2'b01 && lmul==3'b10)? 0: 1; //LMUL==2'b11 returns 1
+                                    step_alu = (lanes == 2'b00 && lmul==3'b01)? 1: (lanes == 2'b00 && lmul==3'b10)? 2'd1 : (lanes == 2'b01 && lmul==3'b10)? 2'd2: 0;                                  
                             end
 
-                            result_vmul_1[(i*32)+32-1:i*32] = result_vmul_32b_1[(i*32)+32-1:i*32];
                             result_valu_1[(i*32)+32-1:i*32] = result_valu_32b_1[(i*32)+32-1:i*32];
                         end 
                         2'd1: begin
-                            if (i == 3&& (op_instr_alu !=0 || is_mul==1)) begin
-                                    done = (lmul==2'b01)? 1: 0;
-                                    step = (lmul==3'b10)? 2'd2 : 2'd0;                             
+                            if (i == 3&& (op_instr_alu !=0)) begin
+                                    done_valu = (lmul==2'b01)? 1: 0;
+                                    step_alu = (lmul==3'b10)? 2'd2 : 2'd0;                             
                             end
 
-                            result_vmul_2[(i*32)+32-1:i*32] = result_vmul_32b_1[(i*32)+32-1:i*32];
                             result_valu_2[(i*32)+32-1:i*32] = result_valu_32b_1[(i*32)+32-1:i*32];
-
                         end 
                         2'd2: begin
-                            if (i == 3 && (op_instr_alu !=0 || is_mul==1)) begin
-                                done = (lanes == 2'b01 && lmul==3'b10)? 1:0;
-                                step = (lanes == 2'b01 && lmul==3'b10)? 0: 2'd3;       
+                            if (i == 3 && (op_instr_alu !=0)) begin
+                                done_valu = (lanes == 2'b01 && lmul==3'b10)? 1:0;
+                                step_alu = (lanes == 2'b01 && lmul==3'b10)? 0: 2'd3;       
                             end
 
-                            result_vmul_3[(i*32)+32-1:i*32] = result_vmul_32b_1[(i*32)+32-1:i*32];
                             result_valu_3[(i*32)+32-1:i*32] = result_valu_32b_1[(i*32)+32-1:i*32];
-  
-
-
                         end 
                         2'd3: begin
-                            if (i == 3 && (op_instr_alu !=0 || is_mul==1)) begin
-                                done = (lmul==2'b10)? 1: 0;
-                                step = 2'd0;                           
+                            if (i == 3 && (op_instr_alu !=0)) begin
+                                done_valu = (lmul==2'b10)? 1: 0;
+                                step_alu = 2'd0;                           
                             end
 
-                            result_vmul_4[(i*32)+32-1:i*32] = result_vmul_32b_1[(i*32)+32-1:i*32];
                             result_valu_4[(i*32)+32-1:i*32] = result_valu_32b_1[(i*32)+32-1:i*32];
                         end
                 endcase
 
-                case (step)
+                case (step_mul)
                         2'd0: begin
-                            if (i == 3 && (op_instr_alu !=0 || is_mul==1)) begin
-                                    //done = 1;
-                                    done = (lanes == 2'b00 && lmul==3'b01)? 0: (lanes == 2'b00 && lmul==3'b10)? 0 : (lanes == 2'b01 && lmul==3'b10)? 0: 1; //LMUL==2'b11 returns 1
-                                    step = (lanes == 2'b00 && lmul==3'b01)? 1: (lanes == 2'b00 && lmul==3'b10)? 2'd1 : (lanes == 2'b01 && lmul==3'b10)? 2'd2: 0;
-                                    //step = 1;                                   
+                            if (i == 3 && (is_mul==1)) begin
+                                    done_vmul = (lanes == 2'b00 && lmul==3'b01)? 0: (lanes == 2'b00 && lmul==3'b10)? 0 : (lanes == 2'b01 && lmul==3'b10)? 0: 1; //LMUL==2'b11 returns 1
+                                    step_mul = (lanes == 2'b00 && lmul==3'b01)? 1: (lanes == 2'b00 && lmul==3'b10)? 2'd1 : (lanes == 2'b01 && lmul==3'b10)? 2'd2: 0;
                             end
 
                             result_vmul_1[(i*32)+32-1:i*32] = result_vmul_32b_1[(i*32)+32-1:i*32];
-                            result_valu_1[(i*32)+32-1:i*32] = result_valu_32b_1[(i*32)+32-1:i*32];
-                            // result_vmul_1[(i*32)+32-1:i*32] = 32'h010203b1 ;
-                            // result_valu_1[(i*32)+32-1:i*32] = 32'h050607a1;
                         end 
                         2'd1: begin
-                            if (i == 3&& (op_instr_alu !=0 || is_mul==1)) begin
-                                    done = (lmul==2'b01)? 1: 0;
-                                    step = (lmul==3'b10)? 2'd2 : 2'd0;                             
+                            if (i == 3&& (is_mul==1)) begin
+                                    done_vmul = (lmul==2'b01)? 1: 0;
+                                    step_mul = (lmul==3'b10)? 2'd2 : 2'd0;                             
                             end
 
                             result_vmul_2[(i*32)+32-1:i*32] = result_vmul_32b_1[(i*32)+32-1:i*32];
-                            result_valu_2[(i*32)+32-1:i*32] = result_valu_32b_1[(i*32)+32-1:i*32];
-                            // result_vmul_2[(i*32)+32-1:i*32] = 32'h010202b2 ;
-                            // result_valu_2[(i*32)+32-1:i*32] = 32'h010202a2 ;
-
                         end 
                         2'd2: begin
-                            if (i == 3 && (op_instr_alu !=0 || is_mul==1)) begin
-                                done = (lanes == 2'b01 && lmul==3'b10)? 1:0;
-                                step = (lanes == 2'b01 && lmul==3'b10)? 0: 2'd3;       
+                            if (i == 3 && (is_mul==1)) begin
+                                done_vmul = (lanes == 2'b01 && lmul==3'b10)? 1:0;
+                                step_mul = (lanes == 2'b01 && lmul==3'b10)? 0: 2'd3;       
                             end
 
-                            result_vmul_3[(i*32)+32-1:i*32] = result_vmul_32b_1[(i*32)+32-1:i*32];
-                            result_valu_3[(i*32)+32-1:i*32] = result_valu_32b_1[(i*32)+32-1:i*32];
-                            // result_vmul_3[(i*32)+32-1:i*32] = 32'h010202b3 ;
-                            // result_valu_3[(i*32)+32-1:i*32] = 32'h010202a3 ;
-  
-
-
+                            result_vmul_3[(i*32)+32-1:i*32] = result_vmul_32b_1[(i*32)+32-1:i*32];  
                         end 
                         2'd3: begin
-                            if (i == 3 && (op_instr_alu !=0 || is_mul==1)) begin
-                                done = (lmul==2'b10)? 1: 0;
-                                step = 2'd0;                           
+                            if (i == 3 && (is_mul==1)) begin
+                                done_vmul = (lmul==2'b10)? 1: 0;
+                                step_mul = 2'd0;                           
                             end
 
                             result_vmul_4[(i*32)+32-1:i*32] = result_vmul_32b_1[(i*32)+32-1:i*32];
-                            result_valu_4[(i*32)+32-1:i*32] = result_valu_32b_1[(i*32)+32-1:i*32];
-                            // result_vmul_4[(i*32)+32-1:i*32] = 32'h010202b4 ;
-                            // result_valu_4[(i*32)+32-1:i*32] = 32'h010202a4 ;
                         end
                 endcase                                     
             end
@@ -208,8 +206,8 @@ module v_lanes(
                 .nrst(nrst),
                 .op_instr(op_instr_alu),
                 .vsew(vsew),
-                .op_A((step_alu == 2'd0)? op_A_2[((i-4)*32)+32-1:(i-4)*32] : op_A_4[((i-4)*32)+32-1:(i-4)*32]),
-                .op_B((step_alu == 2'd0)? op_B_2[((i-4)*32)+32-1:(i-4)*32] : op_B_4[((i-4)*32)+32-1:(i-4)*32]),
+                .op_A((step_alu == 2'd0)? alu_op_A_2[((i-4)*32)+32-1:(i-4)*32] : alu_op_A_4[((i-4)*32)+32-1:(i-4)*32]),
+                .op_B((step_alu == 2'd0)? alu_op_B_2[((i-4)*32)+32-1:(i-4)*32] : alu_op_B_4[((i-4)*32)+32-1:(i-4)*32]),
                 .result(result_valu_32b_2[((i-4)*32)+32-1:(i-4)*32])
 
             );
@@ -221,24 +219,31 @@ module v_lanes(
                 .nrst(nrst),
                 .is_mul(is_mul),
                 .sew(vsew),
-                .op_A((step_mul == 2'd0)? op_A_2[((i-4)*32)+32-1:(i-4)*32] : op_A_4[((i-4)*32)+32-1:(i-4)*32]),
-                .op_B((step_mul == 2'd0)? op_B_2[((i-4)*32)+32-1:(i-4)*32] : op_B_4[((i-4)*32)+32-1:(i-4)*32]),
+                .op_A((step_mul == 2'd0)? mul_op_A_2[((i-4)*32)+32-1:(i-4)*32] : mul_op_A_4[((i-4)*32)+32-1:(i-4)*32]),
+                .op_B((step_mul == 2'd0)? mul_op_B_2[((i-4)*32)+32-1:(i-4)*32] : mul_op_B_4[((i-4)*32)+32-1:(i-4)*32]),
                 .result(result_vmul_32b_2[((i-4)*32)+32-1:(i-4)*32])
             );
 
             always @(result_valu_32b_2,result_vmul_32b_2) begin
                 if ((lanes == 2'b01) || (lanes == 2'b10)) begin
-                    case (step)
+                    case (step_alu)
                             2'd0: begin
-                                result_vmul_2[((i-4)*32)+32-1:(i-4)*32] = result_vmul_32b_2[((i-4)*32)+32-1:(i-4)*32];
                                 result_valu_2[((i-4)*32)+32-1:(i-4)*32] = result_valu_32b_2[((i-4)*32)+32-1:(i-4)*32]; 
                             end 
                             2'd2: begin
-                                result_vmul_4[((i-4)*32)+32-1:(i-4)*32] = result_vmul_32b_2[((i-4)*32)+32-1:(i-4)*32];
                                 result_valu_4[((i-4)*32)+32-1:(i-4)*32] = result_valu_32b_2[((i-4)*32)+32-1:(i-4)*32];                        
                             end
                             default: ;
-                    endcase                      
+                    endcase    
+                    case (step_mul)
+                            2'd0: begin
+                                result_vmul_2[((i-4)*32)+32-1:(i-4)*32] = result_vmul_32b_2[((i-4)*32)+32-1:(i-4)*32];
+                            end 
+                            2'd2: begin
+                                result_vmul_4[((i-4)*32)+32-1:(i-4)*32] = result_vmul_32b_2[((i-4)*32)+32-1:(i-4)*32];
+                            end
+                            default: ;
+                    endcase                    
                 end                 
             end
 
@@ -259,8 +264,8 @@ module v_lanes(
                 .nrst(nrst),
                 .op_instr(op_instr_alu),
                 .vsew(vsew),
-                .op_A(op_A_3[((i-8)*32)+32-1:(i-8)*32]),
-                .op_B(op_B_3[((i-8)*32)+32-1:(i-8)*32]),
+                .op_A(alu_op_A_3[((i-8)*32)+32-1:(i-8)*32]),
+                .op_B(alu_op_B_3[((i-8)*32)+32-1:(i-8)*32]),
                 .result(result_valu_3[((i-8)*32)+32-1:(i-8)*32])
 
             );
@@ -272,8 +277,8 @@ module v_lanes(
                 .nrst(nrst),
                 .is_mul(is_mul),
                 .sew(vsew),
-                .op_A(op_A_3[((i-8)*32)+32-1:(i-8)*32]),
-                .op_B(op_B_3[((i-8)*32)+32-1:(i-8)*32]),
+                .op_A(mul_op_A_3[((i-8)*32)+32-1:(i-8)*32]),
+                .op_B(mul_op_B_3[((i-8)*32)+32-1:(i-8)*32]),
                 .result(result_vmul_3[((i-8)*32)+32-1:(i-8)*32])
             );
         end
@@ -287,8 +292,8 @@ module v_lanes(
                 .nrst(nrst),
                 .op_instr(op_instr_alu),
                 .vsew(vsew),
-                .op_A(op_A_4[((i-12)*32)+32-1:(i-12)*32]),
-                .op_B(op_B_4[((i-12)*32)+32-1:(i-12)*32]),
+                .op_A(alu_op_A_4[((i-12)*32)+32-1:(i-12)*32]),
+                .op_B(alu_op_B_4[((i-12)*32)+32-1:(i-12)*32]),
                 .result(result_valu_4[((i-12)*32)+32-1:(i-12)*32])
 
             );
@@ -300,8 +305,8 @@ module v_lanes(
                 .nrst(nrst),
                 .is_mul(is_mul),
                 .sew(vsew),
-                .op_A(op_A_4[((i-12)*32)+32-1:(i-12)*32]),
-                .op_B(op_B_4[((i-12)*32)+32-1:(i-12)*32]),
+                .op_A(mul_op_A_4[((i-12)*32)+32-1:(i-12)*32]),
+                .op_B(mul_op_B_4[((i-12)*32)+32-1:(i-12)*32]),
                 .result(result_vmul_4[((i-12)*32)+32-1:(i-12)*32])
             );
         end        

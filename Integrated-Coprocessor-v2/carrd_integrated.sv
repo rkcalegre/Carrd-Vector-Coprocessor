@@ -220,11 +220,11 @@ module carrd_integrated#(
 	.vs2_3(op_B[383:256]),
 	.vs2_4(op_B[511:384]),
 	.rs1(op_A[127:0]),
-    	.done_vsldu(done_vsldu),
+    .done_vsldu(done_vsldu),
 	.result(result_vsldu)
 	);
 
-     //VLSU
+/*      //VLSU
     logic is_load, is_store;
     //logic [6:0] v_lsu_op;
     logic [3:0] write_en;
@@ -260,12 +260,13 @@ module carrd_integrated#(
     .data_out_2(data_out_2),
     .data_out_3(data_out_3),
     .data_out_4(data_out_4),
-    .l_done(l_done),
+    .l_done(done_vlsu),
     .s_done(s_done)
-    ); 
+    );  */
 
     //V_LANES
-    logic done_vlanes;
+    logic done_valu;
+    logic done_vmul;
     logic [127:0] result_valu_1;
     logic [127:0] result_valu_2;
     logic [127:0] result_valu_3;
@@ -292,7 +293,8 @@ module carrd_integrated#(
         .result_vmul_3(result_vmul_3),
         .result_valu_4(result_valu_4),
         .result_vmul_4(result_vmul_4),
-        .done(done_vlanes),
+        .done_valu(done_valu),
+        .done_vmul(done_vmul),
 
         .op_A_1(op_A[127:0]),
         .op_A_2(op_A[255:128]),
@@ -307,6 +309,7 @@ module carrd_integrated#(
 
 	// Writeback
     logic x_reg_wr_en;
+    logic done_vlsu;
 
     carrd_writeback vwriteback(
         .clk(clk),
@@ -315,9 +318,11 @@ module carrd_integrated#(
         .v_lsu_op(v_lsu_op), 
         .v_sldu_op(v_sldu_op),
         .v_red_op(v_red_op),
-        .done_vlanes(done_vlanes),
+        .done_valu(done_valu),
+        .done_vmul(done_vmul),
         .done_vred(done_vred),
         .done_vsldu(done_vsldu),        
+        .done_vlsu(done_vlsu),        
         .result_vlsu(result_vlsu),
         .result_valu_1(result_valu_1),
         .result_valu_2(result_valu_2),
