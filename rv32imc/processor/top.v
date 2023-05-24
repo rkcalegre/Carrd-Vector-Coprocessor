@@ -48,8 +48,11 @@ module top(
 	wire [`WORD_WIDTH-1:0] v_instr;
 
 	// Memory Data buses from Vector Coprocessor
-	wire [3:0] v_lsu_op;
-	wire [13:0] v_data_addr;
+	wire is_vstype;
+	wire [`PC_ADDR_BITS-1:0] v_data_addr0;
+	wire [`PC_ADDR_BITS-1:0] v_data_addr1;
+	wire [`PC_ADDR_BITS-1:0] v_data_addr2;
+	wire [`PC_ADDR_BITS-1:0] v_data_addr3;
 	// For Vector Store Operations
 	wire [`DATAMEM_BITS-1:0] v_store_data_0;
 	wire [`DATAMEM_BITS-1:0] v_store_data_1;
@@ -149,12 +152,18 @@ module top(
 		.v_rd_xreg_addr(v_rd_xreg_addr),
 		.xreg_out(xreg_out),
 		.v_instr(v_instr),
-		.v_lsu_op(v_lsu_op),
-		.v_data_addr(v_data_addr),
+
+		.is_vstype(is_vstype),
+		.v_data_addr0(v_data_addr0),
+		.v_data_addr1(v_data_addr1),
+		.v_data_addr2(v_data_addr2),
+		.v_data_addr3(v_data_addr3),
+
 		.v_store_data_0(v_store_data_0),
 		.v_store_data_1(v_store_data_1),
 		.v_store_data_2(v_store_data_2),
 		.v_store_data_3(v_store_data_3),
+
 		.v_load_data_0(v_load_data_0),
 		.v_load_data_1(v_load_data_1),
 		.v_load_data_2(v_load_data_2),
@@ -201,8 +210,13 @@ module top(
 		.clk(CLKIP_OUT),
 		.nrst(nrst & locked),
 		.op_instr_base(v_instr),
-		.v_lsu_op(v_lsu_op),
-		.v_data_addr(v_data_addr),
+
+		.is_vstype(is_vstype),
+		.data_addr0(v_data_addr0),
+		.data_addr1(v_data_addr1),
+		.data_addr2(v_data_addr2),
+		.data_addr3(v_data_addr3),
+
 		.v_store_data_0(v_store_data_0),
 		.v_store_data_1(v_store_data_1),
 		.v_store_data_2(v_store_data_2),
@@ -211,7 +225,10 @@ module top(
 		.v_load_data_0(v_load_data_0),
 		.v_load_data_1(v_load_data_1),
 		.v_load_data_2(v_load_data_2),
-		.v_load_data_3(v_load_data_3)
+		.v_load_data_3(v_load_data_3),
+
+		.v_rd_xreg_addr(v_rd_xreg_addr),
+		.xreg_out(xreg_out)
 	);
 
 	// For Vivado ILA Capture control; Remove if not needed

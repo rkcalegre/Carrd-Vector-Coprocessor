@@ -30,12 +30,17 @@
 `include "constants.vh"
 
 module v_datamem(
-	input core_clk,				// Gated clock signal
-	input con_clk,				// un-gated clock signal
+	input core_clk,								// Gated clock signal
+	input con_clk,								// Un-gated clock signal
 	input nrst,
 
-	// Inputs from the RISCV core
-	input [3:0] dm_write,
+	// Bank Selection
+	input [3:0] dm_write_0,
+	input [3:0] dm_write_1,
+	input [3:0] dm_write_2,
+	input [3:0] dm_write_3,
+
+	// Input Data to each Memory Bank
 	input [`DATAMEM_BITS-1:0] data_addr,
 	input [`DATAMEM_WIDTH-1:0] data_in_0,
 	input [`DATAMEM_WIDTH-1:0] data_in_1,
@@ -44,16 +49,17 @@ module v_datamem(
 
 	// Inputs from protocol controllers
 	// NOTE: protocol controllers cannot read from FPGAIO
-	input [3:0] con_write,				// Similar to dm_write
-	input [`DATAMEM_BITS-1:0] con_addr,	// datamem address from protocol controller
-	input [`DATAMEM_WIDTH-1:0] con_in,	// data input from protocol controller
+	input [3:0] con_write,						// Similar to dm_write
+	input [`DATAMEM_BITS-1:0] con_addr,			// Datamem address from protocol controller
+	input [`DATAMEM_WIDTH-1:0] con_in,			// Data input from protocol controller
 
 	// Outputs
-	output [`DATAMEM_WIDTH-1:0] data_out_0,	// data output to the RISC-V core OR data word 0 output to the Vector Coprocessor Core
-	output [`DATAMEM_WIDTH-1:0] data_out_1,	// data word 1 output to the Vector Coprocessor Core
-	output [`DATAMEM_WIDTH-1:0] data_out_2,	// data word 2 output to the Vector Coprocessor Core
-	output [`DATAMEM_WIDTH-1:0] data_out_3,	// data word 3 output to the Vector Coprocessor Core
-	output [`DATAMEM_WIDTH-1:0] con_out		// data output to protocol controller
+	// For now, output to Base RISC-V Core is defaulted to Bank 0
+	output [`DATAMEM_WIDTH-1:0] data_out_0,		// Data word 0 output to the Vector Coprocessor Core
+	output [`DATAMEM_WIDTH-1:0] data_out_1,		// Data word 1 output to the Vector Coprocessor Core
+	output [`DATAMEM_WIDTH-1:0] data_out_2,		// Data word 2 output to the Vector Coprocessor Core
+	output [`DATAMEM_WIDTH-1:0] data_out_3,		// Data word 3 output to the Vector Coprocessor Core
+	output [`DATAMEM_WIDTH-1:0] con_out			// Data output to protocol controller
 );
 	
 	// Block memory outputs
@@ -82,7 +88,7 @@ module v_datamem(
 	// Addresses 0x000 - 0xFFF (Word-aligned addresses)
 	blk_mem_gen_datamem_bank0 COREMEM0(
 		.clka(core_clk),
-		.wea(dm_write),
+		.wea(dm_write_0),
 		.addra(data_addr[`DATAMEM_BITS-2:0]),
 		.dina(data_in_little_e_0),
 		.douta(coremem_douta_0),
@@ -96,7 +102,7 @@ module v_datamem(
 
 	blk_mem_gen_datamem_bank1 COREMEM1(
 		.clka(core_clk),
-		.wea(dm_write),
+		.wea(dm_write_1),
 		.addra(data_addr[`DATAMEM_BITS-2:0]),
 		.dina(data_in_little_e_1),
 		.douta(coremem_douta_1),
@@ -110,7 +116,7 @@ module v_datamem(
 
 	blk_mem_gen_datamem_bank2 COREMEM2(
 		.clka(core_clk),
-		.wea(dm_write),
+		.wea(dm_write_2),
 		.addra(data_addr[`DATAMEM_BITS-2:0]),
 		.dina(data_in_little_e_2),
 		.douta(coremem_douta_2),
@@ -124,7 +130,7 @@ module v_datamem(
 
 	blk_mem_gen_datamem_bank3 COREMEM3(
 		.clka(core_clk),
-		.wea(dm_write),
+		.wea(dm_write_3),
 		.addra(data_addr[`DATAMEM_BITS-2:0]),
 		.dina(data_in_little_e_3),
 		.douta(coremem_douta_3),
