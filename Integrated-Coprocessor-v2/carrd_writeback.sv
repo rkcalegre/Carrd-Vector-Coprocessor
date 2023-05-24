@@ -9,7 +9,7 @@
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
-// Description: 
+// Description: This block mimics the writeback stage of the pipelined processor.
 // 
 // Dependencies: 
 // 
@@ -96,7 +96,7 @@ module carrd_writeback(
             x_reg_wr_en = 0;            
         end
 
-
+//The following code were commented out and kept for reference
 /*         if (v_alu_op inside {[1:10]}) begin
             v_reg_wr_en <= (v_sel_dest==1 && done_vlanes==1) ? 1: 0;
             x_reg_wr_en <= (v_sel_dest==2 && done_vlanes==1) ? 1: 0;

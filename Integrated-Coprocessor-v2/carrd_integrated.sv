@@ -6,10 +6,10 @@
 // Create Date: 11.04.2023 18:47:48
 // Design Name: 
 // Module Name: carrd_integrated
-// Project Name: 
+// Project Name: CARRD_Vector Coprocessor
 // Target Devices: 
 // Tool Versions: 
-// Description: 
+// Description: The top module of the project instantiating all other vector blocks.
 // 
 // Dependencies: 
 // 
@@ -23,15 +23,20 @@
 `include "constants.vh"
 
 module carrd_integrated#(
-    parameter int LANES = 0
+	/**
+	LANES Configuration
+	0 - 4 lanes
+	1 - 8 lanes
+	2 - 16 lanes **/
+    parameter int LANES = 0 //To be set before synthesizing the project. 
 )(
 	input clk,
 	input nrst,
-    input logic [31:0] op_instr_base,
+	input logic [31:0] op_instr_base, //The instruction from the base processor
     
-    // Memory Data buses from Vector Coprocessor
+    	// Memory Data buses from Vector Coprocessor
 	output [3:0] v_lsu_op,
-    output [13:0] v_data_addr,
+    	output [13:0] v_data_addr,
 	// For Vector Store Operations
 	output [`DATAMEM_BITS-1:0] v_store_data_0,
 	output [`DATAMEM_BITS-1:0] v_store_data_1,
@@ -44,24 +49,24 @@ module carrd_integrated#(
 	input [`DATAMEM_BITS-1:0] v_load_data_3,
 
 	output [`REGFILE_BITS-1:0] v_rd_xreg_addr, // For Vector-Scalar Instructions that require reads from the scalar regfile
-	input [`WORD_WIDTH-1:0] xreg_out			// Data read from scalar register
+	input [`WORD_WIDTH-1:0] xreg_out	   // Data read from scalar register
     );
 
     import v_pkg::*;
 
     /*=== INSTANTIATING MODULES ===*/
 
-    //Regfile
+    //Vector Register File
 	logic clk, nrst, reg_wr_en, el_wr_en;
-    logic [1:0] lanes = LANES;
+    	logic [1:0] lanes = LANES;
 	logic [2:0] vlmul;
-    logic [2:0] vsew;
-    logic [4:0] el_wr_addr;
+    	logic [2:0] vsew;
+    	logic [4:0] el_wr_addr;
 	logic  [4:0] el_addr_1, el_addr_2;
 	logic [32-1:0] el_data_out_1, el_data_out_2 ;
 	logic [127:0] el_wr_data;
 	logic [4:0] el_reg_wr_addr, el_rd_addr_1,el_rd_addr_2,mask_src;
-    logic [127:0]  reg_wr_data,reg_wr_data_2,reg_wr_data_3,reg_wr_data_4;
+    	logic [127:0]  reg_wr_data,reg_wr_data_2,reg_wr_data_3,reg_wr_data_4;
 	logic [127:0]  mask;
 	logic [127:0] reg_data_out_v1_a,reg_data_out_v1_b,reg_data_out_v1_c,reg_data_out_v1_d;
 	logic [127:0] reg_data_out_v2_a,reg_data_out_v2_b,reg_data_out_v2_c,reg_data_out_v2_d;
@@ -81,23 +86,23 @@ module carrd_integrated#(
         .nrst(nrst),
         .lmul(vlmul),
         .sew(vsew),
-		.el_wr_en(el_wr_en),
+	.el_wr_en(el_wr_en),
         .el_wr_addr(el_wr_addr),
         .el_reg_wr_addr(el_reg_wr_addr),
         .el_wr_data(el_wr_data),
         .reg_wr_en(reg_wr_en),
         .reg_wr_addr(vd),
-        .reg_wr_data(reg_wr_data), //from results of blocks
+	.reg_wr_data(reg_wr_data), //signal from v_writeback
         .reg_wr_data_2(reg_wr_data_2),
         .reg_wr_data_3(reg_wr_data_3),
         .reg_wr_data_4(reg_wr_data_4),
         .el_rd_addr_1(el_rd_addr_1),
         .el_rd_addr_2(el_rd_addr_2),
-		.el_addr_1(el_addr_1),
+	.el_addr_1(el_addr_1),
         .el_addr_2(el_addr_2),
         .mask_src(mask_src),
         .el_data_out_1(el_data_out_1),
-		.el_data_out_2(el_data_out_2),
+	.el_data_out_2(el_data_out_2),
         .mask(mask),
         .reg_rd_addr_v1(vs1),
         .reg_rd_addr_v2(vs2),
@@ -111,10 +116,7 @@ module carrd_integrated#(
         .reg_data_out_v2_d(reg_data_out_v2_d)
 	);
 
-    //csr
-    //logic vconfig_wr_en;
-    // logic [31:0] vl_in;
-    // logic [31:0] vtype_in;
+    //Control Status Register
     logic [31:0] vl_out;
     logic [10:0] vtype_out;
 
@@ -127,8 +129,6 @@ module carrd_integrated#(
     .clk(clk),
     .nrst(nrst),
     .vconfig_wr_en(is_vconfig),
-    // .vl_in(vl_in),
-    // .vtype_in(vtype_in),
     .vl_in(op_instr_base),
     .vtype_in(op_instr_base),
     .vl_out(vl_out),
@@ -136,8 +136,7 @@ module carrd_integrated#(
 	);
 
 
-    //Decoder
-	//logic [31:0] instr;
+    //Decoder Block
     logic [3:0] v_alu_op;
     logic is_vconfig;
     logic [3:0] v_lsu_op;
@@ -186,11 +185,7 @@ module carrd_integrated#(
                   (v_op_sel_B == 2)? {{480{1'b0}}, x_reg_data}:  //rs2 data
                   (v_op_sel_B == 3)? {{501{1'b0}}, zimm} : 0 ;  //zimmediate data
 
-    //Reduction
-    //logic [5:0] op_instr;
-    //logic [1:0] vsew;
-    //logic [1:0] lmul;
-    //logic [31:0] vec_regA;
+    //Vector Reduction Blok
     logic done_vred;
     logic [31:0] result_vred;
 
@@ -210,16 +205,7 @@ module carrd_integrated#(
         .result(result_vred)
     );
 
-    //SLDU
-
-    //logic [5:0] op_instr;
-    //logic [2:0] sew;
-    //logic [2:0] lmul;
-    // logic [127:0] vs2_1;//vs2
-    // logic [127:0] vs2_2;//vs2
-    // logic [127:0] vs2_3;//vs3
-    // logic [127:0] vs2_4;//vs4 to accomodate lmul=4
-    //logic [127:0] rs1;//rs1     redefine limit of range (currently VECTOR_LENGTH)
+    //Vector SLDU
     logic [511:0] result_vsldu; //vd
     logic done_vsldu;
     
@@ -234,7 +220,7 @@ module carrd_integrated#(
 	.vs2_3(op_B[383:256]),
 	.vs2_4(op_B[511:384]),
 	.rs1(op_A[127:0]),
-    .done_vsldu(done_vsldu),
+    	.done_vsldu(done_vsldu),
 	.result(result_vsldu)
 	);
 
@@ -319,6 +305,7 @@ module carrd_integrated#(
 
     );
 
+	// Writeback
     logic x_reg_wr_en;
 
     carrd_writeback vwriteback(
