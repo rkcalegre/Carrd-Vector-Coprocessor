@@ -24,8 +24,6 @@ module storeblock(
     input [1:0] byte_offset,
     input [1:0] store_select,
     input is_stype,
-    //output [31:0] data,
-    //output reg [3:0] dm_write
 
 	// Vector Coprocessor Datapath Signals //
 	input is_vstype,
@@ -37,11 +35,10 @@ module storeblock(
 	input [31:0] data_in_3,
 
 	// Data Addresses from VLSU
-	input [`PC_ADDR_BITS-1:0] data_addr0,
-	input [`PC_ADDR_BITS-1:0] data_addr1,
-	input [`PC_ADDR_BITS-1:0] data_addr2,
-	input [`PC_ADDR_BITS-1:0] data_addr3,
-	output [`DATAMEM_BITS-1:0] data_addr,
+	input [`DATAMEM_BITS-1:0] data_addr0,
+	input [`DATAMEM_BITS-1:0] data_addr1,
+	input [`DATAMEM_BITS-1:0] data_addr2,
+	input [`DATAMEM_BITS-1:0] data_addr3,
 
 	// Write Enable Signals for each memory bank
 	output reg [3:0] dm_write_0,
@@ -66,14 +63,17 @@ module storeblock(
 	parameter bank3 = 2'b11;
     
     wire [31:0] nboff_data;
+	wire [1:0] bank_sel = data_addr0[1:0];
     
     assign nboff_data = (store_select == sb) ? {24'd0 , opB[7:0]} : (store_select == sh) ? {16'd0, opB[15:0]} : opB ;
-    assign data0 = (is_vstype) ? data_in_0 : (nboff_data << (8*byte_offset));
-	assign data1 = data_in_1;
-	assign data2 = data_in_2;
-	assign data3 = data_in_3;
-	//assign data_addr = data_addr0[`DATAMEM_BITS+1:2];
-	assign data_addr = data_addr0;
+	//assign data0 = (is_vstype) ? data_in_0 : (nboff_data << (8*byte_offset));
+	//assign data1 = data_in_1;
+	//assign data2 = data_in_2;
+	//assign data3 = data_in_3;
+    assign data0 = (is_vstype) ? data_in_0 : (bank_sel == bank0) ? (nboff_data << (8*byte_offset)) : 32'd0;
+	assign data1 = (is_vstype) ? data_in_1 : (bank_sel == bank1) ? (nboff_data << (8*byte_offset)) : 32'd0;
+	assign data2 = (is_vstype) ? data_in_2 : (bank_sel == bank2) ? (nboff_data << (8*byte_offset)) : 32'd0;
+	assign data3 = (is_vstype) ? data_in_3 : (bank_sel == bank3) ? (nboff_data << (8*byte_offset)) : 32'd0;
     
     // Original implementation was big-endian [b+3, b+2, b+1, b]
     // Changed to little-endian to accomodate RISC-V GNU Assembler Output [b, b+1, b+2, b+3]
@@ -87,8 +87,14 @@ module storeblock(
 	// =================================================
 
 	always@(*) begin
-		case (data_addr0[1:0])
+		case (bank_sel)
 			bank0: begin
+
+				// Turn off other Write Enables
+				dm_write_1 <= 4'b0000;
+				dm_write_2 <= 4'b0000;
+				dm_write_3 <= 4'b0000;
+
 				case(store_select)
 					sb:
 						case({is_stype, byte_offset})
@@ -114,6 +120,12 @@ module storeblock(
 				endcase
 			end
 			bank1: begin
+
+				// Turn off other Write Enables
+				dm_write_0 <= 4'b0000;
+				dm_write_2 <= 4'b0000;
+				dm_write_3 <= 4'b0000;
+				
 				case(store_select)
 					sb:
 						case({is_stype, byte_offset})
@@ -139,6 +151,12 @@ module storeblock(
 				endcase
 			end
 			bank2: begin
+
+				// Turn off other Write Enables
+				dm_write_0 <= 4'b0000;
+				dm_write_1 <= 4'b0000;
+				dm_write_3 <= 4'b0000;
+				
 				case(store_select)
 					sb:
 						case({is_stype, byte_offset})
@@ -164,6 +182,12 @@ module storeblock(
 				endcase
 			end
 			bank3: begin
+
+				// Turn off other Write Enables
+				dm_write_0 <= 4'b0000;
+				dm_write_1 <= 4'b0000;
+				dm_write_2 <= 4'b0000;
+				
 				case(store_select)
 					sb:
 						case({is_stype, byte_offset})
@@ -188,9 +212,14 @@ module storeblock(
 					default: dm_write_3 <= 4'b0000;
 				endcase
 			end 
-			default: 
+			default: begin
+				dm_write_0 <= 4'b0000;
+				dm_write_1 <= 4'b0000;
+				dm_write_2 <= 4'b0000;
+				dm_write_3 <= 4'b0000;
+			end
 		endcase
-
+		
 		/*
 		case(store_select)
 			sb:
@@ -218,10 +247,10 @@ module storeblock(
 		*/
 
 		if (is_vstype) begin
-			dm_write_0 <= (data_addr0[1:0] == 2'b00) ? 4'b1111 : 4'b0000;
-			dm_write_1 <= (data_addr1[1:0] == 2'b01) ? 4'b1111 : 4'b0000;
-			dm_write_2 <= (data_addr2[1:0] == 2'b10) ? 4'b1111 : 4'b0000;
-			dm_write_3 <= (data_addr3[1:0] == 2'b11) ? 4'b1111 : 4'b0000;
+			dm_write_0 <= (bank_sel == 2'b00) ? 4'b1111 : 4'b0000;
+			dm_write_1 <= (bank_sel == 2'b01) ? 4'b1111 : 4'b0000;
+			dm_write_2 <= (bank_sel == 2'b10) ? 4'b1111 : 4'b0000;
+			dm_write_3 <= (bank_sel == 2'b11) ? 4'b1111 : 4'b0000;
 		end
 	end
 endmodule

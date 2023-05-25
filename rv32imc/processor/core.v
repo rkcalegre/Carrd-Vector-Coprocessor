@@ -42,10 +42,10 @@ module core(
 
 	// Memory Data buses from Vector Coprocessor
 	input is_vstype,
-	input [`DATAMEM_BITS-1:0] v_data_addr0,
-	input [`DATAMEM_BITS-1:0] v_data_addr1,
-	input [`DATAMEM_BITS-1:0] v_data_addr2,
-	input [`DATAMEM_BITS-1:0] v_data_addr3,
+	input [`PC_ADDR_BITS-1:0] v_data_addr0,
+	input [`PC_ADDR_BITS-1:0] v_data_addr1,
+	input [`PC_ADDR_BITS-1:0] v_data_addr2,
+	input [`PC_ADDR_BITS-1:0] v_data_addr3,
 
 	// For Vector Store Operations
 	input [`DATAMEM_WIDTH-1:0] v_store_data_0,
@@ -881,7 +881,7 @@ module core(
 		.exe_CNI(exe_CNI)
 	);
 
-	assign store_data_addr = (is_vstype) ? v_data_addr0 : exe_ALUout[`DATAMEM_BITS+1:2];
+	assign exe_data_addr = (is_vstype) ? v_data_addr0 : exe_ALUout[`DATAMEM_BITS+1:2];
 
 	storeblock STOREBLOCK(
 		.opB(exe_rstore),
@@ -896,11 +896,10 @@ module core(
 		.data_in_2(v_store_data_2),
 		.data_in_3(v_store_data_3),
 
-		.data_addr0(store_data_addr),
+		.data_addr0(exe_data_addr),
 		.data_addr1(v_data_addr1),
 		.data_addr2(v_data_addr2),
 		.data_addr3(v_data_addr3),
-		.data_addr(exe_data_addr),
 
 		.dm_write_0(exe_dm_write),
 		.dm_write_1(exe_dm_write_1),
@@ -969,11 +968,12 @@ module core(
 		.con_out(con_out)
 	);
 
-	assign mem_DATAMEMout =  (mem_data_addr == 2'b00) ? mem_MEMBANKout  :
-						  	 (mem_data_addr == 2'b01) ? mem_MEMBANKout1 :
-						     (mem_data_addr == 2'b10) ? mem_MEMBANKout2 :
-						     (mem_data_addr == 2'b11) ? mem_MEMBANKout3 : mem_MEMBANKout;
-
+	
+	assign mem_DATAMEMout =  (exe_data_addr[1:0] == 2'b00) ? mem_MEMBANKout  :
+						  	 (exe_data_addr[1:0] == 2'b01) ? mem_MEMBANKout1 :
+						     (exe_data_addr[1:0] == 2'b10) ? mem_MEMBANKout2 :
+						     (exe_data_addr[1:0] == 2'b11) ? mem_MEMBANKout3 : mem_MEMBANKout;
+	
 	loadblock LOADBLOCK(
 		.data(mem_DATAMEMout),
 		.byte_offset(mem_ALUout[1:0]),

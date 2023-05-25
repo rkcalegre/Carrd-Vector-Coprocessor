@@ -54,16 +54,16 @@ module top(
 	wire [`PC_ADDR_BITS-1:0] v_data_addr2;
 	wire [`PC_ADDR_BITS-1:0] v_data_addr3;
 	// For Vector Store Operations
-	wire [`DATAMEM_BITS-1:0] v_store_data_0;
-	wire [`DATAMEM_BITS-1:0] v_store_data_1;
-	wire [`DATAMEM_BITS-1:0] v_store_data_2;
-	wire [`DATAMEM_BITS-1:0] v_store_data_3;
+	wire [`DATAMEM_WIDTH-1:0] v_store_data_0;
+	wire [`DATAMEM_WIDTH-1:0] v_store_data_1;
+	wire [`DATAMEM_WIDTH-1:0] v_store_data_2;
+	wire [`DATAMEM_WIDTH-1:0] v_store_data_3;
 
 	// For Vector Load Operations
-	wire [`DATAMEM_BITS-1:0] v_load_data_0;
-	wire [`DATAMEM_BITS-1:0] v_load_data_1;
-	wire [`DATAMEM_BITS-1:0] v_load_data_2;
-	wire [`DATAMEM_BITS-1:0] v_load_data_3;
+	wire [`DATAMEM_WIDTH-1:0] v_load_data_0;
+	wire [`DATAMEM_WIDTH-1:0] v_load_data_1;
+	wire [`DATAMEM_WIDTH-1:0] v_load_data_2;
+	wire [`DATAMEM_WIDTH-1:0] v_load_data_3;
 
 // DECLARING WIRES
 	wire CLKIP_OUT;			// Output of CLKIP module

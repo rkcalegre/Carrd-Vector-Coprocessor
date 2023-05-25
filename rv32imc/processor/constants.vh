@@ -51,6 +51,7 @@
 `define DATAMEM_WIDTH 32                                // Block Memory Width; Can be changed with WORD_WIDTH
 `define DATAMEM_DEPTH `BANK_DEPTH + 16 	                // 2048 (COREMEM) + 16(PROTOCOLMEM) Block Memory Depth
 `define DATAMEM_BITS `ceilLog2(`DATAMEM_DEPTH) + 2      // 12 bits of addressing to each memory bank + 2 bits for Bank Selection
+`define MEMBANK_BITS `ceilLog2(`DATAMEM_DEPTH)          // 12 bits of addressing to each memory bank
 
 //`define WORD_WIDTH           32   // Word width of 32bits; Used for Instructions, operands, and immediates
 `define V_REGS 32   //32 vector registers as defined by RVV

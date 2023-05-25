@@ -42,16 +42,16 @@ module carrd_integrated#(
     output [`PC_ADDR_BITS-1:0] data_addr3,
 
 	// For Vector Store Operations
-	output [`DATAMEM_BITS-1:0] v_store_data_0,
-	output [`DATAMEM_BITS-1:0] v_store_data_1,
-	output [`DATAMEM_BITS-1:0] v_store_data_2,
-	output [`DATAMEM_BITS-1:0] v_store_data_3,
+	output [`DATAMEM_WIDTH-1:0] v_store_data_0,
+	output [`DATAMEM_WIDTH-1:0] v_store_data_1,
+	output [`DATAMEM_WIDTH-1:0] v_store_data_2,
+	output [`DATAMEM_WIDTH-1:0] v_store_data_3,
 
 	// For Vector Load Operations
-	input [`DATAMEM_BITS-1:0] v_load_data_0,
-	input [`DATAMEM_BITS-1:0] v_load_data_1,
-	input [`DATAMEM_BITS-1:0] v_load_data_2,
-	input [`DATAMEM_BITS-1:0] v_load_data_3,
+	input [`DATAMEM_WIDTH-1:0] v_load_data_0,
+	input [`DATAMEM_WIDTH-1:0] v_load_data_1,
+	input [`DATAMEM_WIDTH-1:0] v_load_data_2,
+	input [`DATAMEM_WIDTH-1:0] v_load_data_3,
 
     // For Vector-Scalar Instructions that require reads from the scalar regfile
 	output [`REGFILE_BITS-1:0] v_rd_xreg_addr,  

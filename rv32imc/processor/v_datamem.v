@@ -7,14 +7,14 @@
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 // Module Name: datamem.v
 // Description: This module contains the Block Memory Generator IP Modules needed
-//				to implement a ~4kB memory for the RISCV processor.
+//				to implement a ~32kB memory for the RISCV processor.
 //				Block Memory Generator IP settings for both modules:
 //					- Native Interface, True DUAL PORT RAM
 //					- Byte write enabled (8bits per byte)
 //					- common clock &  generate address unchecked
 //					- minimum area algorithm
 //					PORT settings (both port a & b)
-//						- 32bit write & read width, 1024 write & read depth
+//						- 32bit write & read width, 2048 write & read depth
 //						- Read First operating mode, Always Enabled
 //						- checkboxes left unchecked
 //					
@@ -54,12 +54,11 @@ module v_datamem(
 	input [`DATAMEM_WIDTH-1:0] con_in,			// Data input from protocol controller
 
 	// Outputs
-	// For now, output to Base RISC-V Core is defaulted to Bank 0
 	output [`DATAMEM_WIDTH-1:0] data_out_0,		// Data word 0 output to the Vector Coprocessor Core
 	output [`DATAMEM_WIDTH-1:0] data_out_1,		// Data word 1 output to the Vector Coprocessor Core
 	output [`DATAMEM_WIDTH-1:0] data_out_2,		// Data word 2 output to the Vector Coprocessor Core
 	output [`DATAMEM_WIDTH-1:0] data_out_3,		// Data word 3 output to the Vector Coprocessor Core
-	output [`DATAMEM_WIDTH-1:0] con_out		// Data output to protocol controller
+	output [`DATAMEM_WIDTH-1:0] con_out			// Data output to protocol controller
 
 );
 	
@@ -74,6 +73,7 @@ module v_datamem(
 	// If x_sel = 1, select PROTOCOLMEM output, else select COREMEM output
 	wire core_sel = data_addr[`DATAMEM_BITS-1];
 	wire protocol_sel = con_addr[`DATAMEM_BITS-1];
+	wire [1:0] bank_sel = data_addr[1:0];
 	
 	// Inputs are big-endian words
 	// This part converts them to little-endian format
@@ -90,13 +90,13 @@ module v_datamem(
 	blk_mem_gen_datamem_bank0 COREMEM0(
 		.clka(core_clk),
 		.wea(dm_write_0),
-		.addra(data_addr[`DATAMEM_BITS-1:2]),
+		.addra(data_addr[`DATAMEM_BITS-2:2]),
 		.dina(data_in_little_e_0),
 		.douta(coremem_douta_0),
 
 		.clkb(con_clk),
 		.web(4'b0),
-		.addrb(con_addr[`DATAMEM_BITS-1:2]),
+		.addrb(con_addr[`DATAMEM_BITS-2:2]),
 		.dinb(32'b0),
 		.doutb(coremem_doutb_0)
 	);
@@ -104,13 +104,13 @@ module v_datamem(
 	blk_mem_gen_datamem_bank1 COREMEM1(
 		.clka(core_clk),
 		.wea(dm_write_1),
-		.addra(data_addr[`DATAMEM_BITS-1:2]),
+		.addra(data_addr[`DATAMEM_BITS-2:2]),
 		.dina(data_in_little_e_1),
 		.douta(coremem_douta_1),
 
 		.clkb(con_clk),
 		.web(4'b0),
-		.addrb(con_addr[`DATAMEM_BITS-1:2]),
+		.addrb(con_addr[`DATAMEM_BITS-2:2]),
 		.dinb(32'b0),
 		.doutb(coremem_doutb_1)
 	);
@@ -118,13 +118,13 @@ module v_datamem(
 	blk_mem_gen_datamem_bank2 COREMEM2(
 		.clka(core_clk),
 		.wea(dm_write_2),
-		.addra(data_addr[`DATAMEM_BITS-1:2]),
+		.addra(data_addr[`DATAMEM_BITS-2:2]),
 		.dina(data_in_little_e_2),
 		.douta(coremem_douta_2),
 
 		.clkb(con_clk),
 		.web(4'b0),
-		.addrb(con_addr[`DATAMEM_BITS-1:2]),
+		.addrb(con_addr[`DATAMEM_BITS-2:2]),
 		.dinb(32'b0),
 		.doutb(coremem_doutb_2)
 	);
@@ -132,13 +132,13 @@ module v_datamem(
 	blk_mem_gen_datamem_bank3 COREMEM3(
 		.clka(core_clk),
 		.wea(dm_write_3),
-		.addra(data_addr[`DATAMEM_BITS-1:2]),
+		.addra(data_addr[`DATAMEM_BITS-2:2]),
 		.dina(data_in_little_e_3),
 		.douta(coremem_douta_3),
 
 		.clkb(con_clk),
 		.web(4'b0),
-		.addrb(con_addr[`DATAMEM_BITS-1:2]),
+		.addrb(con_addr[`DATAMEM_BITS-2:2]),
 		.dinb(32'b0),
 		.doutb(coremem_doutb_3)
 	);
@@ -204,11 +204,13 @@ module v_datamem(
 	    end
 	end
 
-	wire [`DATAMEM_WIDTH-1:0] con_out_little_e = protocol_sel_reg? protocolmem_doutb : (data_addr[1:0] == 2'b00)? coremem_doutb_0 :
-																					   (data_addr[1:0] == 2'b01)? coremem_doutb_1 :
-																					   (data_addr[1:0] == 2'b10)? coremem_doutb_2 :
-																					   (data_addr[1:0] == 2'b11)? coremem_doutb_3 : coremem_doutb_0;
-																					   
+
+	wire [`DATAMEM_WIDTH-1:0] con_out_little_e = protocol_sel_reg? protocolmem_doutb : (bank_sel == 2'b00)? coremem_doutb_0 :
+																					   (bank_sel == 2'b01)? coremem_doutb_1 :
+																					   (bank_sel == 2'b10)? coremem_doutb_2 :
+																					   (bank_sel == 2'b11)? coremem_doutb_3 : coremem_doutb_0;
+
+	//wire [`DATAMEM_WIDTH-1:0] con_out_little_e = protocol_sel_reg? protocolmem_doutb : coremem_doutb_0;																	   
 	assign con_out = {con_out_little_e[7:0], con_out_little_e[15:8], con_out_little_e[23:16], con_out_little_e[31:24]};
-	
+
 endmodule

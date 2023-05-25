@@ -10,15 +10,15 @@ module tb_core();
 	reg [`INT_SIG_WIDTH-1:0] int_sig;
 
 	reg [3:0] con_write;
-	reg [`PC_ADDR_BITS:0] con_addr;
+	reg [`DATAMEM_BITS-1:0] con_addr;
 	reg [`WORD_WIDTH-1:0] con_in;
 	wire [`WORD_WIDTH-1:0] con_out;
 
 	reg is_vstype;
-	reg [`PC_ADDR_BITS-1:0] v_data_addr0; 
-	reg [`PC_ADDR_BITS-1:0] v_data_addr1;
-	reg [`PC_ADDR_BITS-1:0] v_data_addr2;
-	reg [`PC_ADDR_BITS-1:0] v_data_addr3;
+	reg [`DATAMEM_BITS-1:0] v_data_addr0; 
+	reg [`DATAMEM_BITS-1:0] v_data_addr1;
+	reg [`DATAMEM_BITS-1:0] v_data_addr2;
+	reg [`DATAMEM_BITS-1:0] v_data_addr3;
 
 	reg [`WORD_WIDTH-1:0] last_inst;
 
@@ -42,7 +42,7 @@ module tb_core();
 		.con_out(con_out)
 	);
 
-	//answerkey AK();
+	answerkey AK();
 	answerkey0 AK0();
 	answerkey1 AK1();
 	answerkey2 AK2();
@@ -332,7 +332,7 @@ module tb_core();
 		if(!nrst)
 			max_data_addr <= 0;
 		else if(!done) 
-			if((CORE.exe_is_stype && |CORE.exe_dm_write && CORE.exe_ALUout[13:2] > max_data_addr) && (CORE.exe_ALUout[13:2] < 12'hA))
+			if((CORE.exe_is_stype && |CORE.exe_dm_write && CORE.exe_ALUout[13:2] > max_data_addr) && (CORE.exe_ALUout[13:2] < 12'h1d))
 				max_data_addr <= CORE.exe_ALUout[13:2];
 	end
 
@@ -372,36 +372,36 @@ module tb_core();
 		$display("Address\t  Actual  \tExpected ");
 		$display("=======\t==========\t==========");	
 	end
-
+	/*
 	always@(negedge CLK) begin
 		if(done) begin
 			if (con_addr[1:0] == 2'b00) begin
-				if(con_out == AK0.memory[con_addr[`DATAMEM_BITS+1:2]]) begin
+				if(con_out == AK0.memory0[con_addr[`DATAMEM_BITS-1:2]]) begin
 					//$display("0x%3X\t0x%X\t0x%X\tPass", con_addr, con_out, AK.memory[con_addr]);
 					pass = pass + 1;
 				end else begin
-					$display("0x%3X\t0x%X\t0x%X\tFail--------------------", con_addr[`DATAMEM_BITS+1:2], con_out, AK0.memory[con_addr[`DATAMEM_BITS+1:2]]);
+					$display("0x%3X\t0x%X\t0x%X\tFail--------------------", con_addr, con_out, AK0.memory0[con_addr[`DATAMEM_BITS-1:2]]);
 				end
 			end else if (con_addr[1:0] == 2'b01) begin
-				if(con_out == AK1.memory[con_addr[`DATAMEM_BITS+1:2]]) begin
+				if(con_out == AK1.memory1[con_addr[`DATAMEM_BITS-1:2]]) begin
 					//$display("0x%3X\t0x%X\t0x%X\tPass", con_addr, con_out, AK.memory[con_addr]);
 					pass = pass + 1;
 				end else begin
-					$display("0x%3X\t0x%X\t0x%X\tFail--------------------", con_addr[`DATAMEM_BITS+1:2], con_out, AK1.memory[con_addr[`DATAMEM_BITS+1:2]]);
+					$display("0x%3X\t0x%X\t0x%X\tFail--------------------", con_addr, con_out, AK1.memory1[con_addr[`DATAMEM_BITS-1:2]]);
 				end
 			end	else if (con_addr[1:0] == 2'b10) begin
-				if(con_out == AK2.memory[con_addr[`DATAMEM_BITS+1:2]]) begin
+				if(con_out == AK2.memory2[con_addr[`DATAMEM_BITS-1:2]]) begin
 					//$display("0x%3X\t0x%X\t0x%X\tPass", con_addr, con_out, AK.memory[con_addr]);
 					pass = pass + 1;
 				end else begin
-					$display("0x%3X\t0x%X\t0x%X\tFail--------------------", con_addr[`DATAMEM_BITS+1:2], con_out, AK2.memory[con_addr[`DATAMEM_BITS+1:2]]);
+					$display("0x%3X\t0x%X\t0x%X\tFail--------------------", con_addr, con_out, AK2.memory2[con_addr[`DATAMEM_BITS-1:2]]);
 				end
 			end else begin
-				if(con_out == AK3.memory[con_addr[`DATAMEM_BITS+1:2]]) begin
+				if(con_out == AK3.memory3[con_addr[`DATAMEM_BITS-1:2]]) begin
 					//$display("0x%3X\t0x%X\t0x%X\tPass", con_addr, con_out, AK.memory[con_addr]);
 					pass = pass + 1;
 				end else begin
-					$display("0x%3X\t0x%X\t0x%X\tFail--------------------", con_addr[`DATAMEM_BITS+1:2], con_out, AK3.memory[con_addr[`DATAMEM_BITS+1:2]]);
+					$display("0x%3X\t0x%X\t0x%X\tFail--------------------", con_addr, con_out, AK3.memory3[con_addr[`DATAMEM_BITS-1:2]]);
 				end
 			end
 
@@ -410,8 +410,9 @@ module tb_core();
 			con_addr = con_addr + 1;
 		end
 	end
+	*/
 
-	/*
+	
 	always@(negedge CLK) begin
 		if(done) begin	
 			if(con_out == AK.memory[con_addr]) begin
@@ -426,7 +427,7 @@ module tb_core();
 			con_addr = con_addr + 1;
 		end
 	end
-	*/
+	
 
 	// Since Vivado/Verilog can't handle nested FOR loops well, this part
 	// was split off into its own task. Ideally, it would be within the for loop
@@ -488,9 +489,38 @@ module tb_core();
 endmodule
 
 // ANSWER KEY
+
 module answerkey();
 	reg [31:0] memory [0:1023];
 	initial begin
 		$readmemh("answerkey.mem", memory);
+	end
+endmodule
+
+module answerkey0();
+	reg [31:0] memory0 [0:255];
+	initial begin
+		$readmemh("answerkey0.mem", memory0);
+	end
+endmodule
+
+module answerkey1();
+	reg [31:0] memory1 [0:255];
+	initial begin
+		$readmemh("answerkey1.mem", memory1);
+	end
+endmodule
+
+module answerkey2();
+	reg [31:0] memory2 [0:255];
+	initial begin
+		$readmemh("answerkey2.mem", memory2);
+	end
+endmodule
+
+module answerkey3();
+	reg [31:0] memory3 [0:255];
+	initial begin
+		$readmemh("answerkey3.mem", memory3);
 	end
 endmodule
