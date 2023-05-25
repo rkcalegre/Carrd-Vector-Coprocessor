@@ -67,3 +67,9 @@ nop
 # Signed maximum
 vmax.vv v12, v8, v4      # v12 = 9
 nop
+
+
+# Vector Integer Multiply Instructions
+# vmul
+vmul.vv v12, v8, v4      # v12 = v8 * v4 = 72 (or 0100 1000)
+nop
