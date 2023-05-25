@@ -67,7 +67,7 @@ module storeblock(
 	assign data1 = data_in_1;
 	assign data2 = data_in_2;
 	assign data3 = data_in_3;
-	assign data_addr = data_addr0[`DATAMEM_BITS+2:2];
+	assign data_addr = data_addr0[`DATAMEM_BITS+1:2];
     
     // Original implementation was big-endian [b+3, b+2, b+1, b]
     // Changed to little-endian to accomodate RISC-V GNU Assembler Output [b, b+1, b+2, b+3]

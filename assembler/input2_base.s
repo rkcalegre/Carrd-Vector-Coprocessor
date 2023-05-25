@@ -141,6 +141,12 @@ vor.vi v8, v4, 10, v0.t
 nop
 vadd.vv v12, v4, v8, v0.t
 nop
+vmul.vv v12, v12, v12, v0.t
+nop
+vadd.vv v12, v4, v8, v0.t
+nop
+vmul.vv v12, v12, v12, v0.t
+nop
 vslidedown.vi v16, v4, 2, v0.t
 nop
 vadd.vv v20, v16, v16, v0.t
