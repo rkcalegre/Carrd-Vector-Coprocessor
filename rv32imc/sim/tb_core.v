@@ -14,6 +14,12 @@ module tb_core();
 	reg [`WORD_WIDTH-1:0] con_in;
 	wire [`WORD_WIDTH-1:0] con_out;
 
+	reg is_vstype;
+	reg [`PC_ADDR_BITS-1:0] v_data_addr0; 
+	reg [`PC_ADDR_BITS-1:0] v_data_addr1;
+	reg [`PC_ADDR_BITS-1:0] v_data_addr2;
+	reg [`PC_ADDR_BITS-1:0] v_data_addr3;
+
 	reg [`WORD_WIDTH-1:0] last_inst;
 
 	core CORE(
@@ -26,6 +32,12 @@ module tb_core();
 		.con_write(con_write),
 		.con_addr(con_addr),
 		.con_in(con_in),
+
+		.is_vstype(is_vstype),
+		.v_data_addr0(v_data_addr0),
+		.v_data_addr1(v_data_addr1),
+		.v_data_addr2(v_data_addr2),
+		.v_data_addr3(v_data_addr3),
 
 		.con_out(con_out)
 	);
@@ -81,6 +93,12 @@ module tb_core();
 		con_write = 0;
 		con_addr = 10'h0;
 		con_in = 0;
+
+		is_vstype = 0;
+		v_data_addr0 = 12'h0;
+		v_data_addr1 = 12'h0;
+		v_data_addr2 = 12'h0;
+		v_data_addr3 = 12'h0;
 
 		done = 0;
 		check = 0;
@@ -310,8 +328,8 @@ module tb_core();
 		if(!nrst)
 			max_data_addr <= 0;
 		else if(!done) 
-			if((CORE.exe_is_stype && |CORE.exe_dm_write && CORE.exe_ALUout[14:2] > max_data_addr) && (CORE.exe_ALUout[14:2] < 13'h1d))
-				max_data_addr <= CORE.exe_ALUout[14:2];
+			if((CORE.exe_is_stype && |CORE.exe_dm_write && CORE.exe_ALUout[13:2] > max_data_addr) && (CORE.exe_ALUout[13:2] < 12'hA))
+				max_data_addr <= CORE.exe_ALUout[13:2];
 	end
 
 	// For simulating int_sig
