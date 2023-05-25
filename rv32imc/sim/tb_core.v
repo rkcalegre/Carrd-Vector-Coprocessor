@@ -10,7 +10,7 @@ module tb_core();
 	reg [`INT_SIG_WIDTH-1:0] int_sig;
 
 	reg [3:0] con_write;
-	reg [`DATAMEM_BITS:0] con_addr;
+	reg [`PC_ADDR_BITS:0] con_addr;
 	reg [`WORD_WIDTH-1:0] con_in;
 	wire [`WORD_WIDTH-1:0] con_out;
 
@@ -42,7 +42,11 @@ module tb_core();
 		.con_out(con_out)
 	);
 
-	answerkey AK();
+	//answerkey AK();
+	answerkey0 AK0();
+	answerkey1 AK1();
+	answerkey2 AK2();
+	answerkey3 AK3();
 
 	always
 		#10 CLK = ~CLK;		// 50MHz clock
@@ -370,6 +374,45 @@ module tb_core();
 	end
 
 	always@(negedge CLK) begin
+		if(done) begin
+			if (con_addr[1:0] == 2'b00) begin
+				if(con_out == AK0.memory[con_addr[`DATAMEM_BITS+1:2]]) begin
+					//$display("0x%3X\t0x%X\t0x%X\tPass", con_addr, con_out, AK.memory[con_addr]);
+					pass = pass + 1;
+				end else begin
+					$display("0x%3X\t0x%X\t0x%X\tFail--------------------", con_addr[`DATAMEM_BITS+1:2], con_out, AK0.memory[con_addr[`DATAMEM_BITS+1:2]]);
+				end
+			end else if (con_addr[1:0] == 2'b01) begin
+				if(con_out == AK1.memory[con_addr[`DATAMEM_BITS+1:2]]) begin
+					//$display("0x%3X\t0x%X\t0x%X\tPass", con_addr, con_out, AK.memory[con_addr]);
+					pass = pass + 1;
+				end else begin
+					$display("0x%3X\t0x%X\t0x%X\tFail--------------------", con_addr[`DATAMEM_BITS+1:2], con_out, AK1.memory[con_addr[`DATAMEM_BITS+1:2]]);
+				end
+			end	else if (con_addr[1:0] == 2'b10) begin
+				if(con_out == AK2.memory[con_addr[`DATAMEM_BITS+1:2]]) begin
+					//$display("0x%3X\t0x%X\t0x%X\tPass", con_addr, con_out, AK.memory[con_addr]);
+					pass = pass + 1;
+				end else begin
+					$display("0x%3X\t0x%X\t0x%X\tFail--------------------", con_addr[`DATAMEM_BITS+1:2], con_out, AK2.memory[con_addr[`DATAMEM_BITS+1:2]]);
+				end
+			end else begin
+				if(con_out == AK3.memory[con_addr[`DATAMEM_BITS+1:2]]) begin
+					//$display("0x%3X\t0x%X\t0x%X\tPass", con_addr, con_out, AK.memory[con_addr]);
+					pass = pass + 1;
+				end else begin
+					$display("0x%3X\t0x%X\t0x%X\tFail--------------------", con_addr[`DATAMEM_BITS+1:2], con_out, AK3.memory[con_addr[`DATAMEM_BITS+1:2]]);
+				end
+			end
+
+			total_test_cases = total_test_cases + 1;
+			if(con_addr == max_data_addr) print_metrics = 1;
+			con_addr = con_addr + 1;
+		end
+	end
+
+	/*
+	always@(negedge CLK) begin
 		if(done) begin	
 			if(con_out == AK.memory[con_addr]) begin
 				//$display("0x%3X\t0x%X\t0x%X\tPass", con_addr, con_out, AK.memory[con_addr]);
@@ -383,6 +426,7 @@ module tb_core();
 			con_addr = con_addr + 1;
 		end
 	end
+	*/
 
 	// Since Vivado/Verilog can't handle nested FOR loops well, this part
 	// was split off into its own task. Ideally, it would be within the for loop

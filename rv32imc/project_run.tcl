@@ -1,5 +1,5 @@
 # Set Current Directory to point to Github Repo directory (where project_run.tcl should be located)
-set SRCDIR "C:/Users/Manal/Desktop/Fourth Year/ECE 199/carrdv2-accomodate-nop/rv32imc"
+set SRCDIR "D:/Coding Projects/Carrd-Vector-Coprocessor/rv32imc/"
 
 cd $SRCDIR
 
@@ -11,7 +11,7 @@ add_files ./memory/instmem.mem
 add_files ./memory/isr_mem.mem
 
 #Add constraints
-# add_files -fileset constrs_1 ./constraints/arty7_a35t.xdc
+add_files -fileset constrs_1 ./constraints/arty7_a35t.xdc
 
 #Add testbench and answer key
 add_files -fileset sim_1 ./sim/tb_top.v
@@ -26,14 +26,21 @@ set_property top_lib xil_defaultlib [get_filesets sim_1]
 set_property top top [current_fileset]
 
 #Import IP Modules
-add_files	{./vivado-ip-src/blk_mem_gen_datamem/blk_mem_gen_datamem.xci	\
-			./vivado-ip-src/blk_mem_gen_protocol/blk_mem_gen_protocol.xci	\
+add_files	{./vivado-ip-src/blk_mem_gen_protocol/blk_mem_gen_protocol.xci	\
 			./vivado-ip-src/clk_wiz_0/clk_wiz_0.xci 						\
 			./vivado-ip-src/div_gen_unsigned/div_gen_unsigned.xci 			\
 			./vivado-ip-src/div_gen_signed/div_gen_signed.xci 				\
 			./vivado-ip-src/mult_gen_hsu/mult_gen_hsu.xci  					\
 			./vivado-ip-src/mult_gen_signed/mult_gen_signed.xci 			\
-			./vivado-ip-src/mult_gen_u/mult_gen_u.xci}
+			./vivado-ip-src/mult_gen_u/mult_gen_u.xci						\
+			../Integrated-Coprocessor-v2\ip\blk_mem_gen_datamem_bank0\blk_mem_gen_datamem_bank0.xci \
+			../Integrated-Coprocessor-v2\ip\blk_mem_gen_datamem_bank1\blk_mem_gen_datamem_bank1.xci \
+			../Integrated-Coprocessor-v2\ip\blk_mem_gen_datamem_bank2\blk_mem_gen_datamem_bank2.xci \
+			../Integrated-Coprocessor-v2\ip\blk_mem_gen_datamem_bank3\blk_mem_gen_datamem_bank3.xci \
+			../Integrated-Coprocessor-v2\ip\c_addsub_0\c_addsub_0.xci \
+			../Integrated-Coprocessor-v2\ip\mult_gen_8\mult_gen_8.xci \
+			../Integrated-Coprocessor-v2\ip\mult_gen_16\mult_gen_16.xci \
+			../Integrated-Coprocessor-v2\ip\mult_gen_32\mult_gen_32.xci}
 
 # Import Waveform files
 # add_files -fileset sim_1 ./wcfg

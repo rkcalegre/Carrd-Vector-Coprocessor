@@ -33,7 +33,7 @@ module core(
 	input [3:0] con_write,							// Write enable signal
 	input [`DATAMEM_BITS-1:0] con_addr,				// Word-aligned data address
 	input [`DATAMEM_WIDTH-1:0] con_in,				// Input data from Protocol controllers
-	output [`DATAMEM_WIDTH-1:0] con_out,			// Ouput of DATAMEM connected to Protocol controllers
+	output [`DATAMEM_WIDTH-1:0] con_out,			// Ouput of MEMBANK 0 connected to Protocol controllers
 
 	// Signals routed to Vector Coprocessor
 	input [`REGFILE_BITS-1:0] v_rd_xreg_addr, 		// For Vector-Scalar Instructions that require reads from the scalar regfile
@@ -42,22 +42,22 @@ module core(
 
 	// Memory Data buses from Vector Coprocessor
 	input is_vstype,
-	input [`PC_ADDR_BITS-1:0] v_data_addr0,
-	input [`PC_ADDR_BITS-1:0] v_data_addr1,
-	input [`PC_ADDR_BITS-1:0] v_data_addr2,
-	input [`PC_ADDR_BITS-1:0] v_data_addr3,
+	input [`DATAMEM_BITS-1:0] v_data_addr0,
+	input [`DATAMEM_BITS-1:0] v_data_addr1,
+	input [`DATAMEM_BITS-1:0] v_data_addr2,
+	input [`DATAMEM_BITS-1:0] v_data_addr3,
 
 	// For Vector Store Operations
-	input [`DATAMEM_BITS-1:0] v_store_data_0,
-	input [`DATAMEM_BITS-1:0] v_store_data_1,
-	input [`DATAMEM_BITS-1:0] v_store_data_2,
-	input [`DATAMEM_BITS-1:0] v_store_data_3,
+	input [`DATAMEM_WIDTH-1:0] v_store_data_0,
+	input [`DATAMEM_WIDTH-1:0] v_store_data_1,
+	input [`DATAMEM_WIDTH-1:0] v_store_data_2,
+	input [`DATAMEM_WIDTH-1:0] v_store_data_3,
 
 	// For Vector Load Operations
-	output [`DATAMEM_BITS-1:0] v_load_data_0,
-	output [`DATAMEM_BITS-1:0] v_load_data_1,
-	output [`DATAMEM_BITS-1:0] v_load_data_2,
-	output [`DATAMEM_BITS-1:0] v_load_data_3
+	output [`DATAMEM_WIDTH-1:0] v_load_data_0,
+	output [`DATAMEM_WIDTH-1:0] v_load_data_1,
+	output [`DATAMEM_WIDTH-1:0] v_load_data_2,
+	output [`DATAMEM_WIDTH-1:0] v_load_data_3
 );
 
 /******************************** DECLARING WIRES *******************************/
@@ -161,20 +161,21 @@ module core(
 	assign exe_btype[0] = (exe_opcode == `OPC_BTYPE)? ( (exe_funct3 == 3'h7)? 1'b1 : 1'b0) : 1'b0;	// BGEU
 
 	// Control signals
-	wire [3:0] exe_ALU_op;					// For EXE stage
-	wire exe_div_valid;						// For EXE stage
-	wire [1:0] exe_div_op;					// For EXE stage
-	wire exe_is_stype;						// For EXE stage
-	wire [3:0] exe_dm_write;				// For MEM stage
-	wire [3:0] exe_dm_write_1;				// For MEM stage
-	wire [3:0] exe_dm_write_2;				// For MEM stage
-	wire [3:0] exe_dm_write_3;				// For MEM stage
-	wire exe_wr_en;							// For WB stage
-	wire [2:0] exe_dm_select;				// For MEM stage
-	wire [2:0] exe_sel_data;				// For WB stage
-	wire [1:0] exe_store_select;			// For EXE stage
-	wire exe_sel_opBR;						// For EXE stage
-	wire [`DATAMEM_BITS-1:0] exe_data_addr;	// Input DATAMEM for Vector Load/Store Instructions
+	wire [3:0] exe_ALU_op;						// For EXE stage
+	wire exe_div_valid;							// For EXE stage
+	wire [1:0] exe_div_op;						// For EXE stage
+	wire exe_is_stype;							// For EXE stage
+	wire [3:0] exe_dm_write;					// For MEM stage
+	wire [3:0] exe_dm_write_1;					// For MEM stage
+	wire [3:0] exe_dm_write_2;					// For MEM stage
+	wire [3:0] exe_dm_write_3;					// For MEM stage
+	wire exe_wr_en;								// For WB stage
+	wire [2:0] exe_dm_select;					// For MEM stage
+	wire [2:0] exe_sel_data;					// For WB stage
+	wire [1:0] exe_store_select;				// For EXE stage
+	wire exe_sel_opBR;							// For EXE stage
+	wire [`DATAMEM_BITS-1:0] exe_data_addr;	  	// Input DATAMEM for Vector Load/Store Instructions
+	wire [`DATAMEM_BITS-1:0] store_data_addr;	// Input address to STORE BLOCK
 
 	// Inputs to EXE/MEM Pipereg
 	wire [`WORD_WIDTH-1:0] exe_ALUout;		// ALU output
@@ -207,9 +208,10 @@ module core(
 
 	// MEM Stage Datapath Signals
 	wire [`WORD_WIDTH-1:0] mem_DATAMEMout;	// Output of DATAMEM
-	wire [`WORD_WIDTH-1:0] mem_DATAMEMout1;	// Output of DATAMEM
-	wire [`WORD_WIDTH-1:0] mem_DATAMEMout2;	// Output of DATAMEM
-	wire [`WORD_WIDTH-1:0] mem_DATAMEMout3;	// Output of DATAMEM
+	wire [`WORD_WIDTH-1:0] mem_MEMBANKout;	// Output of MEM BANK 0
+	wire [`WORD_WIDTH-1:0] mem_MEMBANKout1;	// Output of MEM BANK 1
+	wire [`WORD_WIDTH-1:0] mem_MEMBANKout2;	// Output of MEM BANK 2
+	wire [`WORD_WIDTH-1:0] mem_MEMBANKout3;	// Output of MEM BANK 3	
 
 	// Inputs to MEM/WB Pipereg
 	wire [`WORD_WIDTH-1:0] mem_loaddata;	// Output of LOAD BLOCK
@@ -879,6 +881,8 @@ module core(
 		.exe_CNI(exe_CNI)
 	);
 
+	assign store_data_addr = (is_vstype) ? v_data_addr0 : exe_ALUout[`DATAMEM_BITS+1:2];
+
 	storeblock STOREBLOCK(
 		.opB(exe_rstore),
 		.byte_offset(exe_ALUout[1:0]),
@@ -892,7 +896,7 @@ module core(
 		.data_in_2(v_store_data_2),
 		.data_in_3(v_store_data_3),
 
-		.data_addr0(v_data_addr0),
+		.data_addr0(store_data_addr),
 		.data_addr1(v_data_addr1),
 		.data_addr2(v_data_addr2),
 		.data_addr3(v_data_addr3),
@@ -932,11 +936,11 @@ module core(
 
 
 // MEM Stage =====================================================================
-	assign mem_data_addr = (is_vstype) ? exe_data_addr : exe_ALUout[`DATAMEM_BITS+1:2];
-	assign v_load_data_0 = mem_DATAMEMout;
-	assign v_load_data_1 = mem_DATAMEMout1;
-	assign v_load_data_2 = mem_DATAMEMout2;
-	assign v_load_data_3 = mem_DATAMEMout3;
+	//assign mem_data_addr = (is_vstype) ? exe_data_addr : exe_ALUout[`DATAMEM_BITS+1:2];
+	assign v_load_data_0 = mem_MEMBANKout;
+	assign v_load_data_1 = mem_MEMBANKout1;
+	assign v_load_data_2 = mem_MEMBANKout2;
+	assign v_load_data_3 = mem_MEMBANKout3;
 
 	v_datamem VDATAMEM(
 		.core_clk(mem_clk),
@@ -948,7 +952,7 @@ module core(
 		.dm_write_2(exe_dm_write_2),
 		.dm_write_3(exe_dm_write_3),
 
-		.data_addr(mem_data_addr),
+		.data_addr(exe_data_addr),
 		.data_in_0(exe_storedata),
 		.data_in_1(exe_storedata_1),
 		.data_in_2(exe_storedata_2),
@@ -958,12 +962,17 @@ module core(
 		.con_addr(con_addr),
 		.con_in(con_in),
 
-		.data_out_0(mem_DATAMEMout),
-		.data_out_1(mem_DATAMEMout1),
-		.data_out_2(mem_DATAMEMout2),
-		.data_out_3(mem_DATAMEMout3),
+		.data_out_0(mem_MEMBANKout),
+		.data_out_1(mem_MEMBANKout1),
+		.data_out_2(mem_MEMBANKout2),
+		.data_out_3(mem_MEMBANKout3),
 		.con_out(con_out)
 	);
+
+	assign mem_DATAMEMout =  (mem_data_addr == 2'b00) ? mem_MEMBANKout  :
+						  	 (mem_data_addr == 2'b01) ? mem_MEMBANKout1 :
+						     (mem_data_addr == 2'b10) ? mem_MEMBANKout2 :
+						     (mem_data_addr == 2'b11) ? mem_MEMBANKout3 : mem_MEMBANKout;
 
 	loadblock LOADBLOCK(
 		.data(mem_DATAMEMout),

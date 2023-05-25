@@ -59,6 +59,11 @@ module storeblock(
     parameter sw = 2'd2;
     parameter sh = 2'd1;
     parameter sb = 2'd0;
+
+	parameter bank0 = 2'b00;
+	parameter bank1 = 2'b01;
+	parameter bank2 = 2'b10;
+	parameter bank3 = 2'b11;
     
     wire [31:0] nboff_data;
     
@@ -67,12 +72,126 @@ module storeblock(
 	assign data1 = data_in_1;
 	assign data2 = data_in_2;
 	assign data3 = data_in_3;
-	assign data_addr = data_addr0[`DATAMEM_BITS+1:2];
+	//assign data_addr = data_addr0[`DATAMEM_BITS+1:2];
+	assign data_addr = data_addr0;
     
     // Original implementation was big-endian [b+3, b+2, b+1, b]
     // Changed to little-endian to accomodate RISC-V GNU Assembler Output [b, b+1, b+2, b+3]
 
+	// Bank Selection is based on bits [1:0] of address
+	// =================================================
+	// Write to Bank 0 if data_addr[1:0] == 2'b00	  //
+	// Write to Bank 1 if data_addr[1:0] == 2'b01	  //
+	// Write to Bank 2 if data_addr[1:0] == 2'b10     //
+	// Write to Bank 3 if data_addr[1:0] == 2'b11     //
+	// =================================================
+
 	always@(*) begin
+		case (data_addr0[1:0])
+			bank0: begin
+				case(store_select)
+					sb:
+						case({is_stype, byte_offset})
+							3'b100: dm_write_0 <= 4'b1000;
+							3'b101: dm_write_0 <= 4'b0100;
+							3'b110: dm_write_0 <= 4'b0010;
+							3'b111: dm_write_0 <= 4'b0001;
+							default: dm_write_0 <= 4'b0000;
+						endcase
+					sh:
+						case({is_stype, byte_offset})
+							3'b100: dm_write_0 <= 4'b1100;
+							3'b110: dm_write_0 <= 4'b0011;
+							default: dm_write_0 <= 4'b0000;
+						endcase
+					sw:
+						case({is_stype, byte_offset})
+							3'b100: dm_write_0 <= 4'b1111;
+							default: dm_write_0 <= 4'b0000;
+						endcase
+
+					default: dm_write_0 <= 4'b0000;
+				endcase
+			end
+			bank1: begin
+				case(store_select)
+					sb:
+						case({is_stype, byte_offset})
+							3'b100: dm_write_1 <= 4'b1000;
+							3'b101: dm_write_1 <= 4'b0100;
+							3'b110: dm_write_1 <= 4'b0010;
+							3'b111: dm_write_1 <= 4'b0001;
+							default: dm_write_1 <= 4'b0000;
+						endcase
+					sh:
+						case({is_stype, byte_offset})
+							3'b100: dm_write_1 <= 4'b1100;
+							3'b110: dm_write_1 <= 4'b0011;
+							default: dm_write_1 <= 4'b0000;
+						endcase
+					sw:
+						case({is_stype, byte_offset})
+							3'b100: dm_write_1 <= 4'b1111;
+							default: dm_write_1 <= 4'b0000;
+						endcase
+
+					default: dm_write_1 <= 4'b0000;
+				endcase
+			end
+			bank2: begin
+				case(store_select)
+					sb:
+						case({is_stype, byte_offset})
+							3'b100: dm_write_2 <= 4'b1000;
+							3'b101: dm_write_2 <= 4'b0100;
+							3'b110: dm_write_2 <= 4'b0010;
+							3'b111: dm_write_2 <= 4'b0001;
+							default: dm_write_2 <= 4'b0000;
+						endcase
+					sh:
+						case({is_stype, byte_offset})
+							3'b100: dm_write_2 <= 4'b1100;
+							3'b110: dm_write_2 <= 4'b0011;
+							default: dm_write_2 <= 4'b0000;
+						endcase
+					sw:
+						case({is_stype, byte_offset})
+							3'b100: dm_write_2 <= 4'b1111;
+							default: dm_write_2 <= 4'b0000;
+						endcase
+
+					default: dm_write_2 <= 4'b0000;
+				endcase
+			end
+			bank3: begin
+				case(store_select)
+					sb:
+						case({is_stype, byte_offset})
+							3'b100: dm_write_3 <= 4'b1000;
+							3'b101: dm_write_3 <= 4'b0100;
+							3'b110: dm_write_3 <= 4'b0010;
+							3'b111: dm_write_3 <= 4'b0001;
+							default: dm_write_3 <= 4'b0000;
+						endcase
+					sh:
+						case({is_stype, byte_offset})
+							3'b100: dm_write_3 <= 4'b1100;
+							3'b110: dm_write_3 <= 4'b0011;
+							default: dm_write_3 <= 4'b0000;
+						endcase
+					sw:
+						case({is_stype, byte_offset})
+							3'b100: dm_write_3 <= 4'b1111;
+							default: dm_write_3 <= 4'b0000;
+						endcase
+
+					default: dm_write_3 <= 4'b0000;
+				endcase
+			end 
+			default: 
+		endcase
+
+		/*
 		case(store_select)
 			sb:
 				case({is_stype, byte_offset})
@@ -96,14 +215,8 @@ module storeblock(
 
 			default: dm_write_0 <= 4'b0000;
 		endcase
+		*/
 
-		// Bank Selection is based on bits [1:0] of address
-		// =================================================
-		// Write to Bank 0 if data_addr[1:0] == 2'b00	  //
-		// Write to Bank 1 if data_addr[1:0] == 2'b01	  //
-		// Write to Bank 2 if data_addr[1:0] == 2'b10     //
-		// Write to Bank 3 if data_addr[1:0] == 2'b11     //
-		// =================================================
 		if (is_vstype) begin
 			dm_write_0 <= (data_addr0[1:0] == 2'b00) ? 4'b1111 : 4'b0000;
 			dm_write_1 <= (data_addr1[1:0] == 2'b01) ? 4'b1111 : 4'b0000;
