@@ -73,7 +73,8 @@ module v_datamem(
 	// If x_sel = 1, select PROTOCOLMEM output, else select COREMEM output
 	wire core_sel = data_addr[`DATAMEM_BITS-1];
 	wire protocol_sel = con_addr[`DATAMEM_BITS-1];
-	wire [1:0] bank_sel = data_addr[1:0];
+	//wire [1:0] bank_sel = data_addr[1:0];
+	//wire [`MEMBANK_BITS-1:0] bank_addr = data_addr[`DATAMEM_BITS-2:2];	// for checking contents
 	
 	// Inputs are big-endian words
 	// This part converts them to little-endian format
@@ -172,7 +173,7 @@ module v_datamem(
 		end
 		else begin
 		      core_sel_reg <= core_sel;
-		      num_cycles_addr_reg <= (data_addr == 14'h2010);
+		      num_cycles_addr_reg <= (data_addr == 14'h2010);		// TO BE CHANGED
 		end
 	end
 	assign data_out_0 = core_sel_reg ?  
@@ -205,11 +206,11 @@ module v_datamem(
 	end
 
 
-	wire [`DATAMEM_WIDTH-1:0] con_out_little_e = protocol_sel_reg? protocolmem_doutb : (bank_sel == 2'b00)? coremem_doutb_0 :
-																					   (bank_sel == 2'b01)? coremem_doutb_1 :
-																					   (bank_sel == 2'b10)? coremem_doutb_2 :
-																					   (bank_sel == 2'b11)? coremem_doutb_3 : coremem_doutb_0;
-
+	wire [`DATAMEM_WIDTH-1:0] con_out_little_e = protocol_sel_reg? protocolmem_doutb : (con_addr[1:0] == 2'b00)? coremem_doutb_0 :
+																					   (con_addr[1:0] == 2'b01)? coremem_doutb_1 :
+																					   (con_addr[1:0] == 2'b10)? coremem_doutb_2 :
+																					   (con_addr[1:0] == 2'b11)? coremem_doutb_3 : coremem_doutb_0;
+	
 	//wire [`DATAMEM_WIDTH-1:0] con_out_little_e = protocol_sel_reg? protocolmem_doutb : coremem_doutb_0;																	   
 	assign con_out = {con_out_little_e[7:0], con_out_little_e[15:8], con_out_little_e[23:16], con_out_little_e[31:24]};
 

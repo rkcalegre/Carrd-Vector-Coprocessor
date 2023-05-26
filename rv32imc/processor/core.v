@@ -961,19 +961,19 @@ module core(
 		.con_addr(con_addr),
 		.con_in(con_in),
 
-		.data_out_0(mem_MEMBANKout),
+		.data_out_0(mem_DATAMEMout),
 		.data_out_1(mem_MEMBANKout1),
 		.data_out_2(mem_MEMBANKout2),
 		.data_out_3(mem_MEMBANKout3),
 		.con_out(con_out)
 	);
 
-	
+	/*
 	assign mem_DATAMEMout =  (exe_data_addr[1:0] == 2'b00) ? mem_MEMBANKout  :
 						  	 (exe_data_addr[1:0] == 2'b01) ? mem_MEMBANKout1 :
 						     (exe_data_addr[1:0] == 2'b10) ? mem_MEMBANKout2 :
 						     (exe_data_addr[1:0] == 2'b11) ? mem_MEMBANKout3 : mem_MEMBANKout;
-	
+	*/
 	loadblock LOADBLOCK(
 		.data(mem_DATAMEMout),
 		.byte_offset(mem_ALUout[1:0]),

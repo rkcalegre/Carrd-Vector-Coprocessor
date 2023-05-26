@@ -372,7 +372,7 @@ module tb_core();
 		$display("Address\t  Actual  \tExpected ");
 		$display("=======\t==========\t==========");	
 	end
-	/*
+	
 	always@(negedge CLK) begin
 		if(done) begin
 			if (con_addr[1:0] == 2'b00) begin
@@ -410,9 +410,9 @@ module tb_core();
 			con_addr = con_addr + 1;
 		end
 	end
-	*/
-
 	
+
+	/*
 	always@(negedge CLK) begin
 		if(done) begin	
 			if(con_out == AK.memory[con_addr]) begin
@@ -427,7 +427,7 @@ module tb_core();
 			con_addr = con_addr + 1;
 		end
 	end
-	
+	*/
 
 	// Since Vivado/Verilog can't handle nested FOR loops well, this part
 	// was split off into its own task. Ideally, it would be within the for loop
