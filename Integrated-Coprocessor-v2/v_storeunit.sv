@@ -71,7 +71,7 @@ module storeunit #(
         if (!done) begin
            case (store_op)
             VLSU_VSE8: begin
-                storedata = { {480{0}} , {data[31:0]} };
+                storedata = { {480{0}} , {temp_data[31:0]} };
                 data_out0 = { {24{storedata[7]}}  , {storedata[7:0]} };
                 data_out1 = { {24{storedata[15]}} , {storedata[15:8]} };
                 data_out2 = { {24{storedata[23]}} , {storedata[23:16]} };
@@ -79,7 +79,7 @@ module storeunit #(
                 cc = cc + 1;
             end
             VLSU_VSE16: begin
-                storedata = { {448{0}} , {data[63:0]} };
+                storedata = { {448{0}} , {temp_data[63:0]} };
                 data_out0 = { {16{storedata[15]}} , {storedata[15:0]} };
                 data_out1 = { {16{storedata[31]}} , {storedata[31:16]} };
                 data_out2 = { {16{storedata[47]}} , {storedata[47:32]} };
@@ -87,7 +87,7 @@ module storeunit #(
                 cc = cc + 1;
             end
             VLSU_VSE32: begin
-                storedata = { {384{0}} , {data[127:0]} };
+                storedata = { {384{0}} , {temp_data[127:0]} };
                 data_out0 = storedata[31:0];
                 data_out1 = storedata[63:32];
                 data_out2 = storedata[95:64];
@@ -95,7 +95,7 @@ module storeunit #(
                 cc = cc + 1;
             end
             VLSU_VSSE8: begin
-                storedata = { {480{0}} , {data[31:0]} };
+                storedata = { {480{0}} , {temp_data[31:0]} };
                 data_out0 = { {24{storedata[7]}}  , {storedata[7:0]} };
                 data_out1 = { {24{storedata[15]}} , {storedata[15:8]} };
                 data_out2 = { {24{storedata[23]}} , {storedata[23:16]} };
@@ -103,7 +103,7 @@ module storeunit #(
                 cc = cc + 1;
             end
             VLSU_VSSE16: begin
-                storedata = { {448{0}} , {data[63:0]} };
+                storedata = { {448{0}} , {temp_data[63:0]} };
                 data_out0 = { {16{storedata[15]}} , {storedata[15:0]} };
                 data_out1 = { {16{storedata[31]}} , {storedata[31:16]} };
                 data_out2 = { {16{storedata[47]}} , {storedata[47:32]} };
@@ -111,7 +111,7 @@ module storeunit #(
                 cc = cc + 1;
             end
             VLSU_VSSE32: begin
-                storedata = { {384{0}} , {data[127:0]} };
+                storedata = { {384{0}} , {temp_data[127:0]} };
                 data_out0 = storedata[31:0];
                 data_out1 = storedata[63:32];
                 data_out2 = storedata[95:64];
@@ -119,7 +119,7 @@ module storeunit #(
                 cc = cc + 1;
             end
             default: begin
-                storedata = { {384{0}} , {data[127:0]} };
+                storedata = { {384{0}} , {temp_data[127:0]} };
                 data_out0 = storedata[31:0];
                 data_out1 = storedata[63:32];
                 data_out2 = storedata[95:64];
