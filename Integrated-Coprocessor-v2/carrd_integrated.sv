@@ -64,15 +64,15 @@ module carrd_integrated#(
 
     //Vector Register File
 	logic clk, nrst, reg_wr_en, el_wr_en;
-    	logic [1:0] lanes = LANES;
+    logic [1:0] lanes = LANES;
 	logic [2:0] vlmul;
-    	logic [2:0] vsew;
-    	logic [4:0] el_wr_addr;
+    logic [2:0] vsew;
+    logic [4:0] el_wr_addr;
 	logic  [4:0] el_addr_1, el_addr_2;
 	logic [32-1:0] el_data_out_1, el_data_out_2 ;
 	logic [127:0] el_wr_data;
 	logic [4:0] el_reg_wr_addr, el_rd_addr_1,el_rd_addr_2,mask_src;
-    	logic [127:0]  reg_wr_data,reg_wr_data_2,reg_wr_data_3,reg_wr_data_4;
+    logic [127:0]  reg_wr_data,reg_wr_data_2,reg_wr_data_3,reg_wr_data_4;
 	logic [127:0]  mask;
 	logic [127:0] reg_data_out_v1_a,reg_data_out_v1_b,reg_data_out_v1_c,reg_data_out_v1_d;
 	logic [127:0] reg_data_out_v2_a,reg_data_out_v2_b,reg_data_out_v2_c,reg_data_out_v2_d;
@@ -92,23 +92,23 @@ module carrd_integrated#(
         .nrst(nrst),
         .lmul(vlmul),
         .sew(vsew),
-	.el_wr_en(el_wr_en),
+	    .el_wr_en(el_wr_en),
         .el_wr_addr(el_wr_addr),
         .el_reg_wr_addr(el_reg_wr_addr),
         .el_wr_data(el_wr_data),
         .reg_wr_en(reg_wr_en),
         .reg_wr_addr(vd),
-	.reg_wr_data(reg_wr_data), //signal from v_writeback
+	    .reg_wr_data(reg_wr_data), //signal from v_writeback
         .reg_wr_data_2(reg_wr_data_2),
         .reg_wr_data_3(reg_wr_data_3),
         .reg_wr_data_4(reg_wr_data_4),
         .el_rd_addr_1(el_rd_addr_1),
         .el_rd_addr_2(el_rd_addr_2),
-	.el_addr_1(el_addr_1),
+	    .el_addr_1(el_addr_1),
         .el_addr_2(el_addr_2),
         .mask_src(mask_src),
         .el_data_out_1(el_data_out_1),
-	.el_data_out_2(el_data_out_2),
+	    .el_data_out_2(el_data_out_2),
         .mask(mask),
         .reg_rd_addr_v1(vs1),
         .reg_rd_addr_v2(vs2),
@@ -231,54 +231,54 @@ module carrd_integrated#(
 	.result(result_vsldu)
 	);
 
-/*      //VLSU
+      //VLSU
     logic is_load, is_store;
     //logic [6:0] v_lsu_op;
-    logic [3:0] write_en;
-    logic [2:0] width;
-    //logic [1:0] stride;
-    logic [31:0] l_addr,s_addr1, s_addr2, s_addr3, s_addr4;
-    logic [31:0] data_in1, data_in2, data_in3, data_in4; 
-    logic [511:0] loaddata, storedata, result_vlsu;
-    logic [31:0] data_out_1, data_out_2, data_out_3, data_out_4; 
-    //logic [31:0] result_vlsu; 
+    //logic [31:0] l_addr;
+    logic [31:0] l_data_in1, l_data_in2, l_data_in3, l_data_in4; 
+    logic [1:0] write_en1, write_en2, write_en3, write_en4;
+    logic [511:0] l_data_out;
+    logic [31:0] s_data_out1, s_data_out2, s_data_out3, s_data_out4; 
+    logic [`DATAMEM_BITS-1:0] s_addr;                          // Base Address - from rs1
 
-    assign v_store_data_0 = data_in1;
-    assign v_store_data_1 = data_in2;
-    assign v_store_data_2 = data_in3;
-    assign v_store_data_3 = data_in4;
+    assign is_load = (v_lsu_op > 0 && v_lsu_op <7);
+    assign is_store = (v_lsu_op > 6 && v_lsu_op <13);
+
 
     v_lsu vlsu(
-	.clk(clk),
-	.nrst(nrst),
-    .data_in1(data_in1),
-    .data_in2(data_in2),
-    .data_in3(data_in3),
-    .data_in4(data_in4),
-    .v_lsu_op(v_lsu_op),  // v_lsu_op
-    .width(width),
+    .l_data_in0(v_load_data_0),
+    .l_data_in1(v_load_data_1),
+    .l_data_in2(v_load_data_2),
+    .l_data_in3(v_load_data_3),
+    .vlsu_op(v_lsu_op),  // v_lsu_op
     .lmul(vlmul),
-    .l_addr(l_addr),
-    .s_addr1(s_addr1),
-    .s_addr2(s_addr2),
-    .s_addr3(s_addr3),
-    .s_addr4(s_addr4),
-    .storedata(storedata),
+    .l_addr(xreg_out),
     .is_load(is_load),
     .is_store(is_store),
-    .write_en(write_en),
-    .loaddata(loaddata),
-    .data_out_1(data_out_1),
-    .data_out_2(data_out_2),
-    .data_out_3(data_out_3),
-    .data_out_4(data_out_4),
-    .l_done(done_vlsu),
-    .s_done(s_done)
-    );  */
+    .l_data_out(l_data_out),
+    .s_data_in(op_A),
+    .write_en0(write_en0),
+    .write_en1(write_en1),
+    .write_en2(write_en2),
+    .write_en3(write_en3),
+    .l_done(l_done),
+    .s_done(s_done),
+    .s_addr(s_addr), //TO EDIT
+    .data_addr0(data_addr0),
+    .data_addr1(data_addr1),
+    .data_addr2(data_addr2),
+    .data_addr3(data_addr3),
+    .s_data_out0(v_store_data_0),
+    .s_data_out1(v_store_data_1),
+    .s_data_out2(v_store_data_2),
+    .s_data_out3(v_store_data_3)
+    );  
 
     //V_LANES
     logic done_valu;
     logic done_vmul;
+    logic s_done;
+    logic l_done;
     logic [127:0] result_valu_1;
     logic [127:0] result_valu_2;
     logic [127:0] result_valu_3;
@@ -321,9 +321,41 @@ module carrd_integrated#(
 
 	// Writeback
     logic x_reg_wr_en;
-    logic done_vlsu;
 
     carrd_writeback vwriteback(
+        .clk(clk),
+        .v_alu_op(v_alu_op),
+        .is_mul(is_mul),
+        .is_load(is_load), 
+        .v_sldu_op(v_sldu_op),
+        .v_red_op(v_red_op),
+        .done_valu(done_valu),
+        .done_vmul(done_vmul),
+        .done_vred(done_vred),
+        .done_vsldu(done_vsldu),        
+        .done_vload(l_done),        
+        .result_vload(l_data_out),
+        .result_valu_1(result_valu_1),
+        .result_valu_2(result_valu_2),
+        .result_valu_3(result_valu_3),
+        .result_valu_4(result_valu_4),
+        .result_vmul_1(result_vmul_1), 
+        .result_vmul_2(result_vmul_2), 
+        .result_vmul_3(result_vmul_3), 
+        .result_vmul_4(result_vmul_4), 
+        .result_vsldu(result_vsldu),
+        .result_vred(result_vred),
+        .v_sel_dest(v_sel_dest), 
+        .v_reg_wr_en(reg_wr_en),
+        .x_reg_wr_en(x_reg_wr_en),
+        .el_wr_en(el_wr_en), 
+        .reg_wr_data(reg_wr_data),
+        .reg_wr_data_2(reg_wr_data_2), 
+        .reg_wr_data_3(reg_wr_data_3), 
+        .reg_wr_data_4(reg_wr_data_4) 
+    );
+
+/*     carrd_writeback vwriteback( //BEFORE CHANGING LSU
         .clk(clk),
         .v_alu_op(v_alu_op),
         .is_mul(is_mul),
@@ -354,6 +386,6 @@ module carrd_integrated#(
         .reg_wr_data_2(reg_wr_data_2), 
         .reg_wr_data_3(reg_wr_data_3), 
         .reg_wr_data_4(reg_wr_data_4) 
-    );
+    ); */
 
 endmodule

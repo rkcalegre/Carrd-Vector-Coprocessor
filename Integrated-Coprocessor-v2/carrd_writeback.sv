@@ -24,15 +24,19 @@ module carrd_writeback(
     input clk,
     input [3:0] v_alu_op,
     input is_mul,
-    input [3:0] v_lsu_op,
+    //input [3:0] v_lsu_op,
+    input is_load,
+    //input is_store,
     input [2:0] v_sldu_op,
     input [2:0] v_red_op,
     input done_valu,
     input done_vmul,
     input done_vred,
     input done_vsldu,
-    input done_vlsu, //for Load instructions
-    input logic [31:0] result_vlsu,
+    input done_vload,
+    //input done_vlsu, //for Load and Store instructions
+    //input logic [511:0] result_vlsu,
+    input logic [511:0] result_vload,
     input logic [127:0] result_valu_1,
     input logic [127:0] result_valu_2,
     input logic [127:0] result_valu_3,
@@ -71,13 +75,13 @@ module carrd_writeback(
             reg_wr_data_2 = result_vmul_2;
             reg_wr_data_3 = result_vmul_3;
             reg_wr_data_4 = result_vmul_4;              
-        end else if (v_lsu_op inside {[1:12]}) begin
-            v_reg_wr_en = (v_sel_dest==1 && done_vlsu==1) ? 1: 0;
-            x_reg_wr_en = (v_sel_dest==2 && done_vlsu==1) ? 1: 0;
-            reg_wr_data = result_vlsu;
-            reg_wr_data_2 = result_vlsu;
-            reg_wr_data_3 = result_vlsu;
-            reg_wr_data_4 = result_vlsu;  
+        end else if (is_load == 1) begin
+            v_reg_wr_en = (v_sel_dest==1 && done_vload==1) ? 1: 0;
+            x_reg_wr_en = (v_sel_dest==2 && done_vload==1) ? 1: 0;
+            reg_wr_data = result_vload[127:0];
+            reg_wr_data_2 = result_vload[255:128];
+            reg_wr_data_3 = result_vload[383:256];
+            reg_wr_data_4 = result_vload[511:384];  
         end else if (v_sldu_op inside {[1:5]}) begin
             v_reg_wr_en = (v_sel_dest==1 && done_vsldu==1) ? 1: 0;
             x_reg_wr_en = (v_sel_dest==2 && done_vsldu==1) ? 1: 0;
@@ -116,10 +120,10 @@ module carrd_writeback(
         end else if (v_lsu_op inside {[1:12]}) begin
             v_reg_wr_en <= (v_sel_dest==1) ? 1: 0;
             x_reg_wr_en <= (v_sel_dest==2) ? 1: 0;
-            reg_wr_data <= result_vlsu;
-            reg_wr_data_2 <= result_vlsu;
-            reg_wr_data_3 <= result_vlsu;
-            reg_wr_data_4 <= result_vlsu;  
+            reg_wr_data <= result_vload;
+            reg_wr_data_2 <= result_vload;
+            reg_wr_data_3 <= result_vload;
+            reg_wr_data_4 <= result_vload;  
         end else if (v_sldu_op inside {[1:5]}) begin
             v_reg_wr_en <= (v_sel_dest==1) ? 1: 0;
             x_reg_wr_en <= (v_sel_dest==2) ? 1: 0;
@@ -157,10 +161,10 @@ module carrd_writeback(
         end else if (v_lsu_op!=0) begin
             v_reg_wr_en <= (v_sel_dest==1) ? 1: 0;
             x_reg_wr_en <= (v_sel_dest==2) ? 1: 0;
-            reg_wr_data <= result_vlsu;
-            reg_wr_data_2 <= result_vlsu;
-            reg_wr_data_3 <= result_vlsu;
-            reg_wr_data_4 <= result_vlsu;  
+            reg_wr_data <= result_vload;
+            reg_wr_data_2 <= result_vload;
+            reg_wr_data_3 <= result_vload;
+            reg_wr_data_4 <= result_vload;  
         end else if (v_sldu_op!=0) begin
             v_reg_wr_en <= (v_sel_dest==1) ? 1: 0;
             x_reg_wr_en <= (v_sel_dest==2) ? 1: 0;
@@ -210,10 +214,10 @@ module carrd_writeback(
             default: begin
                 v_reg_wr_en <= (v_sel_dest==1) ? 1: 0;
                 x_reg_wr_en <= (v_sel_dest==2) ? 1: 0;
-                reg_wr_data <= result_vlsu;
-                reg_wr_data_2 <= result_vlsu;
-                reg_wr_data_3 <= result_vlsu;
-                reg_wr_data_4 <= result_vlsu;           
+                reg_wr_data <= result_vload;
+                reg_wr_data_2 <= result_vload;
+                reg_wr_data_3 <= result_vload;
+                reg_wr_data_4 <= result_vload;           
             end
         endcase
 

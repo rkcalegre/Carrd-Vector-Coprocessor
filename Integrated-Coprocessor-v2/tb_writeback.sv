@@ -5,7 +5,7 @@
 // 
 // Create Date: 12.05.2023 04:56:59
 // Design Name: 
-// Module Name: tb_wruiteback
+// Module Name: tb_writeback
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
