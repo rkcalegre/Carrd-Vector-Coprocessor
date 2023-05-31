@@ -44,26 +44,18 @@ def split(answerkey):
 # Split to 4 banks
 bank1, bank2, bank3, bank4 = split(answerkey)
 
-with open('datamem0.coe', 'w') as f:
-    f.write("memory_initialization_radix=16;\nmemory_initialization_vector=")
+with open('answerkey0.mem', 'w') as f:
     for data in bank1:
         f.write(data)
-    f.write(";")
 
-with open('datamem1.coe', 'w') as f:
-    f.write("memory_initialization_radix=16;\nmemory_initialization_vector=")
+with open('answerkey1.mem', 'w') as f:
     for data in bank2:
         f.write(data)
-    f.write(";")
 
-with open('datamem2.coe', 'w') as f:
-    f.write("memory_initialization_radix=16;\nmemory_initialization_vector=")
+with open('answerkey2.mem', 'w') as f:
     for data in bank3:
         f.write(data)
-    f.write(";")
 
-with open('datamem3.coe', 'w') as f:
-    f.write("memory_initialization_radix=16;\nmemory_initialization_vector=")
+with open('answerkey3.mem', 'w') as f:
     for data in bank4:
         f.write(data)
-    f.write(";")
