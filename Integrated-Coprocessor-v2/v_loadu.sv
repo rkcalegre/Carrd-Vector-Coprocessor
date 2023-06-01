@@ -99,7 +99,8 @@ module v_loadu(
                 end
             else
                 l_done =1'b0;
-        end
+        end else l_done =1'b0;
+
 
     end 
     

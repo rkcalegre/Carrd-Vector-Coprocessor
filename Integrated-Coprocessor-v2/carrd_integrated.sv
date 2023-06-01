@@ -280,10 +280,10 @@ module carrd_integrated#(
 
     v_loadu vloadu(
     .clk(clk),
-    .l_data_in0(l_data_in), 
-    .l_data_in1(l_data_in),
-    .l_data_in2(l_data_in),
-    .l_data_in3(l_data_in),
+    .l_data_in0(v_load_data_0), 
+    .l_data_in1(v_load_data_1),
+    .l_data_in2(v_load_data_2),
+    .l_data_in3(v_load_data_3),
     .v_lsu_op(v_lsu_op),
     .lmul(vlmul),
     .vsew(vsew),

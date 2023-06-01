@@ -57,9 +57,11 @@ module v_decoder #(
     assign mop = (opcode == OPC_LTYPE || opcode == OPC_STYPE) ? instr[27:26] : OFF;
 
     always_comb begin : vDecoder
+
+        is_vconfig = (opcode == OPC_RTYPE && funct3 == OP_SET);
+        
         case (opcode)
             OPC_RTYPE, OPC_LTYPE, OPC_STYPE: begin
-                is_vconfig = (opcode == OPC_RTYPE && funct3 == OP_SET);
 
                 //  v_alu_op
                 //  1  - vadd
@@ -137,7 +139,7 @@ module v_decoder #(
                                     (opcode == OPC_STYPE && mop == MOP_STRIDED && width == WIDTH_16)      ? VLSU_VSSE16 :
                                     (opcode == OPC_STYPE && mop == MOP_STRIDED && width == WIDTH_32)      ? VLSU_VSSE32 : OFF;
 
-                is_vstype = (opcode == OPC_LTYPE || opcode == OPC_STYPE) ? 1'b1 : OFF;
+                is_vstype = (opcode == OPC_STYPE) ? 1'b1 : OFF;
 
                 // v_op_sel_A (instr[19:15])
                 // 1 - select vs1 
