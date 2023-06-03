@@ -36,10 +36,10 @@ module carrd_integrated#(
     
     // Memory Data buses from Vector Coprocessor
 	output is_vstype,
-    output [`PC_ADDR_BITS-1:0] data_addr0,
-    output [`PC_ADDR_BITS-1:0] data_addr1,
-    output [`PC_ADDR_BITS-1:0] data_addr2,
-    output [`PC_ADDR_BITS-1:0] data_addr3,
+    output [`DATAMEM_BITS-1:0] data_addr0,
+    output [`DATAMEM_BITS-1:0] data_addr1,
+    output [`DATAMEM_BITS-1:0] data_addr2,
+    output [`DATAMEM_BITS-1:0] data_addr3,
 
 	// For Vector Store Operations
 	output [`DATAMEM_WIDTH-1:0] v_store_data_0,
@@ -54,8 +54,10 @@ module carrd_integrated#(
 	input [`DATAMEM_WIDTH-1:0] v_load_data_3,
 
     // For Vector-Scalar Instructions that require reads from the scalar regfile
-	output [`REGFILE_BITS-1:0] v_rd_xreg_addr,  
-	input [`WORD_WIDTH-1:0] xreg_out	        // Data read from scalar register
+	output [`REGFILE_BITS-1:0] v_rd_xreg_addr1,
+    output [`REGFILE_BITS-1:0] v_rd_xreg_addr2,   
+	input [`WORD_WIDTH-1:0] xreg_out1,	        // Data read from scalar register
+    input [`WORD_WIDTH-1:0] xreg_out2	        // Data read from scalar register
 );
 
     import v_pkg::*;
@@ -77,15 +79,20 @@ module carrd_integrated#(
 	logic [127:0] reg_data_out_v1_a,reg_data_out_v1_b,reg_data_out_v1_c,reg_data_out_v1_d;
 	logic [127:0] reg_data_out_v2_a,reg_data_out_v2_b,reg_data_out_v2_c,reg_data_out_v2_d;
 
-    logic [4:0] vs1, vs2, vd;
+    logic [4:0] vs1, vs2, vs3, vd;
     logic [31:0] instr;
 
     //From Base Processor
     assign instr = op_instr_base; 
-    assign x_reg_data = xreg_out;
-    assign v_rd_xreg_addr = vs1;
+    assign x_reg_data1 = xreg_out1;
+    assign x_reg_data2 = xreg_out2;
+    assign v_rd_xreg_addr1 = vs1;
+    assign v_rd_xreg_addr2 = vs2;
     //assign v_data_addr = // address of data mem
 
+    logic [4:0] vsA, vsB;
+    assign vsA = (v_lsu_op inside {[7:12]}) ? vs3 : vs1;
+    assign vsB = vs2;
 
 	v_regfile vregfile(
         .clk(clk),
@@ -110,8 +117,8 @@ module carrd_integrated#(
         .el_data_out_1(el_data_out_1),
 	    .el_data_out_2(el_data_out_2),
         .mask(mask),
-        .reg_rd_addr_v1(vs1),
-        .reg_rd_addr_v2(vs2),
+        .reg_rd_addr_v1(vsA),
+        .reg_rd_addr_v2(vsB),
         .reg_data_out_v1_a(reg_data_out_v1_a),
         .reg_data_out_v1_b(reg_data_out_v1_b),
         .reg_data_out_v1_c(reg_data_out_v1_c),
@@ -172,26 +179,32 @@ module carrd_integrated#(
     .vd(vd),
     .vs1(vs1),
     .vs2(vs2),
+    .vs3(vs3),
     .imm(imm),
     .zimm(zimm)
 
 
 	);
     logic [511:0] op_A;
-    logic [31:0] x_reg_data;
+    logic [31:0] x_reg_data1;
+    logic [31:0] x_reg_data2;
     logic [4:0] imm;
     logic [10:0] zimm;
 
     assign op_A = (v_op_sel_A == 1)? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,reg_data_out_v1_a}:  //vs1 data
-                  (v_op_sel_A == 2)? {{480{1'b0}}, x_reg_data}:  //rs1 data
+                  (v_op_sel_A == 2)? {{480{1'b0}}, x_reg_data1}:  //rs1 data
                   (v_op_sel_A == 3)? {{507{1'b0}}, imm} : 0 ;  //immediate data
 
     logic [511:0] op_B;
 
     assign op_B = (v_op_sel_B == 1)? {reg_data_out_v2_d,reg_data_out_v2_c,reg_data_out_v2_b,reg_data_out_v2_a}:  //vs2 data
-                  (v_op_sel_B == 2)? {{480{1'b0}}, x_reg_data}:  //rs2 data
+                  (v_op_sel_B == 2)? {{480{1'b0}}, x_reg_data2}:  //rs2 data
                   (v_op_sel_B == 3)? {{501{1'b0}}, zimm} : 0 ;  //zimmediate data
 
+    logic [511:0] op_C;
+    
+    assign op_C = {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,reg_data_out_v1_a};
+    
     //Vector Reduction Blok
     logic done_vred;
     logic [31:0] result_vred;
@@ -212,7 +225,7 @@ module carrd_integrated#(
         .result(result_vred)
     );
 
-/*     //Vector SLDU
+    //Vector SLDU
     logic [511:0] result_vsldu; //vd
     logic done_vsldu;
     
@@ -232,6 +245,7 @@ module carrd_integrated#(
 	);
 
       //VLSU
+      /*
     logic is_load, is_store;
     //logic [6:0] v_lsu_op;
     //logic [31:0] l_addr;
@@ -244,7 +258,7 @@ module carrd_integrated#(
     assign is_load = (v_lsu_op > 0 && v_lsu_op <7);
     assign is_store = (v_lsu_op > 6 && v_lsu_op <13);
 
-
+    
     v_lsu vlsu(
     .l_data_in0(v_load_data_0),
     .l_data_in1(v_load_data_1),
@@ -252,7 +266,7 @@ module carrd_integrated#(
     .l_data_in3(v_load_data_3),
     .vlsu_op(v_lsu_op),  // v_lsu_op
     .lmul(vlmul),
-    .l_addr(xreg_out),
+    .l_addr(xreg_out1),
     .is_load(is_load),
     .is_store(is_store),
     .l_data_out(l_data_out),
@@ -272,6 +286,30 @@ module carrd_integrated#(
     .s_data_out1(v_store_data_1),
     .s_data_out2(v_store_data_2),
     .s_data_out3(v_store_data_3)
+    );  
+    */
+    // Store Unit
+    logic done_store;
+
+    v_storeunit vstoreunit (
+        .clk(clk),
+        .nrst(nrst),
+        .store_op(v_lsu_op),
+        .lmul(vlmul),
+        .vsew(vsew),
+        .stride(xreg_out2),          // DOUBLE CHECK
+        .address(xreg_out1),         // DOUBLE CHECK
+        .data(op_C),                 // DOUBLE CHECK
+
+        .data_addr0(data_addr0),
+        .data_addr1(data_addr1),
+        .data_addr2(data_addr2),
+        .data_addr3(data_addr3),
+        .data_out0(v_store_data_0),
+        .data_out1(v_store_data_1),
+        .data_out2(v_store_data_2),
+        .data_out3(v_store_data_3),
+        .done(done_store)
     );  */ 
 
     

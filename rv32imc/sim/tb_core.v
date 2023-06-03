@@ -182,7 +182,7 @@ module tb_core();
 	end
 	// This controlls the done flag
 	always@(posedge CLK) begin
-		if(check == 49 || consecutive_nops == 8) done = 1;
+		if(check == 49 || consecutive_nops == 16) done = 1;
 	end
 
 	// Tracking how many clock cycles it takes to execute the program
@@ -332,8 +332,11 @@ module tb_core();
 		if(!nrst)
 			max_data_addr <= 0;
 		else if(!done) 
+			max_data_addr <= 14'd11;
+			/*
 			if((CORE.exe_is_stype && |CORE.exe_dm_write && CORE.exe_ALUout[15:2] > max_data_addr) && (CORE.exe_ALUout[15:2] < 14'h2c))
 				max_data_addr <= CORE.exe_ALUout[15:2];
+			*/
 	end
 
 	// For simulating int_sig

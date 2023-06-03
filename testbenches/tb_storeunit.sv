@@ -29,8 +29,9 @@ module tb_storeunit();
     
     import v_pkg::*;
 
-    storeunit UUT (
+    v_storeunit UUT (
         .clk(clk),
+        .nrst(nrst),
         .store_op(store_op),
         .lmul(lmul),
         .vsew(vsew),
