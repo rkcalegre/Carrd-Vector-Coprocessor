@@ -14,3 +14,4 @@ rv32imc/memory/datamem2.coe
 rv32imc/memory/datamem3.coe
 rv32imc/memory/instmem.mem
 rv32imc/sim/tb_core.v
+rv32imc/memory/
