@@ -3,3 +3,14 @@ rv32imc/vivado-ip-src/blk_mem_gen_protocol.xcix
 rv32imc/vivado-ip-src/blk_mem_gen_datamem.xcix
 rv32imc/memory/instmem.mem
 rv32imc/memory/answerkey.mem
+rv32imc/memory/answerkey.mem
+rv32imc/memory/answerkey0.mem
+rv32imc/memory/answerkey1.mem
+rv32imc/memory/answerkey2.mem
+rv32imc/memory/answerkey3.mem
+rv32imc/memory/datamem0.coe
+rv32imc/memory/datamem1.coe
+rv32imc/memory/datamem2.coe
+rv32imc/memory/datamem3.coe
+rv32imc/memory/instmem.mem
+rv32imc/sim/tb_core.v

@@ -24,8 +24,8 @@ module carrd_writeback(
     input clk,
     input [3:0] v_alu_op,
     input is_mul,
-    //input [3:0] v_lsu_op,
-    input is_load,
+    input [3:0] v_lsu_op,
+    //input is_load,
     //input is_store,
     input [2:0] v_sldu_op,
     input [2:0] v_red_op,
@@ -75,7 +75,8 @@ module carrd_writeback(
             reg_wr_data_2 = result_vmul_2;
             reg_wr_data_3 = result_vmul_3;
             reg_wr_data_4 = result_vmul_4;              
-        end else if (is_load == 1) begin
+        //end else if (is_load == 1) begin
+        end else if (v_lsu_op inside {[1:6]}) begin
             v_reg_wr_en = (v_sel_dest==1 && done_vload==1) ? 1: 0;
             x_reg_wr_en = (v_sel_dest==2 && done_vload==1) ? 1: 0;
             reg_wr_data = result_vload[127:0];
