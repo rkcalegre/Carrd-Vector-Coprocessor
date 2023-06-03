@@ -36,8 +36,10 @@ module core(
 	output [`DATAMEM_WIDTH-1:0] con_out,			// Ouput of MEMBANK 0 connected to Protocol controllers
 
 	// Signals routed to Vector Coprocessor
-	input [`REGFILE_BITS-1:0] v_rd_xreg_addr, 		// For Vector-Scalar Instructions that require reads from the scalar regfile
-	output [`WORD_WIDTH-1:0] xreg_out,				// Data read from scalar register
+	input [`REGFILE_BITS-1:0] v_rd_xreg_addr1, 		// For Vector-Scalar Instructions that require reads from the scalar regfile
+	input [`REGFILE_BITS-1:0] v_rd_xreg_addr2, 		// For Vector-Scalar Instructions that require reads from the scalar regfile
+	output [`WORD_WIDTH-1:0] xreg_out1,				// Data read from scalar register
+	output [`WORD_WIDTH-1:0] xreg_out2,				// Data read from scalar register
 	output [`WORD_WIDTH-1:0] v_instr,				// Input to vector decoder
 
 	// Memory Data buses from Vector Coprocessor
@@ -113,7 +115,7 @@ module core(
 	//////////////////////////////////////////////////////////////////////////////
 
 	// Inputs to ID/EXE Pipereg 														
-	wire [`WORD_WIDTH-1:0] id_rfoutA, id_rfoutB, id_rfoutV;	// Regfile outputs 								
+	wire [`WORD_WIDTH-1:0] id_rfoutA, id_rfoutB, id_rfoutV1, id_rfoutV2;	// Regfile outputs 								
 	wire [`WORD_WIDTH-1:0] id_imm;							// Output of SHIFT, SIGN EXT, AND SHUFFLE block
 
 	wire [`WORD_WIDTH-1:0] id_branchtarget;					// Computed branch target
@@ -248,7 +250,8 @@ module core(
 // Assigns to Vector Datapath Signals ============================================
 
 	assign v_instr = id_inst;
-	assign xreg_out = id_rfoutV;
+	assign xreg_out1 = id_rfoutV1;
+	assign xreg_out2 = id_rfoutV2;
 
 // &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
@@ -694,8 +697,8 @@ module core(
 		.wr_data(wb_wr_data),
 		.dest_addr(wb_rd),
 
-		.src1_addr(id_rsA),		.src2_addr(id_rsB),		.srcV_addr(v_rd_xreg_addr),
-		.src1_out(id_rfoutA),	.src2_out(id_rfoutB), 	.srcV_out(id_rfoutV)
+		.src1_addr(id_rsA),		.src2_addr(id_rsB),		.srcV1_addr(v_rd_xreg_addr1), 	.srcV2_addr(v_rd_xreg_addr2),
+		.src1_out(id_rfoutA),	.src2_out(id_rfoutB), 	.srcV1_out(id_rfoutV1),			.srcV2_out(id_rfoutV2) 
 	);
 
 	shiftsignshuff SHIFTSIGNSHUFF(

@@ -26,18 +26,21 @@ module regfile(
 	input		[`WORD_WIDTH-1:0]	wr_data,
 	input 		[`REGFILE_BITS-1:0]	src1_addr,
 	input 		[`REGFILE_BITS-1:0]	src2_addr,
-	input		[`REGFILE_BITS-1:0]	srcV_addr,					// source address for VX instructions
+	input		[`REGFILE_BITS-1:0]	srcV1_addr,					// source address for VX instructions
+	input		[`REGFILE_BITS-1:0]	srcV2_addr,
 	input 		[`REGFILE_BITS-1:0]	dest_addr,
 	output 		[`WORD_WIDTH-1:0] 	src1_out,
 	output 		[`WORD_WIDTH-1:0] 	src2_out,
-	output		[`WORD_WIDTH-1:0] 	srcV_out					// scalar operand for VX instructions
+	output		[`WORD_WIDTH-1:0] 	srcV1_out,					// scalar operand for VX instructions
+	output		[`WORD_WIDTH-1:0] 	srcV2_out
 );
 
 	reg [`WORD_WIDTH-1:0] regfile [0:`REGFILE_SIZE-1];
 
 	assign src1_out = regfile[src1_addr];
 	assign src2_out = regfile[src2_addr];
-	assign srcV_out = regfile[srcV_addr];						// for Vector Coprocessor
+	assign srcV1_out = regfile[srcV1_addr];						// for Vector Coprocessor
+	assign srcV2_out = regfile[srcV2_addr];						// for Vector Coprocessor
    
 	integer i;
 	initial begin

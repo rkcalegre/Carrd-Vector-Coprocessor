@@ -16,7 +16,7 @@
 `timescale 1ns / 1ps
 `include "constants.vh"
 
-module storeunit #(
+module v_storeunit #(
     parameter int VLEN = 128
 )(
     input logic clk,
@@ -136,12 +136,13 @@ module storeunit #(
                     cc = cc + 1'b1;
                 end
                 default: begin
-                    storedata = { {384{1'b0}} , {temp_data[127:0]} };
+/*                     storedata = { {384{1'b0}} , {temp_data[127:0]} };
                     data_out0 = storedata[31:0];
                     data_out1 = storedata[63:32];
                     data_out2 = storedata[95:64];
                     data_out3 = storedata[127:96];
-                    cc = cc + 1;
+                    cc = cc + 1; */
+                    //cc=0;
                 end
             endcase
             if (cc > 1) begin
@@ -149,10 +150,13 @@ module storeunit #(
                     temp_addr = temp_addr + stride*4;
                 else
                     temp_addr = temp_addr + 4;
-            end
+            end else temp_addr = address;
         end else begin
+            //temp_addr = address;
+            cc = 0;
             //done = 1'b0;
             //temp_addr = address;
+            //cc=0;
         end
     end
 

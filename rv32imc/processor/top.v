@@ -43,8 +43,10 @@ module top(
 );
 
 	// Signals Routed to Vector Coprocessor
-	wire [`REGFILE_BITS-1:0] v_rd_xreg_addr; 			// For Vector-Scalar Instructions that require reads from the scalar regfile
-	wire [`WORD_WIDTH-1:0] xreg_out;					// Data read from scalar register
+	wire [`REGFILE_BITS-1:0] v_rd_xreg_addr1; 			// For Vector-Scalar Instructions that require reads from the scalar regfile
+	wire [`REGFILE_BITS-1:0] v_rd_xreg_addr2;
+	wire [`WORD_WIDTH-1:0] xreg_out1;					// Data read from scalar register
+	wire [`WORD_WIDTH-1:0] xreg_out2;					// Data read from scalar register
 	wire [`WORD_WIDTH-1:0] v_instr;
 
 	// Memory Data buses from Vector Coprocessor
@@ -149,8 +151,10 @@ module top(
 
 		.con_out(con_out),
 
-		.v_rd_xreg_addr(v_rd_xreg_addr),
-		.xreg_out(xreg_out),
+		.v_rd_xreg_addr1(v_rd_xreg_addr1),
+		.v_rd_xreg_addr2(v_rd_xreg_addr2),
+		.xreg_out1(xreg_out1),
+		.xreg_out2(xreg_out2),
 		.v_instr(v_instr),
 
 		.is_vstype(is_vstype),
@@ -227,8 +231,10 @@ module top(
 		.v_load_data_2(v_load_data_2),
 		.v_load_data_3(v_load_data_3),
 
-		.v_rd_xreg_addr(v_rd_xreg_addr),
-		.xreg_out(xreg_out)
+		.v_rd_xreg_addr1(v_rd_xreg_addr1),
+		.v_rd_xreg_addr2(v_rd_xreg_addr2),
+		.xreg_out1(xreg_out1),
+		.xreg_out2(xreg_out2)
 	);
 
 	// For Vivado ILA Capture control; Remove if not needed
