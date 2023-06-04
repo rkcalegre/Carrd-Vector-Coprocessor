@@ -36,6 +36,7 @@ module carrd_integrated#(
     
     // Memory Data buses from Vector Coprocessor
 	output is_vstype,
+	output is_vltype,
     output [`DATAMEM_BITS-1:0] data_addr0,
     output [`DATAMEM_BITS-1:0] data_addr1,
     output [`DATAMEM_BITS-1:0] data_addr2,
@@ -94,9 +95,13 @@ module carrd_integrated#(
     assign v_rd_xreg_addr1 = vs1;
     assign v_rd_xreg_addr2 = vs2;
     //assign v_data_addr = // address of data mem
+    assign data_addr0 = (is_vltype)? l_data_addr0 : s_data_addr0;
+    assign data_addr1 = (is_vltype)? l_data_addr1 : s_data_addr1;
+    assign data_addr2 = (is_vltype)? l_data_addr2 : s_data_addr2;
+    assign data_addr3 = (is_vltype)? l_data_addr3 : s_data_addr3;
 
     logic [4:0] vsA, vsB;
-    assign vsA = (v_lsu_op inside {[7:12]}) ? vs3 : vs1;
+    assign vsA = (is_vstype) ? vs3 : vs1;
     assign vsB = vs2;
 
 	v_regfile vregfile(
@@ -176,6 +181,7 @@ module carrd_integrated#(
     .is_mul(is_mul),
     .v_lsu_op(v_lsu_op),
     .is_vstype(is_vstype),
+    .is_vltype(is_vltype),
     .v_sldu_op(v_sldu_op),
     .v_red_op(v_red_op),
     .v_op_sel_A(v_op_sel_A),
@@ -296,6 +302,10 @@ module carrd_integrated#(
     */
     // Store Unit
     logic done_store;
+    logic [`DATAMEM_BITS-1:0] s_data_addr0;
+    logic [`DATAMEM_BITS-1:0] s_data_addr1;
+    logic [`DATAMEM_BITS-1:0] s_data_addr2;
+    logic [`DATAMEM_BITS-1:0] s_data_addr3;
 
     v_storeunit vstoreunit (
         .clk(clk),
@@ -307,10 +317,10 @@ module carrd_integrated#(
         .address(xreg_out1),         // DOUBLE CHECK
         .data(op_C),                 // DOUBLE CHECK
 
-        .data_addr0(data_addr0),
-        .data_addr1(data_addr1),
-        .data_addr2(data_addr2),
-        .data_addr3(data_addr3),
+        .data_addr0(s_data_addr0),
+        .data_addr1(s_data_addr1),
+        .data_addr2(s_data_addr2),
+        .data_addr3(s_data_addr3),
         .data_out0(v_store_data_0),
         .data_out1(v_store_data_1),
         .data_out2(v_store_data_2),
@@ -321,6 +331,10 @@ module carrd_integrated#(
     
     logic [511:0] result_vloadu;
     logic done_vloadu;
+    logic [`DATAMEM_BITS-1:0] l_data_addr0;
+    logic [`DATAMEM_BITS-1:0] l_data_addr1;
+    logic [`DATAMEM_BITS-1:0] l_data_addr2;
+    logic [`DATAMEM_BITS-1:0] l_data_addr3;
 
     v_loadu vloadu(
     .clk(clk),
@@ -331,11 +345,11 @@ module carrd_integrated#(
     .v_lsu_op(v_lsu_op),
     .lmul(vlmul),
     .vsew(vsew),
-    .l_addr(xreg_out),
-    .data_addr0(data_addr0),  
-    .data_addr1(data_addr1),  
-    .data_addr2(data_addr2),  
-    .data_addr3(data_addr3),  
+    .l_addr(xreg_out1),
+    .data_addr0(l_data_addr0),  
+    .data_addr1(l_data_addr1),  
+    .data_addr2(l_data_addr2),  
+    .data_addr3(l_data_addr3),  
     .l_data_out(result_vloadu),
     .l_done(done_vloadu)
     );
@@ -343,8 +357,6 @@ module carrd_integrated#(
     //V_LANES
     logic done_valu;
     logic done_vmul;
-    logic s_done;
-    logic l_done;
     logic [127:0] result_valu_1;
     logic [127:0] result_valu_2;
     logic [127:0] result_valu_3;

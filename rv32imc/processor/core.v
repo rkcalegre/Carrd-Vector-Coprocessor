@@ -44,6 +44,7 @@ module core(
 
 	// Memory Data buses from Vector Coprocessor
 	input is_vstype,
+	input is_vltype,
 	input [`PC_ADDR_BITS-1:0] v_data_addr0,
 	input [`PC_ADDR_BITS-1:0] v_data_addr1,
 	input [`PC_ADDR_BITS-1:0] v_data_addr2,
@@ -884,7 +885,7 @@ module core(
 		.exe_CNI(exe_CNI)
 	);
 
-	assign exe_data_addr = (is_vstype) ? v_data_addr0 : exe_ALUout[`DATAMEM_BITS+1:2];
+	assign exe_data_addr = (is_vstype || is_vltype) ? v_data_addr0 : exe_ALUout[`DATAMEM_BITS+1:2];
 
 	storeblock STOREBLOCK(
 		.opB(exe_rstore),
