@@ -369,7 +369,7 @@ module tb_top();
 		if(!nrst)
 			max_data_addr <= 0;
 		else if(!done) 
-			max_data_addr <= 14'd50;
+			max_data_addr <= 14'd11;
 			/*
 			if((CORE.exe_is_stype && |CORE.exe_dm_write && CORE.exe_ALUout[15:2] > max_data_addr) && (CORE.exe_ALUout[15:2] < 14'h2c))
 				max_data_addr <= CORE.exe_ALUout[15:2];

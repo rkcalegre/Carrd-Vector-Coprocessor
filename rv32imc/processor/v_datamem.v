@@ -89,7 +89,7 @@ module v_datamem(
 	// Synchronous read
 	// Addresses 0x000 - 0xFFF (Word-aligned addresses)
 	blk_mem_gen_datamem_bank0 COREMEM0(
-		.clka(core_clk),
+		.clka(con_clk),
 		.wea(dm_write_0),
 		.addra(data_addr[`DATAMEM_BITS-2:2]),
 		.dina(data_in_little_e_0),
@@ -103,7 +103,7 @@ module v_datamem(
 	);
 
 	blk_mem_gen_datamem_bank1 COREMEM1(
-		.clka(core_clk),
+		.clka(con_clk),
 		.wea(dm_write_1),
 		.addra(data_addr[`DATAMEM_BITS-2:2]),
 		.dina(data_in_little_e_1),
@@ -117,7 +117,7 @@ module v_datamem(
 	);
 
 	blk_mem_gen_datamem_bank2 COREMEM2(
-		.clka(core_clk),
+		.clka(con_clk),
 		.wea(dm_write_2),
 		.addra(data_addr[`DATAMEM_BITS-2:2]),
 		.dina(data_in_little_e_2),
@@ -131,7 +131,7 @@ module v_datamem(
 	);
 
 	blk_mem_gen_datamem_bank3 COREMEM3(
-		.clka(core_clk),
+		.clka(con_clk),
 		.wea(dm_write_3),
 		.addra(data_addr[`DATAMEM_BITS-2:2]),
 		.dina(data_in_little_e_3),
@@ -205,12 +205,17 @@ module v_datamem(
 	    end
 	end
 
-
+	/*
 	wire [`DATAMEM_WIDTH-1:0] con_out_little_e = protocol_sel_reg? protocolmem_doutb : (con_addr[1:0] == 2'b00)? coremem_doutb_0 :
 																					   (con_addr[1:0] == 2'b01)? coremem_doutb_1 :
 																					   (con_addr[1:0] == 2'b10)? coremem_doutb_2 :
 																					   (con_addr[1:0] == 2'b11)? coremem_doutb_3 : coremem_doutb_0;
-	
+	*/
+	wire [`DATAMEM_WIDTH-1:0] con_out_little_e = (con_addr[1:0] == 2'b00)? coremem_doutb_0 :
+												 (con_addr[1:0] == 2'b01)? coremem_doutb_1 :
+												 (con_addr[1:0] == 2'b10)? coremem_doutb_2 :
+												 (con_addr[1:0] == 2'b11)? coremem_doutb_3 : coremem_doutb_0;
+
 	//wire [`DATAMEM_WIDTH-1:0] con_out_little_e = protocol_sel_reg? protocolmem_doutb : coremem_doutb_0;																	   
 	assign con_out = {con_out_little_e[7:0], con_out_little_e[15:8], con_out_little_e[23:16], con_out_little_e[31:24]};
 

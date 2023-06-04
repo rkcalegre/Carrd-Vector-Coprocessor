@@ -54,7 +54,7 @@ module v_storeunit #(
     assign num_reg = (lmul == 3'b000) ? 3'd1 : (lmul == 3'b001) ? 3'd2 : (lmul == 3'b010) ? 3'd4 : 3'd1;                                                                                // refers to clock cycles
     assign iter = (elem_per_vreg == 5'd16) ? 5'd4 : (elem_per_vreg == 5'd8) ? 5'd2 : (elem_per_vreg == 5'd4) ? 5'd1 : 5'd1;
     //assign exe_cc = (elem_per_vreg / 4) * iter * num_reg;
-    assign exe_cc = iter * num_reg;
+    assign exe_cc = 1 * num_reg;
 
     assign data_addr0 = (store_op == VLSU_VSSE8 || store_op == VLSU_VSSE16 || store_op == VLSU_VSSE32) ? 
                         (temp_addr) : (temp_addr);
@@ -88,19 +88,19 @@ module v_storeunit #(
         if (!done) begin
             case (store_op)
                 VLSU_VSE8: begin
-                    storedata = { {480{1'b0}} , temp_data[31:0] };
-                    data_out0 = { {24{storedata[7]}}  , {storedata[7:0]} };
-                    data_out1 = { {24{storedata[15]}} , {storedata[15:8]} };
-                    data_out2 = { {24{storedata[23]}} , {storedata[23:16]} };
-                    data_out3 = { {24{storedata[31]}} , {storedata[31:24]} };
+                    storedata = { {384{1'b0}} , {temp_data[127:0]} };
+                    data_out0 = storedata[31:0];
+                    data_out1 = storedata[63:32];
+                    data_out2 = storedata[95:64];
+                    data_out3 = storedata[127:96];
                     cc = cc + 1'b1;
                 end
                 VLSU_VSE16: begin
-                    storedata = { {448{1'b0}} , {temp_data[63:0]} };
-                    data_out0 = { {16{storedata[15]}} , {storedata[15:0]} };
-                    data_out1 = { {16{storedata[31]}} , {storedata[31:16]} };
-                    data_out2 = { {16{storedata[47]}} , {storedata[47:32]} };
-                    data_out3 = { {16{storedata[63]}} , {storedata[63:48]} };
+                    storedata = { {384{1'b0}} , {temp_data[127:0]} };
+                    data_out0 = storedata[31:0];
+                    data_out1 = storedata[63:32];
+                    data_out2 = storedata[95:64];
+                    data_out3 = storedata[127:96];
                     cc = cc + 1'b1;
                 end
                 VLSU_VSE32: begin
@@ -136,7 +136,7 @@ module v_storeunit #(
                     cc = cc + 1'b1;
                 end
                 default: begin
-/*                     storedata = { {384{1'b0}} , {temp_data[127:0]} };
+/*                  storedata = { {384{1'b0}} , {temp_data[127:0]} };
                     data_out0 = storedata[31:0];
                     data_out1 = storedata[63:32];
                     data_out2 = storedata[95:64];

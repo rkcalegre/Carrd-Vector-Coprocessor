@@ -64,6 +64,9 @@ module storeblock(
     
     wire [31:0] nboff_data;
 	wire [1:0] bank_sel = data_addr0[1:0];
+	wire [1:0] bank_sel1 = data_addr1[1:0];
+	wire [1:0] bank_sel2 = data_addr2[1:0];
+	wire [1:0] bank_sel3 = data_addr3[1:0];
     
     assign nboff_data = (store_select == sb) ? {24'd0 , opB[7:0]} : (store_select == sh) ? {16'd0, opB[15:0]} : opB ;
 	//assign data0 = (is_vstype) ? data_in_0 : (nboff_data << (8*byte_offset));
@@ -248,9 +251,9 @@ module storeblock(
 
 		if (is_vstype) begin
 			dm_write_0 <= (bank_sel == 2'b00) ? 4'b1111 : 4'b0000;
-			dm_write_1 <= (bank_sel == 2'b01) ? 4'b1111 : 4'b0000;
-			dm_write_2 <= (bank_sel == 2'b10) ? 4'b1111 : 4'b0000;
-			dm_write_3 <= (bank_sel == 2'b11) ? 4'b1111 : 4'b0000;
+			dm_write_1 <= (bank_sel1 == 2'b01) ? 4'b1111 : 4'b0000;
+			dm_write_2 <= (bank_sel2 == 2'b10) ? 4'b1111 : 4'b0000;
+			dm_write_3 <= (bank_sel3 == 2'b11) ? 4'b1111 : 4'b0000;
 		end
 	end
 endmodule
