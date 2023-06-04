@@ -13,9 +13,5 @@ rv32imc/memory/datamem1.coe
 rv32imc/memory/datamem2.coe
 rv32imc/memory/datamem3.coe
 rv32imc/memory/instmem.mem
-rv32imc/sim/tb_core.v
-<<<<<<< HEAD
-rv32imc/memory/
-=======
 rv32imc/memory/
 >>>>>>> 06ef53163846b9b78f8361ad846153185a26d85b

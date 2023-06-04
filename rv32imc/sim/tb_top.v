@@ -18,7 +18,7 @@
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////
-
+`include "constants.vh"
 
 module tb_top();
 
@@ -35,6 +35,12 @@ module tb_top();
 	wire ck_io8 = 1;
 	wire ck_io38;
 	wire ck_io39;
+
+	reg [3:0] con_write = TOP.RISCVCORE.con_write;
+	reg [`DATAMEM_BITS-1:0] con_addr = TOP.RISCVCORE.con_addr;
+	reg [`WORD_WIDTH-1:0] con_in = TOP.RISCVCORE.con_in;
+	wire [`WORD_WIDTH-1:0] con_out = TOP.RISCVCORE.con_out;
+	reg [`WORD_WIDTH-1:0] last_inst;
 
 	top TOP(
 		.CLK100MHZ(CLK100MHZ),
@@ -53,6 +59,19 @@ module tb_top();
 		.ck_io39(ck_io39)
 	);
 
+	answerkey AK();
+	answerkey0 AK0();
+	answerkey1 AK1();
+	answerkey2 AK2();
+	answerkey3 AK3();
+
+	integer i, j, check, done, pass, consecutive_nops;
+	integer total_test_cases = 0;
+	integer nop_counter;
+	integer max_data_addr;
+	wire [31:0] INST;
+	assign INST = TOP.RISCVCORE.if_inst;
+
 	always
 		#5 CLK100MHZ = ~CLK100MHZ;
 
@@ -60,6 +79,17 @@ module tb_top();
 		CLK100MHZ = 0;
 		nrst = 0;
 		ck_io1 = 1;
+
+		last_inst = 0;
+
+		con_write = 0;
+		con_addr = 10'h0;
+		con_in = 0;
+		done = 0;
+		check = 0;
+		pass = 0;
+		i = 0;
+		j = 0;
 
 		#100 nrst = 1;
 	end
@@ -298,4 +328,133 @@ module tb_top();
 //	   #400000;
 //	   $finish;
 //	end
+
+	always@(posedge CLK100MHZ) begin
+	    if (!nrst) begin
+	        check = 0;
+	        consecutive_nops = 0;
+	        last_inst = 0;
+	    end
+	    else
+            if (!done)
+                if (INST == last_inst && (INST[15:0] == 16'h0001 || INST == 32'h00000013)) begin
+                    consecutive_nops = consecutive_nops + 1;
+                    check = check + 1;
+                end
+                else if (INST == last_inst) begin
+                    check = check + 1;
+                end
+                else begin
+                    last_inst <= INST;
+                    consecutive_nops = 0;
+                    check = 0;
+                end
+	end
+	// This controls the NOP counter
+	always@(posedge CLK100MHZ) begin
+	   if (!done)
+            if(!nrst)
+                nop_counter <= 0;
+            else if(!done)
+                if(INST[15:0] == 16'h0001 || INST == 32'h00000013)
+                    nop_counter <= nop_counter + 1;
+	end
+	// This controlls the done flag
+	always@(posedge CLK100MHZ) begin
+		if(check == 49 || consecutive_nops == 16) done = 1;
+	end
+
+	// This controls max_data_addr
+	always@(posedge CLK100MHZ) begin
+		if(!nrst)
+			max_data_addr <= 0;
+		else if(!done) 
+			max_data_addr <= 14'd50;
+			/*
+			if((CORE.exe_is_stype && |CORE.exe_dm_write && CORE.exe_ALUout[15:2] > max_data_addr) && (CORE.exe_ALUout[15:2] < 14'h2c))
+				max_data_addr <= CORE.exe_ALUout[15:2];
+			*/
+	end
+
+	// The following code is for checking the contents
+	// of BLOCKMEM
+	always@(posedge done) begin
+		$display("---------| SUMMARY |---------");
+		$display("Address\t  Actual  \tExpected ");
+		$display("=======\t==========\t==========");	
+	end
+
+	always@(negedge CLK100MHZ) begin
+		if(done) begin
+			if (con_addr[1:0] == 2'b00) begin
+				if(con_out == AK0.memory0[con_addr[`DATAMEM_BITS-1:2]]) begin
+					//$display("0x%3X\t0x%X\t0x%X\tPass", con_addr, con_out, AK.memory[con_addr]);
+					pass = pass + 1;
+				end else begin
+					$display("0x%3X\t0x%X\t0x%X\tFail--------------------", con_addr, con_out, AK0.memory0[con_addr[`DATAMEM_BITS-1:2]]);
+				end
+			end else if (con_addr[1:0] == 2'b01) begin
+				if(con_out == AK1.memory1[con_addr[`DATAMEM_BITS-1:2]]) begin
+					//$display("0x%3X\t0x%X\t0x%X\tPass", con_addr, con_out, AK.memory[con_addr]);
+					pass = pass + 1;
+				end else begin
+					$display("0x%3X\t0x%X\t0x%X\tFail--------------------", con_addr, con_out, AK1.memory1[con_addr[`DATAMEM_BITS-1:2]]);
+				end
+			end	else if (con_addr[1:0] == 2'b10) begin
+				if(con_out == AK2.memory2[con_addr[`DATAMEM_BITS-1:2]]) begin
+					//$display("0x%3X\t0x%X\t0x%X\tPass", con_addr, con_out, AK.memory[con_addr]);
+					pass = pass + 1;
+				end else begin
+					$display("0x%3X\t0x%X\t0x%X\tFail--------------------", con_addr, con_out, AK2.memory2[con_addr[`DATAMEM_BITS-1:2]]);
+				end
+			end else begin
+				if(con_out == AK3.memory3[con_addr[`DATAMEM_BITS-1:2]]) begin
+					//$display("0x%3X\t0x%X\t0x%X\tPass", con_addr, con_out, AK.memory[con_addr]);
+					pass = pass + 1;
+				end else begin
+					$display("0x%3X\t0x%X\t0x%X\tFail--------------------", con_addr, con_out, AK3.memory3[con_addr[`DATAMEM_BITS-1:2]]);
+				end
+			end
+
+			total_test_cases = total_test_cases + 1;
+			if (con_addr == max_data_addr) $finish;
+			con_addr = con_addr + 1;
+		end
+	end
+
+endmodule
+
+module answerkey();
+	reg [31:0] memory [0:1023];
+	initial begin
+		$readmemh("answerkey.mem", memory);
+	end
+endmodule
+
+module answerkey0();
+	reg [31:0] memory0 [0:255];
+	initial begin
+		$readmemh("answerkey0.mem", memory0);
+	end
+endmodule
+
+module answerkey1();
+	reg [31:0] memory1 [0:255];
+	initial begin
+		$readmemh("answerkey1.mem", memory1);
+	end
+endmodule
+
+module answerkey2();
+	reg [31:0] memory2 [0:255];
+	initial begin
+		$readmemh("answerkey2.mem", memory2);
+	end
+endmodule
+
+module answerkey3();
+	reg [31:0] memory3 [0:255];
+	initial begin
+		$readmemh("answerkey3.mem", memory3);
+	end
 endmodule

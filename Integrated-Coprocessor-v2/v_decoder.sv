@@ -31,6 +31,7 @@ module v_decoder #(
     output logic [2:0] v_sldu_op,
     output logic [3:0] v_lsu_op,
     output logic is_vstype,
+    output logic is_vltype,
 
     output logic [2:0] v_op_sel_A,
     output logic [1:0] v_op_sel_B,
@@ -141,6 +142,7 @@ module v_decoder #(
                                     (opcode == OPC_STYPE && mop == MOP_STRIDED && width == WIDTH_32)      ? VLSU_VSSE32 : OFF;
 
                 is_vstype = (opcode == OPC_STYPE) ? 1'b1 : OFF;
+                is_vltype = (opcode == OPC_LTYPE) ? 1'b1 : OFF;
 
                 // v_op_sel_A (instr[19:15])
                 // 1 - select vs1 
