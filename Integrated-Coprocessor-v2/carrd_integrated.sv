@@ -66,7 +66,7 @@ module carrd_integrated#(
     /*=== INSTANTIATING MODULES ===*/
 
     //Vector Register File
-	logic clk, nrst, reg_wr_en, el_wr_en;
+	logic reg_wr_en, el_wr_en;
     logic [1:0] lanes = LANES;
 	logic [2:0] vlmul;
     logic [2:0] vsew;
@@ -79,9 +79,14 @@ module carrd_integrated#(
 	logic [127:0]  mask;
 	logic [127:0] reg_data_out_v1_a,reg_data_out_v1_b,reg_data_out_v1_c,reg_data_out_v1_d;
 	logic [127:0] reg_data_out_v2_a,reg_data_out_v2_b,reg_data_out_v2_c,reg_data_out_v2_d;
+    logic [31:0] x_reg_data1;
+    logic [31:0] x_reg_data2;
+    logic x_reg_wr_en;
 
     logic [4:0] vs1, vs2, vs3, vd;
     logic [31:0] instr;
+    logic [4:0] imm;
+    logic [10:0] zimm;
 
     //From Base Processor
     assign instr = op_instr_base; 
@@ -137,6 +142,7 @@ module carrd_integrated#(
     //Control Status Register
     logic [31:0] vl_out;
     logic [10:0] vtype_out;
+    logic is_vconfig;
 
     assign vlmul = vtype_out[2:0]; //RISC-V Defintion
     assign vsew = vtype_out[5:3];  //RISC-V Defintion
@@ -156,7 +162,6 @@ module carrd_integrated#(
 
     //Decoder Block
     logic [3:0] v_alu_op;
-    logic is_vconfig;
     logic [3:0] v_lsu_op;
     logic is_mul;    
     logic [2:0] v_sldu_op;
@@ -192,14 +197,15 @@ module carrd_integrated#(
 
 	);
     logic [511:0] op_A;
-    logic [31:0] x_reg_data1;
-    logic [31:0] x_reg_data2;
-    logic [4:0] imm;
-    logic [10:0] zimm;
 
+    /*
     assign op_A = (v_op_sel_A == 1)? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,reg_data_out_v1_a}:  //vs1 data
                   (v_op_sel_A == 2)? {{480{1'b0}}, x_reg_data1}:  //rs1 data
                   (v_op_sel_A == 3)? {{507{1'b0}}, imm} : 0 ;  //immediate data
+    */
+    assign op_A = (v_op_sel_A == 1)? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,reg_data_out_v1_a}:  //vs1 data
+                  (v_op_sel_A == 2)? {{480{1'b0}}, x_reg_data1}:  //rs1 data
+                  (v_op_sel_A == 3)? ((vsew == 3'b000) ? { 64{{3{1'b0}} , imm} } : (vsew == 3'b001) ? { 32{{11{1'b0}} , imm} } : (vsew == 3'b010) ? { 16{{27{1'b0}} , imm} } : 0) : 0 ;  //immediate data
 
     logic [511:0] op_B;
 
@@ -392,7 +398,6 @@ module carrd_integrated#(
     );
 
 	// Writeback
-    logic x_reg_wr_en;
 
     carrd_writeback vwriteback(
         .clk(clk),
