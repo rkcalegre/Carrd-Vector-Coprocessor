@@ -345,6 +345,7 @@ module carrd_integrated#(
     .v_lsu_op(v_lsu_op),
     .lmul(vlmul),
     .vsew(vsew),
+    .stride(xreg_out2), 
     .l_addr(xreg_out1),
     .data_addr0(l_data_addr0),  
     .data_addr1(l_data_addr1),  
