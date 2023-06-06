@@ -46,8 +46,8 @@ module v_sequencer #(
     output logic [IST_ENTRY_BITS-1:0] alu_read, mul_read, lsu_read, sldu_read, red_read, //logic
     output logic busy_alu, busy_mul, busy_lsu, busy_sldu, busy_red, //logic
     output logic [3:0] fifo_count, // logic
-    output logic Rj_alu, Rj_mul, Rj_lsu, Rj_sldu, Rj_red,              // indicates if Fj is available (1),
-    output logic Rk_alu, Rk_mul, Rk_lsu, Rk_sldu, Rk_red,              // indicates if Fk is available (1)
+    output logic Rj_alu, Rj_mul, Rj_lsu, Rj_sldu, Rj_red,              // logic
+    output logic Rk_alu, Rk_mul, Rk_lsu, Rk_sldu, Rk_red,              // logic
     output logic [2:0] raw_alu_1, raw_mul_1, raw_lsu_1, raw_sldu_1, raw_red_1,
     output logic [127:0]  reg_wr_data, reg_wr_data_2, reg_wr_data_3, reg_wr_data_4
 );
@@ -129,7 +129,7 @@ module v_sequencer #(
         op_instr = op == 3'b001 ? v_alu_op: op == 3'b010 ? is_mul: op == 3'b011 ? v_lsu_op: op == 3'b100 ? v_sldu_op: 3'b101 ? v_red_op: 0;
         // Write to Instruction Status Table
         if (!nrst) begin
-            for (int i = 0; i < NO_OF_SLOTS + 1; i++) begin
+            for (int i = 0; i < NO_OF_SLOTS; i++) begin
                 fifo_count = 3'b000;
                 instr_status_table[i] <= {IST_ENTRY_BITS{1'b0}};
             end
@@ -441,12 +441,72 @@ module v_sequencer #(
                 reg_wr_data_3 <= {128{1'b0}};
                 reg_wr_data_4 <= {128{1'b0}};    
                 instr_status_table[wb_instr_index] <= {IST_ENTRY_BITS{1'b0}};    
-                /*for (int i = wb_instr_index; i < NO_OF_SLOTS; i++) begin
-                instr_status_table[i] <= instr_status_table[i+1];
-                end
-                instr_status_table[7] <= {IST_ENTRY_BITS{1'b0}};
-                fifo_count = fifo_count - 1;   */
             end
+        endcase
+        case(wb_instr_index)
+            default: ;
+            3'b000: begin
+                instr_status_table[0] <= instr_status_table[1];
+                instr_status_table[1] <= instr_status_table[2];
+                instr_status_table[2] <= instr_status_table[3];
+                instr_status_table[3] <= instr_status_table[4];
+                instr_status_table[4] <= instr_status_table[5];
+                instr_status_table[5] <= instr_status_table[6];
+                instr_status_table[6] <= instr_status_table[7];
+                instr_status_table[7] <= {IST_ENTRY_BITS{1'b0}};
+                fifo_count <= fifo_count - 1;
+            end
+            3'b001: begin
+                instr_status_table[1] <= instr_status_table[2];
+                instr_status_table[2] <= instr_status_table[3];
+                instr_status_table[3] <= instr_status_table[4];
+                instr_status_table[4] <= instr_status_table[5];
+                instr_status_table[5] <= instr_status_table[6];
+                instr_status_table[6] <= instr_status_table[7];
+                instr_status_table[7] <= {IST_ENTRY_BITS{1'b0}};
+                fifo_count <= fifo_count - 1;
+            end
+            3'b010: begin
+                instr_status_table[2] <= instr_status_table[3];
+                instr_status_table[3] <= instr_status_table[4];
+                instr_status_table[4] <= instr_status_table[5];
+                instr_status_table[5] <= instr_status_table[6];
+                instr_status_table[6] <= instr_status_table[7];
+                instr_status_table[7] <= {IST_ENTRY_BITS{1'b0}};
+                fifo_count <= fifo_count - 1;
+            end
+            3'b011: begin
+                instr_status_table[3] <= instr_status_table[4];
+                instr_status_table[4] <= instr_status_table[5];
+                instr_status_table[5] <= instr_status_table[6];
+                instr_status_table[6] <= instr_status_table[7];
+                instr_status_table[7] <= {IST_ENTRY_BITS{1'b0}};
+                fifo_count <= fifo_count - 1;
+            end
+            3'b100: begin
+                instr_status_table[4] <= instr_status_table[5];
+                instr_status_table[5] <= instr_status_table[6];
+                instr_status_table[6] <= instr_status_table[7];
+                instr_status_table[7] <= {IST_ENTRY_BITS{1'b0}};
+                fifo_count <= fifo_count - 1;
+            end
+            3'b101: begin
+                instr_status_table[5] <= instr_status_table[6];
+                instr_status_table[6] <= instr_status_table[7];
+                instr_status_table[7] <= {IST_ENTRY_BITS{1'b0}};
+                fifo_count <= fifo_count - 1;
+            end
+            3'b110: begin
+                instr_status_table[6] <= instr_status_table[7];
+                instr_status_table[7] <= {IST_ENTRY_BITS{1'b0}};
+                fifo_count <= fifo_count - 1;
+            end
+            3'b111: begin
+                instr_status_table[7] <= {IST_ENTRY_BITS{1'b0}};
+                fifo_count <= fifo_count - 1;        
+            end    
+            
+
         endcase
         end
     end
