@@ -21,7 +21,8 @@
 
 
 module v_lanes(
-    input logic clk,
+    input logic valu_clk,
+    input logic vmul_clk,
     input logic nrst,
     input logic [3:0] op_instr_alu,
     input logic is_mul,
@@ -71,7 +72,7 @@ module v_lanes(
             //ALU
 
             v_alu valu(
-                .clk(~clk),
+                .clk(~valu_clk),
                 .nrst(nrst),
                 .op_instr(op_instr_alu),
                 .vsew(vsew),
@@ -84,7 +85,7 @@ module v_lanes(
             //MUL
 
             v_mul vmul(
-                .clk(~clk),
+                .clk(~vmul_clk),
                 .nrst(nrst),
                 .is_mul(is_mul),
                 .sew(vsew),
@@ -124,7 +125,7 @@ module v_lanes(
                 end               
             end
 
-            always @(posedge clk) begin 
+            always @(posedge valu_clk) begin 
                 case (step_alu)
                         2'd0: begin
                             if (i == 3 && (op_instr_alu !=0)) begin
@@ -158,8 +159,10 @@ module v_lanes(
 
                             result_valu_4[(i*32)+32-1:i*32] = result_valu_32b_1[(i*32)+32-1:i*32];
                         end
-                endcase
+                endcase                              
+            end
 
+            always @(posedge vmul_clk) begin 
                 case (step_mul)
                         2'd0: begin
                             if (i == 3 && (is_mul==1)) begin
@@ -202,7 +205,7 @@ module v_lanes(
             //ALU
 
             v_alu valu(
-                .clk((lanes == 0 )? 0 : ~clk),
+                .clk((lanes == 0 )? 0 : ~valu_clk),
                 .nrst(nrst),
                 .op_instr(op_instr_alu),
                 .vsew(vsew),
@@ -215,7 +218,7 @@ module v_lanes(
             //MUL
 
             v_mul vmul(
-                .clk((lanes == 0 )? 0 : ~clk),
+                .clk((lanes == 0 )? 0 : ~vmul_clk),
                 .nrst(nrst),
                 .is_mul(is_mul),
                 .sew(vsew),
@@ -244,7 +247,7 @@ module v_lanes(
                             end
                             default: result_valu_4[((i-4)*32)+32-1:(i-4)*32] = 0;
                     endcase                    
-                end                 
+                end else result_valu_4[((i-4)*32)+32-1:(i-4)*32] = 0;                  
             end
 
         end
@@ -260,7 +263,7 @@ module v_lanes(
             //ALU
 
             v_alu valu(
-                .clk((lanes == 0 )? 0 :(lanes == 1 )? 0 : ~clk),
+                .clk((lanes == 0 )? 0 :(lanes == 1 )? 0 : ~valu_clk),
                 .nrst(nrst),
                 .op_instr(op_instr_alu),
                 .vsew(vsew),
@@ -273,7 +276,7 @@ module v_lanes(
             //MUL
 
             v_mul vmul(
-                .clk((lanes == 0 )? 0 :(lanes == 1 )? 0 : ~clk),
+                .clk((lanes == 0 )? 0 :(lanes == 1 )? 0 : ~vmul_clk),
                 .nrst(nrst),
                 .is_mul(is_mul),
                 .sew(vsew),
@@ -288,7 +291,7 @@ module v_lanes(
             //ALU
 
             v_alu valu(
-                .clk((lanes == 0 )? 0 :(lanes == 1 )? 0 : ~clk),
+                .clk((lanes == 0 )? 0 :(lanes == 1 )? 0 : ~valu_clk),
                 .nrst(nrst),
                 .op_instr(op_instr_alu),
                 .vsew(vsew),
@@ -301,7 +304,7 @@ module v_lanes(
             //MUL
 
             v_mul vmul(
-                .clk((lanes == 0 )?0: (lanes == 1 )? 0 : ~clk),
+                .clk((lanes == 0 )?0: (lanes == 1 )? 0 : ~vmul_clk),
                 .nrst(nrst),
                 .is_mul(is_mul),
                 .sew(vsew),
