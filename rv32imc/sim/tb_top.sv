@@ -37,7 +37,8 @@ module tb_top();
 	wire ck_io39;
 
 	reg [3:0] con_write = TOP.RISCVCORE.con_write;
-	reg [`DATAMEM_BITS-1:0] con_addr = TOP.RISCVCORE.con_addr;
+	//reg [`DATAMEM_BITS-1:0] con_addr = TOP.RISCVCORE.con_addr;
+	reg [13:0] con_addr;
 	reg [`WORD_WIDTH-1:0] con_in = TOP.RISCVCORE.con_in;
 	wire [`WORD_WIDTH-1:0] con_out = TOP.RISCVCORE.con_out;
 	reg [`WORD_WIDTH-1:0] last_inst;
@@ -56,7 +57,8 @@ module tb_top();
 		.ck_io7(ck_io7),
 		.ck_io8(ck_io8),
 		.ck_io38(ck_io38),
-		.ck_io39(ck_io39)
+		.ck_io39(ck_io39),
+		.con_addr(con_addr)
 	);
 
 	answerkey AK();
@@ -72,6 +74,7 @@ module tb_top();
 	integer max_data_addr;
 	wire [31:0] INST;
 	assign INST = TOP.RISCVCORE.if_inst;
+	//assign TOP.RISCVCORE.con_addr = con_addr;
 
 	always
 		#5 CLK100MHZ = ~CLK100MHZ;
@@ -84,7 +87,7 @@ module tb_top();
 		last_inst = 0;
 
 		con_write = 0;
-		con_addr = 14'h0;
+		con_addr = 0;
 		con_in = 0;
 		done = 0;
 		check = 0;
@@ -94,6 +97,7 @@ module tb_top();
 
 		#100 nrst = 1;
 	end
+	//force con_addr = 0;
 	
 	// reg [11:0] mem_PC, wb_PC;
 	// always@(posedge TOP.CLKIP_OUT) begin
@@ -183,6 +187,7 @@ module tb_top();
 
 	 // For checking UART_TX output of top-level design
 	 // settings: 115200bps, no parity, 1 stop bit
+	 /*
 	 reg [7:0] uart_shiftreg = 0;
 	 reg [7:0] uart_recvd = 0;
 	 integer uart_counter = 0;
@@ -227,7 +232,7 @@ module tb_top();
 	 		if(uart_counter == 9) uart_recvd <= uart_shiftreg;
 	 	end
 	 end
-
+	*/
 //	// For checking MOSI output of top-level design
 //	// NOTE: just manually change sampling edge (if posedge or negedge)
 //	// depending on CPHA & CPOL settings. This snippet just helps confirm MOSI.
@@ -370,7 +375,7 @@ module tb_top();
 		if(!nrst)
 			max_data_addr <= 0;
 		else if(!done) 
-			max_data_addr <= 14'd35;
+			max_data_addr <= 14'd143;
 			/*
 			if((CORE.exe_is_stype && |CORE.exe_dm_write && CORE.exe_ALUout[15:2] > max_data_addr) && (CORE.exe_ALUout[15:2] < 14'h2c))
 				max_data_addr <= CORE.exe_ALUout[15:2];

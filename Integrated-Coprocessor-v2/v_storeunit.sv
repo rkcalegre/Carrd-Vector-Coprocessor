@@ -78,6 +78,7 @@ module v_storeunit #(
     assign data_addr3 = (!done) ? temp_addr + 3 : data_addr3;
     */
     assign done = (cc == exe_cc+1);
+    assign dm_v_write = ((cc > 0 && store_op inside {[7:12]}) || (cc == 0 && !clk && store_op inside {[7:12]}));
 
     logic [127:0] temp_data;
     /*
@@ -111,7 +112,7 @@ module v_storeunit #(
     end
 
     
-    always_comb begin
+    always@(negedge clk) begin
         case (store_op)
             VLSU_VSE8: begin
                 storedata = { {384{1'b0}} , {temp_data[127:0]} };
@@ -140,7 +141,7 @@ module v_storeunit #(
         endcase
     end
 
-    always_comb begin
+    always@(negedge clk) begin
         if (store_op inside {[7:12]}) begin             
             temp_addr = (cc == 0 || done) ? address : temp_addr + 4;
             data_addr0 = (!done && cc != exe_cc) ? temp_addr : data_addr0;
@@ -156,9 +157,6 @@ module v_storeunit #(
         end else begin
             cc = 0;                         // reset counter when done     
         end
-        if (cc > 0) begin
-            dm_v_write = 0;
-        end else dm_v_write = 0;
 
         if (store_op == 0) cc = 0;
     end

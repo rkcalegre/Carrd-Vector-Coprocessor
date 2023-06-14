@@ -39,7 +39,8 @@ module top(
 	input ck_io8,		// UART_DEC
 
 	inout ck_io38,		// Tristate buffer/I2C SCL
-	inout ck_io39		// Tristate buffer/I2C SDA
+	inout ck_io39,		// Tristate buffer/I2C SDA
+	input [13:0] con_addr
 );
 
 	// Signals Routed to Vector Coprocessor
@@ -80,7 +81,7 @@ module top(
 	wire [`INT_SIG_WIDTH-1:0] int_sig;
 
 	// Uncomment the following if needed:
-	wire [`DATAMEM_BITS-1:0] con_addr;		// Output datamem address from protocol controllers
+	//wire [`DATAMEM_BITS-1:0] con_addr;		// Output datamem address from protocol controllers
 	wire [3:0] con_write;					// Write enable signal from protocol controllers
 	wire [`DATAMEM_WIDTH-1:0] con_in;		// Input data to datamem from protocol controllers
 	wire [`DATAMEM_WIDTH-1:0] con_out;		// Output data of datamem based on con_addr
@@ -184,7 +185,7 @@ module top(
 		.nrst(nrst & locked),
 
 		.mem_in(con_out),
-		.mem_addr(con_addr),
+		//.mem_addr(con_addr),
 		.mem_out(con_in),
 		.mem_wr(con_write),
 
