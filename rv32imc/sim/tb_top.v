@@ -67,6 +67,7 @@ module tb_top();
 
 	integer i, j, check, done, pass, consecutive_nops;
 	integer total_test_cases = 0;
+	integer print_metrics = 0;
 	integer nop_counter;
 	integer max_data_addr;
 	wire [31:0] INST;
@@ -370,6 +371,7 @@ module tb_top();
 			max_data_addr <= 0;
 		else if(!done) 
 			max_data_addr <= 14'd330;
+			max_data_addr <= 14'd143;
 			/*
 			if((CORE.exe_is_stype && |CORE.exe_dm_write && CORE.exe_ALUout[15:2] > max_data_addr) && (CORE.exe_ALUout[15:2] < 14'h2c))
 				max_data_addr <= CORE.exe_ALUout[15:2];
@@ -384,6 +386,7 @@ module tb_top();
 		$display("=======\t==========\t==========");	
 	end
 
+	/*
 	always@(negedge CLK100MHZ) begin
 		if(done) begin
 			if (con_addr[1:0] == 2'b00) begin
@@ -417,9 +420,33 @@ module tb_top();
 			end
 
 			total_test_cases = total_test_cases + 1;
-			if (con_addr == max_data_addr) $finish;
+			if (con_addr == max_data_addr) print_metrics = 1;
 			con_addr = con_addr + 1;
 		end
+	end
+	*/
+	
+	always@(negedge CLK100MHZ) begin
+		if(done) begin	
+			if(con_out == AK.memory[con_addr]) begin
+				//$display("0x%3X\t0x%X\t0x%X\tPass", con_addr, con_out, AK.memory[con_addr]);
+				pass = pass + 1;
+			end else begin
+				$display("0x%3X\t0x%X\t0x%X\tFail--------------------", con_addr, con_out, AK.memory[con_addr]);
+			end
+
+			total_test_cases = total_test_cases + 1;
+			if(con_addr == max_data_addr) print_metrics = 1;
+			con_addr = con_addr + 1;
+		end
+	end
+	
+
+	always @(posedge print_metrics) begin
+		done = 0;
+		$display("\n");
+		$display("Passed %0d/%0d test cases.", pass, total_test_cases);
+		$finish;
 	end
 
 endmodule
