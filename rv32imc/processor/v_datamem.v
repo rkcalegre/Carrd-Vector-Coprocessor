@@ -42,6 +42,9 @@ module v_datamem(
 
 	// Input Data to each Memory Bank
 	input [`DATAMEM_BITS-1:0] data_addr,
+	input [`DATAMEM_BITS-1:0] data_addr1,
+	input [`DATAMEM_BITS-1:0] data_addr2,
+	input [`DATAMEM_BITS-1:0] data_addr3,
 	input [`DATAMEM_WIDTH-1:0] data_in_0,
 	input [`DATAMEM_WIDTH-1:0] data_in_1,
 	input [`DATAMEM_WIDTH-1:0] data_in_2,
@@ -105,7 +108,7 @@ module v_datamem(
 	blk_mem_gen_datamem_bank1 COREMEM1(
 		.clka(con_clk),
 		.wea(dm_write_1),
-		.addra(data_addr[`DATAMEM_BITS-2:2]),
+		.addra(data_addr1[`DATAMEM_BITS-2:2]),
 		.dina(data_in_little_e_1),
 		.douta(coremem_douta_1),
 
@@ -119,7 +122,7 @@ module v_datamem(
 	blk_mem_gen_datamem_bank2 COREMEM2(
 		.clka(con_clk),
 		.wea(dm_write_2),
-		.addra(data_addr[`DATAMEM_BITS-2:2]),
+		.addra(data_addr2[`DATAMEM_BITS-2:2]),
 		.dina(data_in_little_e_2),
 		.douta(coremem_douta_2),
 
@@ -133,7 +136,7 @@ module v_datamem(
 	blk_mem_gen_datamem_bank3 COREMEM3(
 		.clka(con_clk),
 		.wea(dm_write_3),
-		.addra(data_addr[`DATAMEM_BITS-2:2]),
+		.addra(data_addr3[`DATAMEM_BITS-2:2]),
 		.dina(data_in_little_e_3),
 		.douta(coremem_douta_3),
 

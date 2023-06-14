@@ -37,6 +37,7 @@ module carrd_integrated#(
     // Memory Data buses from Vector Coprocessor
 	output is_vstype,
 	output is_vltype,
+    output dm_v_write,
     output [`DATAMEM_BITS-1:0] data_addr0,
     output [`DATAMEM_BITS-1:0] data_addr1,
     output [`DATAMEM_BITS-1:0] data_addr2,
@@ -176,6 +177,7 @@ module carrd_integrated#(
     .instr(instr),
     .v_reg_wr_en(reg_wr_en),
     .x_reg_wr_en(x_reg_wr_en),
+    .s_done(done_store),
     .is_vconfig(is_vconfig),
     .v_alu_op(v_alu_op),
     .is_mul(is_mul),
@@ -325,7 +327,8 @@ module carrd_integrated#(
         .data_out1(v_store_data_1),
         .data_out2(v_store_data_2),
         .data_out3(v_store_data_3),
-        .done(done_store)
+        .done(done_store),
+        .dm_v_write(dm_v_write)
     );  
 
     

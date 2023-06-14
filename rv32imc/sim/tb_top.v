@@ -84,7 +84,7 @@ module tb_top();
 		last_inst = 0;
 
 		con_write = 0;
-		con_addr = 10'h0;
+		con_addr = 14'h0;
 		con_in = 0;
 		done = 0;
 		check = 0;
@@ -370,7 +370,7 @@ module tb_top();
 		if(!nrst)
 			max_data_addr <= 0;
 		else if(!done) 
-			max_data_addr <= 14'd143;
+			max_data_addr <= 14'd35;
 			/*
 			if((CORE.exe_is_stype && |CORE.exe_dm_write && CORE.exe_ALUout[15:2] > max_data_addr) && (CORE.exe_ALUout[15:2] < 14'h2c))
 				max_data_addr <= CORE.exe_ALUout[15:2];

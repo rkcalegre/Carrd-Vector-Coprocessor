@@ -45,6 +45,7 @@ module core(
 	// Memory Data buses from Vector Coprocessor
 	input is_vstype,
 	input is_vltype,
+	input dm_v_write,
 	input [`PC_ADDR_BITS-1:0] v_data_addr0,
 	input [`PC_ADDR_BITS-1:0] v_data_addr1,
 	input [`PC_ADDR_BITS-1:0] v_data_addr2,
@@ -178,6 +179,9 @@ module core(
 	wire [1:0] exe_store_select;				// For EXE stage
 	wire exe_sel_opBR;							// For EXE stage
 	wire [`DATAMEM_BITS-1:0] exe_data_addr;	  	// Input DATAMEM for Vector Load/Store Instructions
+	wire [`DATAMEM_BITS-1:0] exe_data_addr1;
+	wire [`DATAMEM_BITS-1:0] exe_data_addr2;
+	wire [`DATAMEM_BITS-1:0] exe_data_addr3;
 	wire [`DATAMEM_BITS-1:0] store_data_addr;	// Input address to STORE BLOCK
 
 	// Inputs to EXE/MEM Pipereg
@@ -886,6 +890,10 @@ module core(
 	);
 
 	assign exe_data_addr = (is_vstype || is_vltype) ? v_data_addr0 : exe_ALUout[`DATAMEM_BITS+1:2];
+	assign exe_data_addr1 = (is_vstype || is_vltype) ? v_data_addr1 : exe_ALUout[`DATAMEM_BITS+1:2];
+	assign exe_data_addr2 = (is_vstype || is_vltype) ? v_data_addr2 : exe_ALUout[`DATAMEM_BITS+1:2];
+	assign exe_data_addr3 = (is_vstype || is_vltype) ? v_data_addr3 : exe_ALUout[`DATAMEM_BITS+1:2];
+
 
 	storeblock STOREBLOCK(
 		.opB(exe_rstore),
@@ -894,6 +902,7 @@ module core(
 		.is_stype(exe_is_stype),
 
 		.is_vstype(is_vstype),
+		.dm_v_write(dm_v_write),
 
 		.data_in_0(v_store_data_0),
 		.data_in_1(v_store_data_1),
@@ -956,6 +965,9 @@ module core(
 		.dm_write_3(exe_dm_write_3),
 
 		.data_addr(exe_data_addr),
+		.data_addr1(exe_data_addr1),
+		.data_addr2(exe_data_addr2),
+		.data_addr3(exe_data_addr3),
 		.data_in_0(exe_storedata),
 		.data_in_1(exe_storedata_1),
 		.data_in_2(exe_storedata_2),

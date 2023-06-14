@@ -52,6 +52,7 @@ module top(
 	// Memory Data buses from Vector Coprocessor
 	wire is_vstype;
 	wire is_vltype;
+	wire dm_v_write;
 	wire [`PC_ADDR_BITS-1:0] v_data_addr0;
 	wire [`PC_ADDR_BITS-1:0] v_data_addr1;
 	wire [`PC_ADDR_BITS-1:0] v_data_addr2;
@@ -160,6 +161,7 @@ module top(
 
 		.is_vstype(is_vstype),
 		.is_vltype(is_vltype),
+		.dm_v_write(dm_v_write),
 		.v_data_addr0(v_data_addr0),
 		.v_data_addr1(v_data_addr1),
 		.v_data_addr2(v_data_addr2),
@@ -219,6 +221,7 @@ module top(
 
 		.is_vstype(is_vstype),
 		.is_vltype(is_vltype),
+		.dm_v_write(dm_v_write),
 		.data_addr0(v_data_addr0),
 		.data_addr1(v_data_addr1),
 		.data_addr2(v_data_addr2),

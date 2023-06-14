@@ -23,6 +23,7 @@ module v_decoder #(
     input [31:0] instr,
     input logic v_reg_wr_en,
     input logic x_reg_wr_en,
+    input logic s_done,
 
     output logic is_vconfig,
     output logic [3:0] v_alu_op,
@@ -186,6 +187,10 @@ module v_decoder #(
                         v_lsu_op = 0;
                     end
                 endcase
+                if (s_done) begin
+                    v_lsu_op = 0;
+                    is_vstype = 0;
+                end
             end
         endcase        
     end
