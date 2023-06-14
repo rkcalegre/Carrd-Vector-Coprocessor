@@ -185,6 +185,8 @@ module v_decoder #(
                         v_red_op = 0;
                         v_sldu_op = 0;
                         v_lsu_op = 0;
+                        is_vltype = 0;
+                        is_vstype = 0;
                     end
                 endcase
                 if (s_done) begin

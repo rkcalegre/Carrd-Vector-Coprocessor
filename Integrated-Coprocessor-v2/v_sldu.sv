@@ -538,7 +538,7 @@ module v_sldu #(
                     3'b010: result = {{480{1'b0}},{rs1[31:0]}}; //sew = 32
                     default: result = {{504{1'b0}},{rs1[7:0]}}; //sew = 8
                 endcase
-                done_vsldu = 1;
+                done_vsldu = 1;     
             end
             default: begin  //vmove
                 //result = {{(512-ELEMENT_WIDTH){1'b0}},{rs1[ELEMENT_WIDTH-1:0]}};
@@ -550,7 +550,7 @@ module v_sldu #(
                 endcase
                 done_vsldu = 1;
                  */
-                
+                done_vsldu = 0;
             end
         endcase
     end
