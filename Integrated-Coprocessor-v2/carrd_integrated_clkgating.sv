@@ -37,6 +37,7 @@ module carrd_integrated #(
     // Memory Data buses from Vector Coprocessor
 	output is_vstype,
 	output is_vltype,
+    output dm_v_write,
     output [`DATAMEM_BITS-1:0] data_addr0,
     output [`DATAMEM_BITS-1:0] data_addr1,
     output [`DATAMEM_BITS-1:0] data_addr2,
@@ -128,7 +129,7 @@ module carrd_integrated #(
 	);
 
     BUFGCE #(
-       //.CE_TYPE("ASYNC"),
+       .CE_TYPE("ASYNC"),
 	   .SIM_DEVICE("7SERIES")
     ) en_vlsu (
 	 	.I(clk),
@@ -390,6 +391,7 @@ module carrd_integrated #(
         .data_out1(v_store_data_1),
         .data_out2(v_store_data_2),
         .data_out3(v_store_data_3),
+        .dm_v_write(dm_v_write),
         .done(done_store)
     );   */
 
@@ -445,6 +447,7 @@ module carrd_integrated #(
     .data_out1(v_store_data_1),
     .data_out2(v_store_data_2),
     .data_out3(v_store_data_3),
+    .dm_v_write(dm_v_write),
     .s_done(done_store)
     );    
 
