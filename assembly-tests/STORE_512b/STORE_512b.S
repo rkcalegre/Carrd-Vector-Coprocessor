@@ -30,6 +30,10 @@ C.NOP
 C.NOP
 vse8.v v4, x1           # m[x1 = 32] = 15
 ADDI x1, x1, 16         # x1 = x1 + 16 = 32 + 16 = 48
+C.NOP
+C.NOP
+C.NOP
+C.NOP
 vsetivli x20, x5, 10    # 16 bit elements 512-bit vector
 ADDI x5, x5, 16
 ADDI x5, x5, 16

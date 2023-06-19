@@ -152,7 +152,7 @@ module v_storeunit #(
     end
     
     always @(posedge clk) begin
-        if (!done) begin
+        if (!done && store_op inside {[7:12]}) begin // note changes
             cc = cc + 1'b1;                 // counter that keeps track of execution time
         end else begin
             cc = 0;                         // reset counter when done     

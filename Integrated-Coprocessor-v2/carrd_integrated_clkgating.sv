@@ -129,7 +129,7 @@ module carrd_integrated #(
 	);
 
     BUFGCE #(
-       .CE_TYPE("ASYNC"),
+       //.CE_TYPE("ASYNC"),
 	   .SIM_DEVICE("7SERIES")
     ) en_vlsu (
 	 	.I(clk),
@@ -242,6 +242,7 @@ module carrd_integrated #(
     .instr(instr),
     .v_reg_wr_en(reg_wr_en),
     .x_reg_wr_en(x_reg_wr_en),
+    .s_done(done_store),
     .is_vconfig(is_vconfig),
     .v_alu_op(v_alu_op),
     .is_mul(is_mul),
