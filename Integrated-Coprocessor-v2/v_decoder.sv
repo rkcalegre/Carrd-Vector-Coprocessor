@@ -113,7 +113,7 @@ module v_decoder #(
                                     ((opcode == OPC_RTYPE) && (funct3 == OPI_VX || funct3 == OPI_VI) && funct6 == VSLIDEDOWN) ? VSLDU_VSLIDEDOWN :
                                     ((opcode == OPC_RTYPE) && funct3 == OPM_VX && funct6 == VSLIDE1UP)                        ? VSLDU_VSLIDE1UP :
                                     ((opcode == OPC_RTYPE) && funct3 == OPM_VX && funct6 == VSLIDE1DOWN)                      ? VSLDU_VSLIDE1DOWN :
-                                    ((opcode == OPC_RTYPE) && funct3 == OPI_VX && funct6 == VMOVE)                              ? VSLDU_VMV : OFF;
+                                    ((opcode == OPC_RTYPE) && (funct3 == OPM_VV || funct3 == OPM_VX) && (funct6 == VMOVE || funct6 == VMOVE1)) ? VSLDU_VMV : OFF;
 
                 // v_lsu_op
                 // 1 - vle8
