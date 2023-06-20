@@ -12,25 +12,25 @@ vadd.vi v4, v0, 15      # v4 = 15
 vadd.vi v5, v0, 20      # v5 = 20
 vadd.vv v6, v5, v4      # v6 = v4 + v5
 vadd.vx v7, v4, x2      # v7 = v4 + x2
-vse32.v v5, x1          # m[x1 = 0] = v5
+vse32.v v5, x1          # m[x1 = 0] = v5 = 20
 ADDI x1, x1, 4
-vse32.v v6, x1          # m[x1 = 4] = v6
+vse32.v v6, x1          # m[x1 = 4] = v6 = 35
 ADDI x1, x1, 4
-vse32.v v7, x1          # m[x1 = 8] = v7
+vse32.v v7, x1          # m[x1 = 8] = v7 = 25
 ADDI x1, x1, 4         
 
 # VSUB
 vsub.vv v6, v4, v5      # v4 = 15
 vsub.vx v7, v4, x2      # v5 = 20
-vse32.v v5, x1          # m[x1 = 12] = v5
+vse32.v v6, x1          # m[x1 = 12] = v5
 ADDI x1, x1, 4
-vse32.v v6, x1          # m[x1 = 16] = v6
+vse32.v v7, x1          # m[x1 = 16] = v6
 ADDI x1, x1, 4
 
 # VAND
 vand.vv v6, v5, v4     
 vand.vx v7, v4, x2      
-vand.vi v8, v4, 0
+vand.vi v8, v4, 1
 vse32.v v6, x1          # m[x1 = 0] = v5
 ADDI x1, x1, 4
 vse32.v v7, x1          # m[x1 = 4] = v6
@@ -61,9 +61,11 @@ vse32.v v8, x1          # m[x1 = 8] = v7
 ADDI x1, x1, 4
 
 # VSLL
-vsll.vv v6, v5, v4     
-vsll.vx v7, v4, x2      
-vsll.vi v8, v4, 2
+ADDI x3, x0, 3
+vadd.vi v9, v0, 2
+vsll.vv v6, v5, v9     
+vsll.vx v7, v4, x3      
+vsll.vi v8, v4, 4
 vse32.v v6, x1          # m[x1 = 0] = v5
 ADDI x1, x1, 4
 vse32.v v7, x1          # m[x1 = 4] = v6
@@ -72,9 +74,9 @@ vse32.v v8, x1          # m[x1 = 8] = v7
 ADDI x1, x1, 4
 
 # VSRL
-vsrl.vv v6, v5, v4     
-vsrl.vx v7, v4, x2      
-vsrl.vi v8, v4, 2
+vsrl.vv v6, v5, v9    
+vsrl.vx v7, v4, x3      
+vsrl.vi v8, v4, 1
 vse32.v v6, x1          # m[x1 = 0] = v5
 ADDI x1, x1, 4
 vse32.v v7, x1          # m[x1 = 4] = v6
@@ -83,8 +85,8 @@ vse32.v v8, x1          # m[x1 = 8] = v7
 ADDI x1, x1, 4
 
 # VSRA
-vsra.vv v6, v5, v4     
-vsra.vx v7, v4, x2      
+vsra.vv v6, v5, v9     
+vsra.vx v7, v4, x3      
 vsra.vi v8, v4, 2
 vse32.v v6, x1          # m[x1 = 0] = v5
 ADDI x1, x1, 4

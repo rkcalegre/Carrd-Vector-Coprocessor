@@ -123,7 +123,7 @@ instruction_dict= {
     'VSLIDE1DOWN.VX':{'args':4,  'syntax':'r-r-r',                   'format':'V',  'opcode':87,    'funct3': 6,      'funct7': 31 },
     'VMIN.VX':       {'args':4,  'syntax':'r-r-r',                   'format':'V',  'opcode':87,    'funct3': 4,      'funct7': 11 },
     'VMIN.VV':       {'args':4,  'syntax':'r-r-r',                   'format':'V',  'opcode':87,    'funct3': 0,      'funct7': 11 },
-    'VMIN.VX':       {'args':4,  'syntax':'r-r-r',                   'format':'V',  'opcode':87,    'funct3': 4,      'funct7': 15 },
+    'VMAX.VX':       {'args':4,  'syntax':'r-r-r',                   'format':'V',  'opcode':87,    'funct3': 4,      'funct7': 15 },
     'VMAX.VV':       {'args':4,  'syntax':'r-r-r',                   'format':'V',  'opcode':87,    'funct3': 0,      'funct7': 15 },
     'VREDSUM.VS':    {'args':4,  'syntax':'r-r-r',                   'format':'V',  'opcode':87,    'funct3': 2,      'funct7': 1 },
     'VREDMAX.VS':    {'args':4,  'syntax':'r-r-r',                   'format':'V',  'opcode':87,    'funct3': 2,      'funct7': 15 },

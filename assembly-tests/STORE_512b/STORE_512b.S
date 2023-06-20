@@ -9,8 +9,12 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
+C.NOP
+C.NOP
 vadd.vi v10, v0, 10
 ADDI x1, x0, 0          # x1 = 0
+C.NOP
+C.NOP
 C.NOP
 C.NOP
 C.NOP
