@@ -131,13 +131,18 @@ module v_alu #(
     endgenerate
     */
 
-    always @(posedge clk) begin
+/*     always @(posedge clk) begin
         if (!nrst) begin
             res_tmp = 0;
         end
     end
-
+ */
     always_comb begin
+
+        if (!nrst) begin
+            res_tmp = 0;
+        end
+
         case (op_instr)
             VALU_VADD: begin
                 // VADD

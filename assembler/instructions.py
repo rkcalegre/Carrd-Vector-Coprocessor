@@ -127,8 +127,10 @@ instruction_dict= {
     'VMAX.VV':       {'args':4,  'syntax':'r-r-r',                   'format':'V',  'opcode':87,    'funct3': 0,      'funct7': 15 },
     'VREDSUM.VS':    {'args':4,  'syntax':'r-r-r',                   'format':'V',  'opcode':87,    'funct3': 2,      'funct7': 1 },
     'VREDMAX.VS':    {'args':4,  'syntax':'r-r-r',                   'format':'V',  'opcode':87,    'funct3': 2,      'funct7': 15 },
-    'VMV.X.S':       {'args':2,  'syntax':'r-v',                     'format':'V',  'opcode':87,    'funct3': 6,      'funct7': 32 },
-    'VMV.S.X':       {'args':2,  'syntax':'v-r',                     'format':'V',  'opcode':87,    'funct3': 2,      'funct7': 32 },
+    'VMV.X.S':       {'args':2,  'syntax':'r-v',                     'format':'V',  'opcode':87,    'funct3':2,      'funct7': 32 },
+    'VMV.S.X':       {'args':2,  'syntax':'v-r',                     'format':'V',  'opcode':87,    'funct3': 6,      'funct7': 32 },
+    #'VMV.X.S':       {'args':2,  'syntax':'r-v',                     'format':'V',  'opcode':87,    'funct3': 6,      'funct7': 32 },
+    #'VMV.S.X':       {'args':2,  'syntax':'v-r',                     'format':'V',  'opcode':87,    'funct3': 2,      'funct7': 32 },
     'VLE8.V':        {'args':3,  'syntax':'r-r',                     'format':'V',  'opcode':7,     'funct3':0,       'funct7': 1},
     'VSE8.V':        {'args':3,  'syntax':'r-r',                     'format':'V',  'opcode':39,    'funct3':0,       'funct7': 1},
     'VLE16.V':       {'args':3,  'syntax':'r-r',                     'format':'V',  'opcode':7,     'funct3':5,       'funct7': 1},
@@ -136,7 +138,13 @@ instruction_dict= {
     'VLE32.V':       {'args':3,  'syntax':'r-r',                     'format':'V',  'opcode':7,     'funct3':6,       'funct7': 1},
     'VSE32.V':       {'args':3,  'syntax':'r-r',                     'format':'V',  'opcode':39,    'funct3':6,       'funct7': 1},
     'VSETVLI':       {'args':3,  'syntax':'r-r-i',    'i_width':11,  'format':'VI', 'opcode':87,    'funct3': 7 },
-    'VSETIVLI':      {'args':3,  'syntax':'r-r-i',    'i_width':10,  'format':'VII', 'opcode':87,   'funct3': 7 }
+    'VSETIVLI':      {'args':3,  'syntax':'r-r-i',    'i_width':10,  'format':'VII','opcode':87,    'funct3': 7 },
+    'VLSE8.V':       {'args':4,  'syntax':'r-r-r',                   'format':'V',  'opcode':7,     'funct3':0,        'funct7': 5},
+    'VSSE8.V':       {'args':4,  'syntax':'r-r-r',                   'format':'V',  'opcode':39,    'funct3':0,        'funct7': 5},
+    'VLSE16.V':      {'args':4,  'syntax':'r-r-r',                   'format':'V',  'opcode':7,     'funct3':5,        'funct7': 5},
+    'VSSE16.V':      {'args':4,  'syntax':'r-r-r',                   'format':'V',  'opcode':39,    'funct3':5,        'funct7': 5},
+    'VLSE32.V':      {'args':4,  'syntax':'r-r-r',                   'format':'V',  'opcode':7,     'funct3':6,        'funct7': 5},
+    'VSSE32.V':      {'args':4,  'syntax':'r-r-r',                   'format':'V',  'opcode':39,    'funct3':6,        'funct7': 5}
     
 # =============================================================================
 #     'VLSE8.V': {'args':4,  'syntax':'r-r-r', 'format':'V', 'opcode':7, 'funct3':0, 'funct7': 5},

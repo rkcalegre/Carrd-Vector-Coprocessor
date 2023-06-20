@@ -46,6 +46,7 @@ module v_loadu(
 	logic [2:0] l_cc = 0;
 	logic [127:0] temp;
 	logic [511:0] hold;
+    logic [5:0] l_stride_cc = 0;
 
 
     assign data_addr0 = (l_cc == 0)? {l_addr,2'b0} : (l_cc == 3'd1)? {l_addr + 32'd1, 2'b0} : (l_cc == 3'd2)? {l_addr + 32'd2, 2'b0} : (l_cc == 3'd3)? {l_addr + 32'd3, 2'b0} : {l_addr,2'b0};
@@ -84,6 +85,8 @@ module v_loadu(
                         hold = (lmul == 3'b010)? loaddata: (lmul==3'b001) ? {{256{1'b0}},{loaddata[511:256]}}: {{384{1'b0}},{loaddata[511:384]}};
 
                         case (stride)
+                            6'd0: loaddata = hold;
+                            6'd1: loaddata = hold;
                             6'd2: loaddata = {256'd0, hold[503:496],hold[487:480],hold[471:464],hold[455:448],hold[439:432],hold[423:416],hold[407:400],hold[391:384],hold[375:368],hold[359:352],hold[343:336],hold[327:320],hold[311:304],hold[295:288],hold[279:272],hold[263:256],hold[247:240],hold[231:224],hold[215:208],hold[199:192],hold[183:176],hold[167:160],hold[151:144],hold[135:128],hold[119:112],hold[103:96],hold[87:80],hold[71:64],hold[55:48],hold[39:32],hold[23:16],hold[7:0]};
                             6'd3: loaddata = {336'd0, hold[511:504],hold[487:480],hold[463:456],hold[439:432],hold[415:408],hold[391:384],hold[367:360],hold[343:336],hold[319:312],hold[295:288],hold[271:264],hold[247:240],hold[223:216],hold[199:192],hold[175:168],hold[151:144],hold[127:120],hold[103:96],hold[79:72],hold[55:48],hold[31:24],hold[7:0]};
                             6'd4: loaddata = {384'd0, hold[487:480],hold[455:448],hold[423:416],hold[391:384],hold[359:352],hold[327:320],hold[295:288],hold[263:256],hold[231:224],hold[199:192],hold[167:160],hold[135:128],hold[103:96],hold[71:64],hold[39:32],hold[7:0]};
@@ -146,7 +149,7 @@ module v_loadu(
                             6'd61: loaddata = {496'd0, hold[495:488],hold[7:0]};
                             6'd62: loaddata = {496'd0, hold[503:496],hold[7:0]};
                             6'd63: loaddata = {496'd0, hold[511:504],hold[7:0]};
-                            default: loaddata = hold;
+                            default: loaddata = {504'd0, hold[7:0]};
                         endcase
                     end else begin
                         temp ={{l_data_in3},{l_data_in2},{l_data_in1},{l_data_in0}};
@@ -163,6 +166,8 @@ module v_loadu(
                         hold = (lmul == 3'b010)? loaddata: (lmul==3'b001) ? {{256{1'b0}},{loaddata[511:256]}}: {{384{1'b0}},{loaddata[511:384]}};
 
                         case (stride)
+                            6'd0: loaddata = hold;
+                            6'd1: loaddata = hold;
                             6'd2: loaddata = {256'd0, hold[495:480],hold[463:448],hold[431:416],hold[399:384],hold[367:352],hold[335:320],hold[303:288],hold[271:256],hold[239:224],hold[207:192],hold[175:160],hold[143:128],hold[111:96],hold[79:64],hold[47:32],hold[15:0]};
                             6'd3: loaddata = {336'd0, hold[495:480],hold[447:432],hold[399:384],hold[351:336],hold[303:288],hold[255:240],hold[207:192],hold[159:144],hold[111:96],hold[63:48],hold[15:0]};
                             6'd4: loaddata = {384'd0, hold[463:448],hold[399:384],hold[335:320],hold[271:256],hold[207:192],hold[143:128],hold[79:64],hold[15:0]};
@@ -193,7 +198,7 @@ module v_loadu(
                             6'd29: loaddata = {480'd0, hold[479:464],hold[15:0]};
                             6'd30: loaddata = {480'd0, hold[495:480],hold[15:0]};
                             6'd31: loaddata = {480'd0, hold[511:496],hold[15:0]};
-                            default: loaddata = hold;
+                            default: loaddata = {496'd0, hold[15:0]};
                         endcase
                     end else begin
                         temp ={{l_data_in3},{l_data_in2},{l_data_in1},{l_data_in0}};
@@ -208,30 +213,37 @@ module v_loadu(
                     if (l_cc==max_reg) begin
 
                         hold = (lmul == 3'b010)? loaddata: (lmul==3'b001) ? {{256{1'b0}},{loaddata[511:256]}}: {{384{1'b0}},{loaddata[511:384]}};
+                        if (l_stride_cc == stride) begin
+                            
+                        end else begin
+                            case (stride)
+                                6'd0: loaddata = hold;
+                                6'd1: loaddata = hold;
+                                6'd2: loaddata = {256'd0, hold[479:448],hold[415:384],hold[351:320],hold[287:256],hold[223:192],hold[159:128],hold[95:64],hold[31:0]};
+                                6'd3: loaddata = {320'd0, hold[511:480],hold[415:384],hold[319:288],hold[223:192],hold[127:96],hold[31:0]};
+                                6'd4: loaddata = {384'd0, hold[415:384],hold[287:256],hold[159:128],hold[31:0]};
+                                6'd5: loaddata = {384'd0, hold[511:480],hold[351:320],hold[191:160],hold[31:0]};
+                                6'd6: loaddata = {416'd0, hold[415:384],hold[223:192],hold[31:0]};
+                                6'd7: loaddata = {416'd0, hold[479:448],hold[255:224],hold[31:0]};
+                                6'd8: loaddata = {448'd0, hold[287:256],hold[31:0]};
+                                6'd9: loaddata = {448'd0, hold[319:288],hold[31:0]};
+                                6'd10: loaddata = {448'd0, hold[351:320],hold[31:0]};
+                                6'd11: loaddata = {448'd0, hold[383:352],hold[31:0]};
+                                6'd12: loaddata = {448'd0, hold[415:384],hold[31:0]};
+                                6'd13: loaddata = {448'd0, hold[447:416],hold[31:0]};
+                                6'd14: loaddata = {448'd0, hold[479:448],hold[31:0]};
+                                6'd15: loaddata = {448'd0, hold[511:480],hold[31:0]};
+                                default: loaddata = {480'd0, hold[31:0]};
+                            endcase
 
-                        case (stride)
-                            6'd2: loaddata = {256'd0, hold[479:448],hold[415:384],hold[351:320],hold[287:256],hold[223:192],hold[159:128],hold[95:64],hold[31:0]};
-                            6'd3: loaddata = {320'd0, hold[511:480],hold[415:384],hold[319:288],hold[223:192],hold[127:96],hold[31:0]};
-                            6'd4: loaddata = {384'd0, hold[415:384],hold[287:256],hold[159:128],hold[31:0]};
-                            6'd5: loaddata = {384'd0, hold[511:480],hold[351:320],hold[191:160],hold[31:0]};
-                            6'd6: loaddata = {416'd0, hold[415:384],hold[223:192],hold[31:0]};
-                            6'd7: loaddata = {416'd0, hold[479:448],hold[255:224],hold[31:0]};
-                            6'd8: loaddata = {448'd0, hold[287:256],hold[31:0]};
-                            6'd9: loaddata = {448'd0, hold[319:288],hold[31:0]};
-                            6'd10: loaddata = {448'd0, hold[351:320],hold[31:0]};
-                            6'd11: loaddata = {448'd0, hold[383:352],hold[31:0]};
-                            6'd12: loaddata = {448'd0, hold[415:384],hold[31:0]};
-                            6'd13: loaddata = {448'd0, hold[447:416],hold[31:0]};
-                            6'd14: loaddata = {448'd0, hold[479:448],hold[31:0]};
-                            6'd15: loaddata = {448'd0, hold[511:480],hold[31:0]};
-                            default: loaddata = hold;
-                        endcase
+                            l_stride_cc = l_stride_cc + 1;
+                        end
                     end else begin
                         temp ={{l_data_in3},{l_data_in2},{l_data_in1},{l_data_in0}};
                         loaddata = (l_cc==0) ? {{temp},{384'd0}}:{{temp},{hold[383:0]}};
                         hold = (l_cc==max_reg) ? loaddata:loaddata>>128;                        
+                        l_cc = l_cc + 3'd1;   
                     end
-                    l_cc = l_cc + 3'd1;   
 
                 end 
             endcase 
@@ -243,7 +255,8 @@ module v_loadu(
             else if (l_cc>max_reg && (v_lsu_op inside {[4:6]}) ) begin
                     l_done = 1'b1;
                     l_cc = 0;
-                    l_data_out = (lmul == 3'b010)? loaddata: (lmul==3'b001) ? {{256{1'b0}},{loaddata[511:256]}}: {{384{1'b0}},{loaddata[511:384]}};
+                    l_stride_cc = 0;
+                    l_data_out = loaddata;
                 end
             else l_done =1'b0;
         end else l_done =1'b0;

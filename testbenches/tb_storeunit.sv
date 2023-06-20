@@ -75,10 +75,10 @@ module tb_storeunit();
         join_none
 
         //==== Testing VSE32 instruction ====//
-        store_op = 4'd12;
+        store_op = 4'd9;
         lmul = 3'd0;            // lmul = 1
         vsew = 3'b010;          // vsew = 32b
-        stride = 5'd2;              // unit-strided
+        stride = 5'd0;          // unit-strided
         address = 14'd0;
         data_test_0 = {32'h33333333 , 32'h22222222 , 32'h11111111 , 32'h00000000};
         data_test_1 = {32'h77777777 , 32'h66666666 , 32'h55555555 , 32'h44444444};
@@ -86,6 +86,14 @@ module tb_storeunit();
         data_test_3 = {32'hffffffff , 32'heeeeeeee , 32'hdddddddd , 32'hcccccccc};
         data = { data_test_3 , data_test_2 , data_test_1 , data_test_0};
 
+        #60;
+        lmul = 3'd1;
+
+        #120;
+        lmul = 3'd2;
+        
+        #300 $finish;
+        /*
         $display("TESTING VSE32, LMUL = 1");
         $strobe("data_addr0: %X", data_addr0);
         $strobe("data_addr1: %X", data_addr1);

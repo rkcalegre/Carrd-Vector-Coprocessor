@@ -22,7 +22,7 @@
 `timescale 1ns / 1ps
 `include "constants.vh"
 
-module carrd_integrated#(
+module carrd_integrated #(
 	/**
 	LANES Configuration
 	0 - 4 lanes
@@ -66,6 +66,77 @@ module carrd_integrated#(
 
     /*=== INSTANTIATING MODULES ===*/
 
+    //Clock Gating
+
+    //Functional Unit Opcodes
+    logic [3:0] v_alu_op;
+    logic [3:0] v_lsu_op;
+    logic is_mul;    
+    logic [2:0] v_sldu_op;
+    logic [2:0] v_red_op;
+
+    logic vred_clk_en;
+    logic valu_clk_en;
+    logic vmul_clk_en;
+    logic vsldu_clk_en;
+
+    assign vred_clk_en = (v_red_op != 0)? 1: 0;
+    assign valu_clk_en = (v_alu_op != 0)? 1: 0;
+    assign vmul_clk_en = (is_mul != 0)? 1: 0;
+    assign vsldu_clk_en = (v_sldu_op != 0)? 1: 0;
+    assign vlsu_clk_en = (v_lsu_op != 0)? 1: 0;
+
+    logic vred_clk;
+    logic valu_clk;
+    logic vmul_clk;
+    logic vsldu_clk;
+    logic vlsu_clk;
+
+    BUFGCE #(
+       //.CE_TYPE("ASYNC"),
+	   .SIM_DEVICE("7SERIES")
+    ) en_vred (
+	 	.I(clk),
+	 	.CE(vred_clk_en),
+	 	.O(vred_clk)
+	);
+
+    BUFGCE #(
+       //.CE_TYPE("ASYNC"),
+	   .SIM_DEVICE("7SERIES")
+    ) en_valu (
+	 	.I(clk),
+	 	.CE(valu_clk_en),
+	 	.O(valu_clk)
+	);
+
+    BUFGCE #(
+       //.CE_TYPE("ASYNC"),
+	   .SIM_DEVICE("7SERIES")
+    ) en_vmul (
+	 	.I(clk),
+	 	.CE(vmul_clk_en),
+	 	.O(vmul_clk)
+	);
+
+    BUFGCE #(
+       //.CE_TYPE("ASYNC"),
+	   .SIM_DEVICE("7SERIES")
+    ) en_vsldu (
+	 	.I(clk),
+	 	.CE(vsldu_clk_en),
+	 	.O(vsldu_clk)
+	);
+
+    BUFGCE #(
+       //.CE_TYPE("ASYNC"),
+	   .SIM_DEVICE("7SERIES")
+    ) en_vlsu (
+	 	.I(clk),
+	 	.CE(vlsu_clk_en),
+	 	.O(vlsu_clk)
+	);
+
     //Vector Register File
 	logic reg_wr_en, el_wr_en;
     logic [1:0] lanes = LANES;
@@ -95,11 +166,11 @@ module carrd_integrated#(
     assign x_reg_data2 = xreg_out2;
     assign v_rd_xreg_addr1 = vs1;
     assign v_rd_xreg_addr2 = vs2;
-    //assign v_data_addr = // address of data mem
+/*     //assign v_data_addr = // address of data mem
     assign data_addr0 = (is_vltype)? l_data_addr0 : s_data_addr0;
     assign data_addr1 = (is_vltype)? l_data_addr1 : s_data_addr1;
     assign data_addr2 = (is_vltype)? l_data_addr2 : s_data_addr2;
-    assign data_addr3 = (is_vltype)? l_data_addr3 : s_data_addr3;
+    assign data_addr3 = (is_vltype)? l_data_addr3 : s_data_addr3; */
 
     logic [4:0] vsA, vsB;
     assign vsA = (is_vstype) ? vs3 : vs1;
@@ -162,12 +233,6 @@ module carrd_integrated#(
 
 
     //Decoder Block
-    logic [3:0] v_alu_op;
-    logic [3:0] v_lsu_op;
-    logic is_mul;    
-    logic [2:0] v_sldu_op;
-    logic [2:0] v_red_op;
-
     logic [2:0] v_op_sel_A;
     logic [1:0] v_op_sel_B;
     logic [1:0] v_sel_dest;
@@ -225,7 +290,7 @@ module carrd_integrated#(
 
 
     v_red vred(
-        .clk(clk),
+        .clk(vred_clk),
         .nrst(nrst),
         .op_instr(v_red_op),
         .sew(vsew),
@@ -244,7 +309,7 @@ module carrd_integrated#(
     logic done_vsldu;
     
 	v_sldu vsldu(
-	.clk(clk),
+	.clk(vsldu_clk),
 	.nrst(nrst),
 	.op_instr(v_sldu_op),
 	.sew(vsew),
@@ -304,13 +369,13 @@ module carrd_integrated#(
     */
     // Store Unit
     logic done_store;
-    logic [`DATAMEM_BITS-1:0] s_data_addr0;
+/*     logic [`DATAMEM_BITS-1:0] s_data_addr0;
     logic [`DATAMEM_BITS-1:0] s_data_addr1;
     logic [`DATAMEM_BITS-1:0] s_data_addr2;
     logic [`DATAMEM_BITS-1:0] s_data_addr3;
 
     v_storeunit vstoreunit (
-        .clk(clk),
+        .clk(vlsu_clk),
         .nrst(nrst),
         .store_op(v_lsu_op),
         .lmul(vlmul),
@@ -327,14 +392,14 @@ module carrd_integrated#(
         .data_out1(v_store_data_1),
         .data_out2(v_store_data_2),
         .data_out3(v_store_data_3),
-        .done(done_store),
-        .dm_v_write(dm_v_write)
-    );  
+        .dm_v_write(dm_v_write),
+        .done(done_store)
+    );   */
 
     
     logic [511:0] result_vloadu;
     logic done_vloadu;
-    logic [`DATAMEM_BITS-1:0] l_data_addr0;
+/*     logic [`DATAMEM_BITS-1:0] l_data_addr0;
     logic [`DATAMEM_BITS-1:0] l_data_addr1;
     logic [`DATAMEM_BITS-1:0] l_data_addr2;
     logic [`DATAMEM_BITS-1:0] l_data_addr3;
@@ -356,7 +421,36 @@ module carrd_integrated#(
     .data_addr3(l_data_addr3),  
     .l_data_out(result_vloadu),
     .l_done(done_vloadu)
-    );
+    ); */
+
+    //VLSU
+
+    v_lsu vlsu(
+    .clk(vlsu_clk), 
+    .nrst(nrst),
+    .l_data_in0(v_load_data_0), 
+    .l_data_in1(v_load_data_1),
+    .l_data_in2(v_load_data_2),
+    .l_data_in3(v_load_data_3),
+    .v_lsu_op(v_lsu_op),
+    .lmul(vlmul),
+    .vsew(vsew),
+    .stride(xreg_out2), 
+    .address(xreg_out1), 
+    .l_data_out(result_vloadu),
+    .l_done(done_vloadu),
+    .s_data(op_C),                 // DOUBLE CHECK
+    .data_addr0(data_addr0),
+    .data_addr1(data_addr1),
+    .data_addr2(data_addr2),
+    .data_addr3(data_addr3),
+    .data_out0(v_store_data_0),
+    .data_out1(v_store_data_1),
+    .data_out2(v_store_data_2),
+    .data_out3(v_store_data_3),
+    .dm_v_write(dm_v_write),
+    .s_done(done_store)
+    );    
 
     //V_LANES
     logic done_valu;
@@ -372,7 +466,9 @@ module carrd_integrated#(
     logic [127:0] result_vmul_4;
 
     v_lanes vlanes(
-        .clk(clk),
+        //.clk(clk),
+        .valu_clk(valu_clk),
+        .vmul_clk(vmul_clk),
         .nrst(nrst),
         .op_instr_alu(v_alu_op),
         .is_mul(is_mul),

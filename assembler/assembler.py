@@ -462,10 +462,16 @@ def assemble(instructions, labels, instmem):
         
         #new
         elif (encoding_type=='V'):
-            d = int(temp_inst[1])
-            s1 = int(temp_inst[2])
-            s2 = int(temp_inst[3])
-            mask=0
+            if ((opcode==39 or opcode==7) and args==4):
+                d = int(temp_inst[1])
+                s1 = int(temp_inst[3])
+                s2 = int(temp_inst[2])
+                mask=0
+            else:    
+                d = int(temp_inst[1])
+                s1 = int(temp_inst[2])
+                s2 = int(temp_inst[3])
+                mask=0
             #if (len(temp_inst)==5 /*or (len(temp_inst)==4 and (opcode==39 or opcode==7))): #if there is masking
             if (temp_inst[-1]=='v0.t'): #if there is masking
                 mask=1

@@ -27,6 +27,7 @@ module storeblock(
 
 	// Vector Coprocessor Datapath Signals //
 	input is_vstype,
+	input dm_v_write,
 
 	// Input Data from VLSU
 	input [31:0] data_in_0,
@@ -249,7 +250,7 @@ module storeblock(
 		endcase
 		*/
 
-		if (is_vstype) begin
+		if (dm_v_write) begin
 			dm_write_0 <= (bank_sel == 2'b00) ? 4'b1111 : 4'b0000;
 			dm_write_1 <= (bank_sel1 == 2'b01) ? 4'b1111 : 4'b0000;
 			dm_write_2 <= (bank_sel2 == 2'b10) ? 4'b1111 : 4'b0000;

@@ -23,6 +23,7 @@ module v_decoder #(
     input [31:0] instr,
     input logic v_reg_wr_en,
     input logic x_reg_wr_en,
+    input logic s_done,
 
     output logic is_vconfig,
     output logic [3:0] v_alu_op,
@@ -112,7 +113,7 @@ module v_decoder #(
                                     ((opcode == OPC_RTYPE) && (funct3 == OPI_VX || funct3 == OPI_VI) && funct6 == VSLIDEDOWN) ? VSLDU_VSLIDEDOWN :
                                     ((opcode == OPC_RTYPE) && funct3 == OPM_VX && funct6 == VSLIDE1UP)                        ? VSLDU_VSLIDE1UP :
                                     ((opcode == OPC_RTYPE) && funct3 == OPM_VX && funct6 == VSLIDE1DOWN)                      ? VSLDU_VSLIDE1DOWN :
-                                    ((opcode == OPC_RTYPE) && funct3 == OPI_VX && funct6 == VMOVE)                              ? VSLDU_VMV : OFF;
+                                    ((opcode == OPC_RTYPE) && (funct3 == OPM_VV || funct3 == OPM_VX) && (funct6 == VMOVE || funct6 == VMOVE1)) ? VSLDU_VMV : OFF;
 
                 // v_lsu_op
                 // 1 - vle8
@@ -184,8 +185,14 @@ module v_decoder #(
                         v_red_op = 0;
                         v_sldu_op = 0;
                         v_lsu_op = 0;
+                        is_vltype = 0;
+                        is_vstype = 0;
                     end
                 endcase
+                if (s_done) begin
+                    v_lsu_op = 0;
+                    is_vstype = 0;
+                end
             end
         endcase        
     end
