@@ -8,6 +8,6 @@
 
 #v0 = 0
 
-vadd.vi v4, v0, 6        # v4 = 6
-vadd.vi v8, v0, 7        # v8 = 7
-vsub.vv v12, v8, v4      # v12 = v8 - v4 = 1
+vadd.vi v4, v0, 7        # v4 = 7
+vadd.vi v8, v0, 6        # v8 = 6
+vsub.vv v12, v8, v4      # v12 = v4 - v8 = 1
