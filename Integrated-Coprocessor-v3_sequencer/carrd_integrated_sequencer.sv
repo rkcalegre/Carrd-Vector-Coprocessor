@@ -37,6 +37,7 @@ module carrd_integrated#(
     // Memory Data buses from Vector Coprocessor
 	output is_vstype,
 	output is_vltype,
+    output dm_v_write,
     output [`DATAMEM_BITS-1:0] data_addr0,
     output [`DATAMEM_BITS-1:0] data_addr1,
     output [`DATAMEM_BITS-1:0] data_addr2,
@@ -508,7 +509,7 @@ module carrd_integrated#(
     logic [`DATAMEM_BITS-1:0] s_data_addr2;
     logic [`DATAMEM_BITS-1:0] s_data_addr3;
 
-//modify
+/* //modify
     v_storeunit vstoreunit (
         .clk(clk),
         .nrst(nrst),
@@ -528,7 +529,7 @@ module carrd_integrated#(
         .data_out2(v_store_data_2),
         .data_out3(v_store_data_3),
         .done(done_store)
-    );  
+    );   */
 
     
     logic [511:0] result_vloadu;
@@ -538,7 +539,7 @@ module carrd_integrated#(
     logic [`DATAMEM_BITS-1:0] l_data_addr2;
     logic [`DATAMEM_BITS-1:0] l_data_addr3;
 
-    v_loadu vloadu(
+/*     v_loadu vloadu(
     .clk(clk),
     .l_data_in0(v_load_data_0), 
     .l_data_in1(v_load_data_1),
@@ -555,7 +556,36 @@ module carrd_integrated#(
     .data_addr3(l_data_addr3),  
     .l_data_out(result_vloadu),
     .l_done(done_vloadu)
-    );
+    ); */
+
+    //VLSU
+
+    v_lsu vlsu(
+    .clk(vlsu_clk), 
+    .nrst(nrst),
+    .l_data_in0(v_load_data_0), 
+    .l_data_in1(v_load_data_1),
+    .l_data_in2(v_load_data_2),
+    .l_data_in3(v_load_data_3),
+    .v_lsu_op(v_lsu_op),
+    .lmul(vlmul),
+    .vsew(vsew),
+    .stride(xreg_out2), 
+    .address(xreg_out1), 
+    .l_data_out(result_vloadu),
+    .l_done(done_vloadu),
+    .s_data(op_C),                 // DOUBLE CHECK
+    .data_addr0(data_addr0),
+    .data_addr1(data_addr1),
+    .data_addr2(data_addr2),
+    .data_addr3(data_addr3),
+    .data_out0(v_store_data_0),
+    .data_out1(v_store_data_1),
+    .data_out2(v_store_data_2),
+    .data_out3(v_store_data_3),
+    .dm_v_write(dm_v_write),
+    .s_done(done_store)
+    );    
 
     //V_LANES
     logic done_valu;

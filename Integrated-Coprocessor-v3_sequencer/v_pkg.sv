@@ -67,7 +67,8 @@ typedef enum logic [5:0] {
     VSLIDEDOWN = 6'b001111        
 } funct6_sldu;
 
-typedef enum logic [5:0] {        
+typedef enum logic [5:0] { 
+    VMOVE1        = 6'b010000,
     VSLIDE1UP    = 6'b001110,      
     VSLIDE1DOWN  = 6'b001111
 } funct6_sldu1;
