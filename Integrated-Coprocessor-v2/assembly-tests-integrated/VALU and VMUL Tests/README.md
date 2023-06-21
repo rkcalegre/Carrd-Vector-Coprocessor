@@ -1,2 +1,0 @@
-This folder consists of functionality tests for Functional units VALU and VMUL without hazard handling.
-Separate assembly files and reference output files are used for each vector register grouping LMUL = 0, 1, and 2.
