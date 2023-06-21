@@ -1,0 +1,1 @@
+This directory contains the assembly test files for each functional unit. Each folder contains the assembly files, the memory files and the intial content of the memory. The answer key is also provided. 
