@@ -46,7 +46,11 @@ C.NOP
 
 # VSUB
 vsub.vv v6, v4, v5      # v4 = 15
+C.NOP
+C.NOP
 vsub.vx v7, v4, x2      # v5 = 20
+C.NOP
+C.NOP
 vse32.v v6, x1          # m[x1 = 12] = v5
 ADDI x1, x1, 4
 C.NOP
