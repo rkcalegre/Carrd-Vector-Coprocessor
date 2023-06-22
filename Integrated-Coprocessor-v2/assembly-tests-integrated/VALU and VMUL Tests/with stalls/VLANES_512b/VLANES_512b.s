@@ -179,12 +179,12 @@ C.NOP
 
 # VSLL
 ADDI x3, x0, 3
-vadd.vi v9, v0, 2
+vadd.vi v24, v0, 2
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vsll.vv v12, v8, v9
+vsll.vv v12, v8, v24
 C.NOP
 C.NOP
 C.NOP
@@ -219,7 +219,7 @@ C.NOP
 C.NOP
 
 # VSRL
-vsrl.vv v12, v8, v9
+vsrl.vv v12, v8, v24
 C.NOP
 C.NOP
 C.NOP
@@ -254,7 +254,7 @@ C.NOP
 C.NOP
 
 # VSRA
-vsra.vv v12, v8, v9
+vsra.vv v12, v8, v24
 C.NOP
 C.NOP
 C.NOP
