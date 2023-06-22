@@ -83,7 +83,7 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-vand.vi v8, v4, 1
+vand.vi v20, v4, 1
 C.NOP
 C.NOP
 C.NOP
@@ -100,7 +100,7 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v8, x1          # m[x1 = 8] = v16
+vse32.v v20, x1          # m[x1 = 8] = v16
 ADDI x1, x1, 16
 C.NOP
 C.NOP
@@ -118,7 +118,7 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-vor.vi v8, v4, 0
+vor.vi v20, v4, 0
 C.NOP
 C.NOP
 C.NOP
@@ -135,7 +135,7 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v8, x1          # m[x1 = 8] = v16
+vse32.v v20, x1          # m[x1 = 8] = v16
 ADDI x1, x1, 16
 C.NOP
 C.NOP
@@ -153,7 +153,7 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-vxor.vi v8, v4, 0
+vxor.vi v20, v4, 0
 C.NOP
 C.NOP
 C.NOP
@@ -170,7 +170,7 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v8, x1          # m[x1 = 8] = v16
+vse32.v v20, x1          # m[x1 = 8] = v16
 ADDI x1, x1, 16
 C.NOP
 C.NOP
@@ -194,7 +194,7 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-vsll.vi v8, v4, 4
+vsll.vi v20, v4, 4
 C.NOP
 C.NOP
 C.NOP
@@ -211,7 +211,7 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v8, x1          # m[x1 = 8] = v16
+vse32.v v20, x1          # m[x1 = 8] = v16
 ADDI x1, x1, 16
 C.NOP
 C.NOP
@@ -229,7 +229,7 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-vsrl.vi v8, v4, 1
+vsrl.vi v20, v4, 1
 C.NOP
 C.NOP
 C.NOP
@@ -246,7 +246,7 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v8, x1          # m[x1 = 8] = v16
+vse32.v v20, x1          # m[x1 = 8] = v16
 ADDI x1, x1, 16
 C.NOP
 C.NOP
@@ -264,7 +264,7 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-vsra.vi v8, v4, 2
+vsra.vi v20, v4, 2
 C.NOP
 C.NOP
 C.NOP
@@ -281,7 +281,7 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v8, x1          # m[x1 = 8] = v16
+vse32.v v20, x1          # m[x1 = 8] = v16
 ADDI x1, x1, 16
 C.NOP
 C.NOP
@@ -335,12 +335,12 @@ C.NOP
 ################### VMUL TESTS ######################
 # VMUL
 ADDI x3, x0, 2
-vadd.vi v8, v0, 2
+vadd.vi v20, v0, 2
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vmul.vv v12, v8, v8
+vmul.vv v12, v8, v20
 C.NOP
 C.NOP
 C.NOP
