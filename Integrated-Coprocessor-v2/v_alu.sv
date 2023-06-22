@@ -183,9 +183,9 @@ module v_alu #(
                 // VSLL
                 // logical shift x[rd] = x[rs1] << x[rs2]
                 case (vsew)
-                    VSEW_8: res_tmp = {op_A[31:24] << op_B[31:24], op_A[23:16] << op_B[23:16], op_A[15:8] << op_B[15:8], op_A[7:0] << op_B[7:0]};
-                    VSEW_16: res_tmp = {op_A[31:16] << op_B[31:16], op_A[15:0] << op_B[15:0]};
-                    VSEW_32: res_tmp = op_A << op_B;
+                    VSEW_8: res_tmp = {op_B[31:24] << op_A[31:24], op_B[23:16] << op_A[23:16], op_B[15:8] << op_A[15:8], op_B[7:0] << op_A[7:0]};
+                    VSEW_16: res_tmp = {op_B[31:16] << op_A[31:16], op_B[15:0] << op_A[15:0]};
+                    VSEW_32: res_tmp = op_B << op_A;
                     default: ;
                 endcase
             end
@@ -193,9 +193,9 @@ module v_alu #(
                 // VSRL
                 //x[rd] = x[rs1] >>u x[rs2]
                 case (vsew)
-                    VSEW_8: res_tmp = {op_A[31:24] >> op_B[31:24], op_A[23:16] >> op_B[23:16], op_A[15:8] >> op_B[15:8], op_A[7:0] >> op_B[7:0]};
-                    VSEW_16: res_tmp = {op_A[31:16] >> op_B[31:16], op_A[15:0] >> op_B[15:0]};
-                    VSEW_32: res_tmp = op_A >> op_B;
+                    VSEW_8: res_tmp = {op_B[31:24] >> op_A[31:24], op_B[23:16] >> op_A[23:16], op_B[15:8] >> op_A[15:8], op_B[7:0] >> op_A[7:0]};
+                    VSEW_16: res_tmp = {op_B[31:16] >> op_A[31:16], op_B[15:0] >> op_A[15:0]};
+                    VSEW_32: res_tmp = op_B >> op_A;
                     default: ;
                 endcase
             end
@@ -203,9 +203,9 @@ module v_alu #(
                 // VSRA 
                 //x[rd] = x[rs1] >>s x[rs2]
                 case (vsew)
-                    VSEW_8: res_tmp = {op_A[31:24] >>> op_B[31:24], op_A[23:16] >>> op_B[23:16], op_A[15:8] >>> op_B[15:8], op_A[7:0] >>> op_B[7:0]};
-                    VSEW_16: res_tmp = {op_A[31:16] >>> op_B[31:16], op_A[15:0] >>> op_B[15:0]};
-                    VSEW_32: res_tmp = op_A >>> op_B;
+                    VSEW_8: res_tmp = {op_B[31:24] >>> op_A[31:24], op_B[23:16] >>> op_A[23:16], op_B[15:8] >>> op_A[15:8], op_B[7:0] >>> op_A[7:0]};
+                    VSEW_16: res_tmp = {op_B[31:16] >>> op_A[31:16], op_B[15:0] >>> op_A[15:0]};
+                    VSEW_32: res_tmp = op_B >>> op_A;
                     default: ;
                 endcase
             end
@@ -247,7 +247,7 @@ module v_alu #(
                 // result = (vm.mask)? op_A : op_B; // vm.mask still does not exist: TBA  
             end
             */
-            default: res_tmp = 0;
+            default: ;
         endcase
     end
 
