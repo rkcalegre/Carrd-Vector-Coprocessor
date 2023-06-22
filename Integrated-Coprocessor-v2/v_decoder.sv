@@ -40,7 +40,7 @@ module v_decoder #(
     output logic [4:0] vd,
     output logic [4:0] vs1,
     output logic [4:0] vs2,
-    output logic [4:0] vs3,
+    //output logic [4:0] vs3,
     output logic [4:0] imm,
     output logic [10:0] zimm
 
@@ -170,9 +170,10 @@ module v_decoder #(
                                     (opcode == OP_SET)                                                                                                                               ? 2'b10 : OFF;
                 
                 vd = instr[11:7];
+                //vs1 = (is_vstype == 1) ? instr[11:7] : instr[19:15];
                 vs1 = instr[19:15];
                 vs2 = instr[24:20];
-                vs3 = instr[11:7];
+                //vs3 = instr[11:7];
                 imm = instr[19:15];
                 zimm = instr[30:20];
             end
