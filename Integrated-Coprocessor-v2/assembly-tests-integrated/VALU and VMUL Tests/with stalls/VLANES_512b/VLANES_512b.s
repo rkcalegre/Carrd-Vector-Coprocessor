@@ -14,34 +14,34 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-vadd.vi v5, v0, 20      # v5 = 20
+vadd.vi v8, v0, 20      # v8 = 20
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vadd.vv v6, v5, v4      # v6 = v4 + v5
+vadd.vv v12, v8, v4      # v12 = v4 + v8
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vadd.vx v7, v4, x2      # v7 = v4 + x2
+vadd.vx v16, v4, x2      # v16 = v4 + x2
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v5, x1          # m[x1 = 0] = v5 = 20
+vse32.v v8, x1          # m[x1 = 0] = v8 = 20
 ADDI x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v6, x1          # m[x1 = 4] = v6 = 35
+vse32.v v12, x1          # m[x1 = 4] = v12 = 35
 ADDI x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v7, x1          # m[x1 = 8] = v7 = 25
+vse32.v v16, x1          # m[x1 = 8] = v16 = 25
 ADDI x1, x1, 16
 C.NOP
 C.NOP
@@ -49,23 +49,23 @@ C.NOP
 C.NOP
 
 # VSUB
-vsub.vv v6, v4, v5      # v4 = 15
+vsub.vv v12, v4, v8      # v4 = 15
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vsub.vx v7, v4, x2      # v5 = 20
+vsub.vx v16, v4, x2      # v8 = 20
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v6, x1          # m[x1 = 12] = v5
+vse32.v v12, x1          # m[x1 = 12] = v8
 ADDI x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v7, x1          # m[x1 = 16] = v6
+vse32.v v16, x1          # m[x1 = 16] = v12
 ADDI x1, x1, 16
 C.NOP
 C.NOP
@@ -73,12 +73,12 @@ C.NOP
 C.NOP
 
 # VAND
-vand.vv v6, v5, v4
+vand.vv v12, v8, v4
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vand.vx v7, v4, x2
+vand.vx v16, v4, x2
 C.NOP
 C.NOP
 C.NOP
@@ -88,19 +88,19 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v6, x1          # m[x1 = 0] = v5
+vse32.v v12, x1          # m[x1 = 0] = v8
 ADDI x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v7, x1          # m[x1 = 4] = v6
+vse32.v v16, x1          # m[x1 = 4] = v12
 ADDI x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v8, x1          # m[x1 = 8] = v7
+vse32.v v8, x1          # m[x1 = 8] = v16
 ADDI x1, x1, 16
 C.NOP
 C.NOP
@@ -108,12 +108,12 @@ C.NOP
 C.NOP
 
 # VOR
-vor.vv v6, v5, v4
+vor.vv v12, v8, v4
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vor.vx v7, v4, x2 
+vor.vx v16, v4, x2 
 C.NOP
 C.NOP
 C.NOP
@@ -123,19 +123,19 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v6, x1          # m[x1 = 0] = v5
+vse32.v v12, x1          # m[x1 = 0] = v8
 ADDI x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v7, x1          # m[x1 = 4] = v6
+vse32.v v16, x1          # m[x1 = 4] = v12
 ADDI x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v8, x1          # m[x1 = 8] = v7
+vse32.v v8, x1          # m[x1 = 8] = v16
 ADDI x1, x1, 16
 C.NOP
 C.NOP
@@ -143,12 +143,12 @@ C.NOP
 C.NOP
 
 # VXOR
-vxor.vv v6, v5, v4
+vxor.vv v12, v8, v4
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vxor.vx v7, v4, x2
+vxor.vx v16, v4, x2
 C.NOP
 C.NOP
 C.NOP
@@ -158,19 +158,19 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v6, x1          # m[x1 = 0] = v5
+vse32.v v12, x1          # m[x1 = 0] = v8
 ADDI x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v7, x1          # m[x1 = 4] = v6
+vse32.v v16, x1          # m[x1 = 4] = v12
 ADDI x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v8, x1          # m[x1 = 8] = v7
+vse32.v v8, x1          # m[x1 = 8] = v16
 ADDI x1, x1, 16
 C.NOP
 C.NOP
@@ -184,12 +184,12 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-vsll.vv v6, v5, v9
+vsll.vv v12, v8, v9
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vsll.vx v7, v4, x3
+vsll.vx v16, v4, x3
 C.NOP
 C.NOP
 C.NOP
@@ -199,19 +199,19 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v6, x1          # m[x1 = 0] = v5
+vse32.v v12, x1          # m[x1 = 0] = v8
 ADDI x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v7, x1          # m[x1 = 4] = v6
+vse32.v v16, x1          # m[x1 = 4] = v12
 ADDI x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v8, x1          # m[x1 = 8] = v7
+vse32.v v8, x1          # m[x1 = 8] = v16
 ADDI x1, x1, 16
 C.NOP
 C.NOP
@@ -219,12 +219,12 @@ C.NOP
 C.NOP
 
 # VSRL
-vsrl.vv v6, v5, v9
+vsrl.vv v12, v8, v9
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vsrl.vx v7, v4, x3
+vsrl.vx v16, v4, x3
 C.NOP
 C.NOP
 C.NOP
@@ -234,19 +234,19 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v6, x1          # m[x1 = 0] = v5
+vse32.v v12, x1          # m[x1 = 0] = v8
 ADDI x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v7, x1          # m[x1 = 4] = v6
+vse32.v v16, x1          # m[x1 = 4] = v12
 ADDI x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v8, x1          # m[x1 = 8] = v7
+vse32.v v8, x1          # m[x1 = 8] = v16
 ADDI x1, x1, 16
 C.NOP
 C.NOP
@@ -254,12 +254,12 @@ C.NOP
 C.NOP
 
 # VSRA
-vsra.vv v6, v5, v9
+vsra.vv v12, v8, v9
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vsra.vx v7, v4, x3
+vsra.vx v16, v4, x3
 C.NOP
 C.NOP
 C.NOP
@@ -269,19 +269,19 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v6, x1          # m[x1 = 0] = v5
+vse32.v v12, x1          # m[x1 = 0] = v8
 ADDI x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v7, x1          # m[x1 = 4] = v6
+vse32.v v16, x1          # m[x1 = 4] = v12
 ADDI x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v8, x1          # m[x1 = 8] = v7
+vse32.v v8, x1          # m[x1 = 8] = v16
 ADDI x1, x1, 16
 C.NOP
 C.NOP
@@ -289,19 +289,19 @@ C.NOP
 C.NOP
 
 # VMIN
-vmin.vv v6, v5, v4
+vmin.vv v12, v8, v4
 C.NOP
 C.NOP
-vmin.vx v7, v4, x2
+vmin.vx v16, v4, x2
 C.NOP
 C.NOP
-vse32.v v6, x1          # m[x1 = 0] = v5
+vse32.v v12, x1          # m[x1 = 0] = v8
 ADDI x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v7, x1          # m[x1 = 4] = v6
+vse32.v v16, x1          # m[x1 = 4] = v12
 ADDI x1, x1, 16
 C.NOP
 C.NOP
@@ -309,23 +309,23 @@ C.NOP
 C.NOP
 
 # VMAX
-vmax.vv v6, v5, v4
+vmax.vv v12, v8, v4
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vmax.vx v7, v4, x2
+vmax.vx v16, v4, x2
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v6, x1          # m[x1 = 0] = v5
+vse32.v v12, x1          # m[x1 = 0] = v8
 ADDI x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v7, x1          # m[x1 = 4] = v6
+vse32.v v16, x1          # m[x1 = 4] = v12
 ADDI x1, x1, 16
 C.NOP
 C.NOP
@@ -340,23 +340,23 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-vmul.vv v6, v5, v8
+vmul.vv v12, v8, v8
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vmul.vx v7, v4, x3
+vmul.vx v16, v4, x3
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v6, x1          # m[x1 = 0] = v5
+vse32.v v12, x1          # m[x1 = 0] = v8
 ADDI x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vse32.v v7, x1          # m[x1 = 4] = v6
+vse32.v v16, x1          # m[x1 = 4] = v12
 ADDI x1, x1, 16
 C.NOP
 C.NOP
