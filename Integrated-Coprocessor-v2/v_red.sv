@@ -24,6 +24,13 @@ assign vec_regB ={vec_regB_4,vec_regB_3,vec_regB_2,vec_regB_1};
 logic [255:0] current_reg;
 logic [2:0] step;
 
+always@(negedge clk)begin
+    if (done) begin
+        step = 0;
+        done = 0;        
+    end
+end
+
 always@(posedge clk)
 if (!nrst)
 begin
