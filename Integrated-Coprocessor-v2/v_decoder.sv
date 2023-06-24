@@ -25,6 +25,7 @@ module v_decoder #(
     input logic x_reg_wr_en,
     input logic s_done,
 
+    output logic is_vector,
     output logic is_vconfig,
     output logic [3:0] v_alu_op,
     output logic is_mul,
@@ -62,6 +63,7 @@ module v_decoder #(
     always_comb begin : vDecoder
 
         is_vconfig = (opcode == OPC_RTYPE && funct3 == OP_SET);
+        is_vector = (opcode == (OPC_RTYPE || OPC_LTYPE || OPC_RTYPE));
         
         case (opcode)
             OPC_RTYPE, OPC_LTYPE, OPC_STYPE: begin
