@@ -256,6 +256,7 @@ module carrd_integrated#(
         .src_B(vs2),
         .dest(vd),
         .imm(imm),
+        .is_vconfig(is_vconfig),
         .is_vector(is_vector),
         .is_vstype(is_vstype),
         .v_alu_op(v_alu_op),
