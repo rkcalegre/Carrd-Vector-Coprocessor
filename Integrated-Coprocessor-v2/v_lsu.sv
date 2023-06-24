@@ -314,10 +314,31 @@ module v_lsu #(
         if (v_lsu_op == 0) s_cc = 0;
     end
 
+    always@(posedge clk) begin
+        if (v_lsu_op inside {[1:6]}) begin
+            l_cc = l_cc + 1'b1;                 // counter that keeps track of execution time
+        end else begin
+            l_cc = 0;                           // reset counter when done     
+        end
+    end
+
+    always@(v_lsu_op) begin
+        if (!(v_lsu_op inside {[1:6]})) begin
+            l_done = 0;                 // counter that keeps track of execution time
+            l_cc = 0;                           // reset counter when done     
+        end
+    end
+
+
+
     always @(negedge s_tmp_done) begin
         s_done = 1'b1;
         s_cc = 0;
     end
+
+/*     always @(negedge l_done) begin
+        l_cc = 0;
+    end */
 
     always @(posedge dm_v_write) begin
         s_done = 0'b0;
@@ -381,26 +402,30 @@ module v_lsu #(
     */
 
     always @(posedge clk) begin
+    //always_comb begin
         //temp_data = {l_data_in3,l_data_in2, l_data_in1, l_data_in0};
         if (v_lsu_op inside {[1:6]}) begin
             case (v_lsu_op)
                 VLSU_VLE8: begin
                     temp ={{l_data_in3},{l_data_in2},{l_data_in1},{l_data_in0}};
                     loaddata = (l_cc==0) ? {{temp},{384'd0}}:{{temp},{hold[383:0]}};
-                    hold = (l_cc==max_reg) ? loaddata:loaddata>>128;
-                    l_cc = l_cc + 3'd1;
+                    //hold = (l_cc==max_reg) ? loaddata:loaddata>>128;
+                    hold = loaddata>>128;
+                    //l_cc = l_cc + 3'd1;
                 end
                 VLSU_VLE16: begin
                     temp ={{l_data_in3},{l_data_in2},{l_data_in1},{l_data_in0}};
                     loaddata = (l_cc==0) ? {{temp},{384'd0}}:{{temp},{hold[383:0]}};
-                    hold = (l_cc==max_reg) ? loaddata:loaddata>>128;
-                    l_cc = l_cc + 3'd1;
+                    //hold = (l_cc==max_reg) ? loaddata:loaddata>>128;
+                    hold = loaddata>>128;
+                    //l_cc = l_cc + 3'd1;
                 end
                 VLSU_VLE32: begin
                     temp ={{l_data_in3},{l_data_in2},{l_data_in1},{l_data_in0}};
                     loaddata = (l_cc==0) ? {{temp},{384'd0}}:{{temp},{hold[383:0]}};
-                    hold = (l_cc==max_reg) ? loaddata:loaddata>>128;
-                    l_cc = l_cc + 3'd1;
+                    //hold = (l_cc==max_reg) ? loaddata:loaddata>>128;
+                    hold = loaddata>>128;
+                    //l_cc = l_cc + 3'd1;
                 end
                 VLSU_VLSE8: begin
 
@@ -480,7 +505,7 @@ module v_lsu #(
                         loaddata = (l_cc==0) ? {{temp},{384'd0}}:{{temp},{hold[383:0]}};
                         hold = (l_cc==max_reg) ? loaddata:loaddata>>128;                        
                     end
-                    l_cc = l_cc + 3'd1;  
+                    //l_cc = l_cc + 3'd1;  
 
                 end
                 VLSU_VLSE16: begin
@@ -529,7 +554,7 @@ module v_lsu #(
                         loaddata = (l_cc==0) ? {{temp},{384'd0}}:{{temp},{hold[383:0]}};
                         hold = (l_cc==max_reg) ? loaddata:loaddata>>128;                        
                     end
-                    l_cc = l_cc + 3'd1;  
+                    //l_cc = l_cc + 3'd1;  
               
                 end
                 VLSU_VLSE32: begin
@@ -566,19 +591,18 @@ module v_lsu #(
                         temp ={{l_data_in3},{l_data_in2},{l_data_in1},{l_data_in0}};
                         loaddata = (l_cc==0) ? {{temp},{384'd0}}:{{temp},{hold[383:0]}};
                         hold = (l_cc==max_reg) ? loaddata:loaddata>>128;                        
-                        l_cc = l_cc + 3'd1;   
                     end
-
+                    //l_cc = l_cc + 3'd1;   
                 end 
             endcase 
-            if (l_cc>=max_reg && (v_lsu_op inside {[1:3]}) ) begin
+            if (l_cc>max_reg && (v_lsu_op inside {[1:3]}) ) begin
                     l_done = 1'b1;
-                    l_cc = 0;
+                    //l_cc = 0;
                     l_data_out = (lmul == 3'b010)? loaddata: (lmul==3'b001) ? {{256{1'b0}},{loaddata[511:256]}}: {{384{1'b0}},{loaddata[511:384]}};
                 end
             else if (l_cc>max_reg && (v_lsu_op inside {[4:6]}) ) begin
                     l_done = 1'b1;
-                    l_cc = 0;
+                    //l_cc = 0;
                     l_stride_cc = 0;
                     l_data_out = loaddata;
                 end

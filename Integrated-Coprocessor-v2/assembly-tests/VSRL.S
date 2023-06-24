@@ -11,4 +11,4 @@
 vadd.vi v28, v0, 8         # v28 = 8 ('b1000)
 vadd.vi v29, v0, 1         # v29 = 1
 vsrl.vi v30, v28, 2         # v30 = 8 >> 2 = 'b0010
-vsrl.vv v31, v29, v28       # v31 = 1 >> 8
+vsrl.vv v31, v28, v29       # v31 = 1 >> 8

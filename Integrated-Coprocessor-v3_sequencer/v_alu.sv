@@ -242,7 +242,7 @@ module v_alu #(
                 // result = (vm.mask)? op_A : op_B; // vm.mask still does not exist: TBA  
             end
             */
-            default: res_tmp = 0;
+            default:;
         endcase
     end
 

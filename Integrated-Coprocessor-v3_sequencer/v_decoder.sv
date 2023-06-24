@@ -39,7 +39,6 @@ module v_decoder #(
     output logic [4:0] vd,
     output logic [4:0] vs1,
     output logic [4:0] vs2,
-    output logic [4:0] vs3,
     output logic [4:0] imm,
     output logic [10:0] zimm
 
@@ -167,13 +166,23 @@ module v_decoder #(
                 // 2 - select rd
                 v_sel_dest = (opcode == OPC_LTYPE || opcode == OPC_STYPE || funct3 == OPI_VV || funct3 == OPI_VX || funct3 == OPI_VI || funct3 == OPM_VV || funct3 == OPM_VX) ? 2'b01 :
                                     (opcode == OP_SET)                                                                                                                               ? 2'b10 : OFF;
-                
+              /* orig  
                 vd = instr[11:7];
                 vs1 = instr[19:15];
                 vs2 = instr[24:20];
                 vs3 = instr[11:7];
                 imm = instr[19:15];
                 zimm = instr[30:20];
+            */
+            // celine
+                vd = instr[11:7];
+                vs1 = is_vstype == 1 ? instr[11:7]: instr[19:15];
+                vs2 = instr[24:20];
+                //vs3 = instr[11:7];
+                imm = instr[19:15];
+                zimm = instr[30:20];
+            
+
             end
             default: begin
                 case (v_reg_wr_en || x_reg_wr_en)

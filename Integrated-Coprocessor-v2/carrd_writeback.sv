@@ -94,7 +94,7 @@ module carrd_writeback(
             v_reg_wr_en = (v_sel_dest==1 && done_vred==1) ? 1: 0;
             x_reg_wr_en = (v_sel_dest==2 && done_vred==1) ? 1: 0;
             //el_wr_en = 1;
-            reg_wr_data = result_vred;
+            reg_wr_data = {{96{1'b0}}, result_vred};
             reg_wr_data_2 = {128{1'b0}};
             reg_wr_data_3 = {128{1'b0}};
             reg_wr_data_4 = {128{1'b0}};   

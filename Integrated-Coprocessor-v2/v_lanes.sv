@@ -233,7 +233,7 @@ module v_lanes(
                             2'd2: begin
                                 result_valu_4[((i-4)*32)+32-1:(i-4)*32] = result_valu_32b_2[((i-4)*32)+32-1:(i-4)*32];                        
                             end
-                            default: result_valu_4[((i-4)*32)+32-1:(i-4)*32] = 0;
+                            default: result_valu_2[((i-4)*32)+32-1:(i-4)*32] = 0;
                     endcase    
                     case (step_mul)
                             2'd0: begin
@@ -242,11 +242,13 @@ module v_lanes(
                             2'd2: begin
                                 result_vmul_4[((i-4)*32)+32-1:(i-4)*32] = result_vmul_32b_2[((i-4)*32)+32-1:(i-4)*32];
                             end
-                            default: result_valu_4[((i-4)*32)+32-1:(i-4)*32] = 0;
+                            default: result_valu_2[((i-4)*32)+32-1:(i-4)*32] = 0;
                     endcase                    
-                end                 
+                end else begin
+                    result_valu_2[((i-4)*32)+32-1:(i-4)*32] = 0;
+                    result_vmul_2[((i-4)*32)+32-1:(i-4)*32] = 0;
+                end                  
             end
-
         end
 
     endgenerate
