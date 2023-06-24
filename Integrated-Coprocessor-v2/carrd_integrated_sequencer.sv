@@ -268,7 +268,7 @@ module carrd_integrated#(
         .done_mul(done_vmul),
         .done_red(done_vred),
         .done_sldu(done_vsldu),        
-        .done_lsu(done_lsu),  
+        .done_lsu(done_vloadu),  
         .result_vlsu(result_vloadu),
         .result_valu_1(result_valu_1),
         .result_valu_2(result_valu_2),
@@ -539,7 +539,6 @@ module carrd_integrated#(
     
     logic [511:0] result_vloadu;
     logic done_vloadu;
-    logic done_lsu;
     logic [`DATAMEM_BITS-1:0] l_data_addr0;
     logic [`DATAMEM_BITS-1:0] l_data_addr1;
     logic [`DATAMEM_BITS-1:0] l_data_addr2;
@@ -590,8 +589,7 @@ module carrd_integrated#(
     .data_out2(v_store_data_2),
     .data_out3(v_store_data_3),
     .dm_v_write(dm_v_write),
-    .s_done(done_store),
-    .done_lsu(done_lsu)
+    .s_done(done_store)
     );    
 
     //V_LANES
