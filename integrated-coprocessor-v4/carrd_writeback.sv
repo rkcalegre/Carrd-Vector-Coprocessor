@@ -51,6 +51,7 @@ module carrd_writeback(
     output logic v_reg_wr_en,
     output logic x_reg_wr_en,
     output logic el_wr_en,
+    output logic [4:0]   el_wr_addr,
     output logic [127:0]  reg_wr_data,
     output logic [127:0]  reg_wr_data_2,
     output logic [127:0]  reg_wr_data_3,
@@ -62,6 +63,7 @@ module carrd_writeback(
     always @(clk) begin
 
         if (v_alu_op inside {[1:10]}) begin
+            el_wr_en = 0;
             v_reg_wr_en = (v_sel_dest==1 && done_valu==1) ? 1: 0;
             x_reg_wr_en = (v_sel_dest==2 && done_valu==1) ? 1: 0;
             reg_wr_data = result_valu_1;
@@ -69,6 +71,7 @@ module carrd_writeback(
             reg_wr_data_3 = result_valu_3;
             reg_wr_data_4 = result_valu_4;             
         end else if (is_mul == 1) begin
+            el_wr_en = 0;
             v_reg_wr_en = (v_sel_dest==1 && done_vmul==1) ? 1: 0;
             x_reg_wr_en = (v_sel_dest==2 && done_vmul==1) ? 1: 0;
             reg_wr_data = result_vmul_1;
@@ -77,6 +80,7 @@ module carrd_writeback(
             reg_wr_data_4 = result_vmul_4;              
         //end else if (is_load == 1) begin
         end else if (v_lsu_op inside {[1:6]}) begin
+            el_wr_en = 0;
             v_reg_wr_en = (v_sel_dest==1 && done_vload==1) ? 1: 0;
             x_reg_wr_en = (v_sel_dest==2 && done_vload==1) ? 1: 0;
             reg_wr_data = result_vload[127:0];
@@ -84,6 +88,7 @@ module carrd_writeback(
             reg_wr_data_3 = result_vload[383:256];
             reg_wr_data_4 = result_vload[511:384];  
         end else if (v_sldu_op inside {[1:5]}) begin
+            el_wr_en = 0;
             v_reg_wr_en = (v_sel_dest==1 && done_vsldu==1) ? 1: 0;
             x_reg_wr_en = (v_sel_dest==2 && done_vsldu==1) ? 1: 0;
             reg_wr_data = result_vsldu[127:0];
@@ -91,14 +96,17 @@ module carrd_writeback(
             reg_wr_data_3 = result_vsldu[383:256];
             reg_wr_data_4 = result_vsldu[511:384];  
         end else if (v_red_op inside {[1:2]}) begin
-            v_reg_wr_en = (v_sel_dest==1 && done_vred==1) ? 1: 0;
+            //v_reg_wr_en = (v_sel_dest==1 && done_vred==1) ? 1: 0;
+            el_wr_en = (v_sel_dest==1 && done_vred==1) ? 1: 0;
+            el_wr_addr = 0;
+            v_reg_wr_en = 0;
             x_reg_wr_en = (v_sel_dest==2 && done_vred==1) ? 1: 0;
-            //el_wr_en = 1;
             reg_wr_data = {{96{1'b0}}, result_vred};
             reg_wr_data_2 = {128{1'b0}};
             reg_wr_data_3 = {128{1'b0}};
             reg_wr_data_4 = {128{1'b0}};   
         end else begin
+            el_wr_en = 0;
             v_reg_wr_en = 0;
             x_reg_wr_en = 0;            
         end
