@@ -239,13 +239,14 @@ module carrd_integrated #(
     logic [2:0] v_op_sel_A;
     logic [1:0] v_op_sel_B;
     logic [1:0] v_sel_dest;
-
+    logic is_vector;    
 
 	v_decoder vdecoder(
     .instr(instr),
     .v_reg_wr_en(reg_wr_en || el_wr_en), //from writeback
     .x_reg_wr_en(x_reg_wr_en),
     .s_done(done_store),
+    .is_vector(is_vector),
     .is_vconfig(is_vconfig),
     .v_alu_op(v_alu_op),
     .is_mul(is_mul),
@@ -274,13 +275,13 @@ module carrd_integrated #(
                   (v_op_sel_A == 3)? {{507{1'b0}}, imm} : 0 ;  //immediate data
     */
     assign op_A = (v_op_sel_A == 1)? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,reg_data_out_v1_a}:  //vs1 data
-                  (v_op_sel_A == 2)? {{480{1'b0}}, x_reg_data1}:  //rs1 data
+                  (v_op_sel_A == 2)? ((vsew == 3'b000) ? { 64{x_reg_data1[7:0]} } : (vsew == 3'b001) ? { 32{x_reg_data1[15:0]} } : (vsew == 3'b010) ? { 16{x_reg_data1} }: 0):  //rs1 data
                   (v_op_sel_A == 3)? ((vsew == 3'b000) ? { 64{{3{1'b0}} , imm} } : (vsew == 3'b001) ? { 32{{11{1'b0}} , imm} } : (vsew == 3'b010) ? { 16{{27{1'b0}} , imm} } : 0) : 0 ;  //immediate data
 
     logic [511:0] op_B;
 
     assign op_B = (v_op_sel_B == 1)? {reg_data_out_v2_d,reg_data_out_v2_c,reg_data_out_v2_b,reg_data_out_v2_a}:  //vs2 data
-                  (v_op_sel_B == 2)? {{480{1'b0}}, x_reg_data2}:  //rs2 data
+                  (v_op_sel_B == 2)? ((vsew == 3'b000) ? { 64{x_reg_data2[7:0]} } : (vsew == 3'b001) ? { 32{x_reg_data2[15:0]} } : (vsew == 3'b010) ? { 16{x_reg_data2} }: 0):  //rs2 data
                   (v_op_sel_B == 3)? {{501{1'b0}}, zimm} : 0 ;  //zimmediate data
 
     logic [511:0] op_C;
