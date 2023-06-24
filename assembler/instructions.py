@@ -127,6 +127,8 @@ instruction_dict= {
     'VMAX.VV':       {'args':4,  'syntax':'r-r-r',                   'format':'V',  'opcode':87,    'funct3': 0,      'funct7': 15 },
     'VREDSUM.VS':    {'args':4,  'syntax':'r-r-r',                   'format':'V',  'opcode':87,    'funct3': 2,      'funct7': 1 },
     'VREDMAX.VS':    {'args':4,  'syntax':'r-r-r',                   'format':'V',  'opcode':87,    'funct3': 2,      'funct7': 15 },
+#    'VREDSUM.VV':    {'args':4,  'syntax':'r-r-r',                   'format':'V',  'opcode':87,    'funct3': 2,      'funct7': 1 },
+#    'VREDMAX.VV':    {'args':4,  'syntax':'r-r-r',                   'format':'V',  'opcode':87,    'funct3': 2,      'funct7': 15 },
     'VMV.X.S':       {'args':2,  'syntax':'r-v',                     'format':'V',  'opcode':87,    'funct3':2,      'funct7': 32 },
     'VMV.S.X':       {'args':2,  'syntax':'v-r',                     'format':'V',  'opcode':87,    'funct3': 6,      'funct7': 32 },
     #'VMV.X.S':       {'args':2,  'syntax':'r-v',                     'format':'V',  'opcode':87,    'funct3': 6,      'funct7': 32 },

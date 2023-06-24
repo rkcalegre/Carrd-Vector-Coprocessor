@@ -28,7 +28,7 @@ set_property top top [current_fileset]
 #Import IP Modules
 add_files	{./vivado-ip-src/blk_mem_gen_protocol/blk_mem_gen_protocol.xci	\
 			./vivado-ip-src/clk_wiz_0/clk_wiz_0.xci 						\
-			./vivado-ip-src/div_gen_unsigned/div_gen_unsigned.xci 			\
+			./vivado-ip-src/div_gen_unsigned.xcix 			\
 			./vivado-ip-src/div_gen_signed/div_gen_signed.xci 				\
 			./vivado-ip-src/mult_gen_hsu/mult_gen_hsu.xci  					\
 			./vivado-ip-src/mult_gen_signed/mult_gen_signed.xci 			\

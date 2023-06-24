@@ -1,3 +1,3 @@
-vadd.vi v16, v16, 21        # v16 = 5'b10101 //imm
-vadd.vi v20, v20, 31        # v20 = 5'b11111 //imm
-vand.vv v24, v20, v16       # v24 = v20 && v16 = 5'b10101 = 21
+vadd.vi v4, v0, 15               # v4 = 31 = 5'b11111
+vadd.vi v8, v0, 4                # V8 = 4 = 3'b100
+vredmax.vs v12, v8, v4           # v12 =  31 = 5'b11111

@@ -105,9 +105,9 @@ module carrd_integrated#(
     //assign which fi
 //    assign dest = optype_wb == 3'b001 ? Fi_alu: optype_wb == 3'b010 ? Fi_mul: optype_wb == 3'b011 ? Fi_lsu: optype_wb == 3'b100 ? Fi_sldu: optype_wb == 3'b101 ? Fi_alu: 0;
     //assign which fj
-    assign src_A = optype == 3'b001 ? Fj_alu: optype_wb == 3'b010 ? Fj_mul: optype_wb == 3'b011 ? Fj_lsu: optype_wb == 3'b100 ? Fj_sldu: optype_wb == 3'b101 ? Fj_alu: 0;
+    assign src_A = optype == 3'b001 ? Fj_alu: optype == 3'b010 ? Fj_mul: optype == 3'b011 ? Fj_lsu: optype == 3'b100 ? Fj_sldu: optype == 3'b101 ? Fj_red: 0;
     //assign which fk
-    assign src_B = optype == 3'b001 ? Fk_alu: optype_wb == 3'b010 ? Fk_mul: optype_wb == 3'b011 ? Fk_lsu: optype_wb == 3'b100 ? Fk_sldu: optype_wb == 3'b101 ? Fk_alu: 0;
+    assign src_B = optype == 3'b001 ? Fk_alu: optype == 3'b010 ? Fk_mul: optype == 3'b011 ? Fk_lsu: optype == 3'b100 ? Fk_sldu: optype == 3'b101 ? Fk_red: 0;
    
 
 	v_regfile vregfile(
