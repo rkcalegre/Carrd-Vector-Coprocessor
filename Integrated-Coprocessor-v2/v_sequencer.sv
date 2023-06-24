@@ -417,10 +417,10 @@ module v_sequencer #(
                 busy_mul = mul_exec[29:27 != 0] ? 1: 0;
             end
             3'b011: begin
-                reg_wr_data <= result_vlsu;
-                reg_wr_data_2 <= result_vlsu;
-                reg_wr_data_3 <= result_vlsu;
-                reg_wr_data_4 <= result_vlsu;
+                reg_wr_data <= result_vlsu[127:0];
+                reg_wr_data_2 <= result_vlsu[255:128];
+                reg_wr_data_3 <= result_vlsu[383:256];
+                reg_wr_data_4 <= result_vlsu[511:284];
                 busy_lsu = lsu_exec[29:27 != 0] ? 1: 0;
             end
             3'b100: begin

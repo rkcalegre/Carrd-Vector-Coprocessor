@@ -96,10 +96,10 @@ module carrd_integrated#(
     assign v_rd_xreg_addr1 = vs1;
     assign v_rd_xreg_addr2 = vs2;
     //assign v_data_addr = // address of data mem
-    assign data_addr0 = (is_vltype)? l_data_addr0 : s_data_addr0;
-    assign data_addr1 = (is_vltype)? l_data_addr1 : s_data_addr1;
-    assign data_addr2 = (is_vltype)? l_data_addr2 : s_data_addr2;
-    assign data_addr3 = (is_vltype)? l_data_addr3 : s_data_addr3;
+    //assign data_addr0 = (is_vltype)? l_data_addr0 : s_data_addr0;
+    //assign data_addr1 = (is_vltype)? l_data_addr1 : s_data_addr1;
+    //assign data_addr2 = (is_vltype)? l_data_addr2 : s_data_addr2;
+    //assign data_addr3 = (is_vltype)? l_data_addr3 : s_data_addr3;
 
     logic [4:0] src_A, src_B, dest_wb;
     //assign which fi
@@ -268,7 +268,7 @@ module carrd_integrated#(
         .done_mul(done_vmul),
         .done_red(done_vred),
         .done_sldu(done_vsldu),        
-        .done_lsu(done_vloadu),  
+        .done_lsu(done_lsu),  
         .result_vlsu(result_vloadu),
         .result_valu_1(result_valu_1),
         .result_valu_2(result_valu_2),
@@ -404,7 +404,7 @@ module carrd_integrated#(
                   (Qk_lsu == 3) ? result_vloadu:
                   (Qk_lsu == 4) ? result_vsldu:
                   (Qk_lsu == 5) ? {{480{1'b0}}, result_vred}:
-                  (Qk_lsu == 6)? {{480{1'b0}}, x_reg_data1}:  //rs1 data
+                  (Qk_lsu == 6)? {{480{1'b0}}, x_reg_data2}:  //rs2 data
                   (Qk_lsu == 7)? ((vsew_lsu == 3'b000) ? { 64{{3{1'b0}} , Imm_lsu} } : (vsew_lsu == 3'b001) ? { 32{{11{1'b0}} , Imm_lsu} } : (vsew_lsu == 3'b010) ? { 16{{27{1'b0}} , Imm_lsu} } : 0) :op_B_lsu): op_B_lsu ;  //immediate data
         assign op_B_sldu = (optype == 3'b100)?((Qk_sldu == 0)? {reg_data_out_v2_d,reg_data_out_v2_c,reg_data_out_v2_b,reg_data_out_v2_a}:  //vs1 data
                   (Qk_sldu == 1) ? {result_valu_4, result_valu_3, result_valu_2, result_valu_1}:
@@ -539,6 +539,7 @@ module carrd_integrated#(
     
     logic [511:0] result_vloadu;
     logic done_vloadu;
+    logic done_lsu;
     logic [`DATAMEM_BITS-1:0] l_data_addr0;
     logic [`DATAMEM_BITS-1:0] l_data_addr1;
     logic [`DATAMEM_BITS-1:0] l_data_addr2;
@@ -566,17 +567,17 @@ module carrd_integrated#(
     //VLSU
 
     v_lsu vlsu(
-    .clk(vlsu_clk), 
+    .clk(clk), 
     .nrst(nrst),
     .l_data_in0(v_load_data_0), 
     .l_data_in1(v_load_data_1),
     .l_data_in2(v_load_data_2),
     .l_data_in3(v_load_data_3),
-    .v_lsu_op(v_lsu_op),
-    .lmul(vlmul),
-    .vsew(vsew),
-    .stride(xreg_out2), 
-    .address(xreg_out1), 
+    .v_lsu_op(op_lsu),
+    .lmul(lmul_lsu),
+    .vsew(vsew_lsu),
+    .stride(op_B_lsu[31:0]), 
+    .address(op_A_lsu[31:0]), 
     .l_data_out(result_vloadu),
     .l_done(done_vloadu),
     .s_data(op_C),                 // DOUBLE CHECK
@@ -589,7 +590,8 @@ module carrd_integrated#(
     .data_out2(v_store_data_2),
     .data_out3(v_store_data_3),
     .dm_v_write(dm_v_write),
-    .s_done(done_store)
+    .s_done(done_store),
+    .done_lsu(done_lsu)
     );    
 
     //V_LANES

@@ -152,7 +152,7 @@ module v_decoder #(
                 // 2 - select rs1 
                 // 3 - select immediate
 
-                v_op_sel_A = (funct3 == OPI_VV || funct3 == OPM_VV)                                                                   ? 2'b01 :
+                v_op_sel_A = ((funct3 == OPI_VV || funct3 == OPM_VV) && !(opcode == OPC_LTYPE || opcode == OPC_STYPE))                                                                   ? 2'b01 :
                                     (funct3 == OPI_VX || funct3 == OPM_VX || funct3 == OP_SET || opcode == OPC_LTYPE || opcode == OPC_STYPE) ? 2'b10 :
                                     (funct3 == OPI_VI)                                                                                       ? 2'b11 : OFF;
 

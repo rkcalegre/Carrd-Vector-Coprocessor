@@ -6,9 +6,16 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-ADDI x8, x0, 0
 vle32.v v4, x8
+C.NOP
+C.NOP
+C.NOP
+C.NOP
 vle16.v v8, x8
+C.NOP
+C.NOP
+C.NOP
+C.NOP
 vle8.v v12, x8
 C.NOP
 C.NOP

@@ -47,7 +47,9 @@ module v_lsu #(
     output logic [`DATAMEM_WIDTH-1:0] data_out2,
     output logic [`DATAMEM_WIDTH-1:0] data_out3,
     output logic dm_v_write,
-    output logic s_done
+    output logic s_done,
+
+    output logic done_lsu
 );
 
     import v_pkg::*;
@@ -71,6 +73,7 @@ module v_lsu #(
     assign exe_cc = (v_lsu_op inside {[7:9]}) ? num_reg : (v_lsu_op inside {[10:12]}) ? ((stride inside {2,6,10,14}) ? num_reg*2*strided_cc : (stride inside {3,5,7,9,11,13,15}) ? num_reg*1*strided_cc : (stride inside {4,8,12,16}) ? num_reg*4*strided_cc : 0) : 0;
     assign s_tmp_done = (v_lsu_op inside {[7:12]} && s_cc == exe_cc-1);
     assign dm_v_write = (v_lsu_op inside {[7:12]});
+    assign done_lsu = (l_done || s_done);
     //assign dm_v_write = ((s_cc > 0 && v_lsu_op inside {[7:12]}));
 
     logic [511:0] temp_data;

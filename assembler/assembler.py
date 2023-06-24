@@ -462,7 +462,7 @@ def assemble(instructions, labels, instmem):
         
         #new
         elif (encoding_type=='V'):
-            if ((opcode==39 or opcode==7)):
+            if ((opcode==39 or opcode==7) and args==4):
                 d = int(temp_inst[1])
                 s1 = int(temp_inst[3])
                 s2 = int(temp_inst[2])
