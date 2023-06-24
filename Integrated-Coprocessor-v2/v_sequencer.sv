@@ -27,7 +27,7 @@ module v_sequencer #(
     input logic [4:0] src_A, src_B, dest, imm,
     input logic [3:0] v_alu_op, v_lsu_op,
     input logic [2:0] v_red_op, v_sldu_op,
-    input logic is_mul, is_vstype, is_vector,
+    input logic is_mul, is_vstype, is_vector, is_vconfig,
     input logic done_alu, done_mul, done_lsu, done_sldu, done_red,
     input logic [127:0] result_valu_1, result_valu_2, result_valu_3, result_valu_4, result_vmul_1, result_vmul_2, result_vmul_3, result_vmul_4, 
     input logic [31:0] result_vred,
@@ -162,7 +162,7 @@ module v_sequencer #(
                 instr_status_table[i] = {IST_ENTRY_BITS{1'b0}};
             end
         end else begin
-            if (fifo_full == 0 && base_instr != 0 && is_vector == 1) begin
+            if (fifo_full == 0 && base_instr != 0 && is_vector == 1 && is_vconfig == 0) begin
             instr_status_table[fifo_count] = {sel_dest, vsew, lmul, sel_op_A, sel_op_B, op, op_instr, src_A, src_B, dest, imm, 3'b001};
             fifo_count = fifo_count + 1;
             end
