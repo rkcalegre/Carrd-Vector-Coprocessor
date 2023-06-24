@@ -167,7 +167,7 @@ module carrd_integrated#(
     //Decoder Block
     logic [3:0] v_alu_op;
     logic [3:0] v_lsu_op;
-    logic is_mul;    
+    logic is_mul, is_vector;    
     logic [2:0] v_sldu_op;
     logic [2:0] v_red_op;
 
@@ -181,6 +181,7 @@ module carrd_integrated#(
     .v_reg_wr_en(reg_wr_en || el_wr_en), //from writeback
     .x_reg_wr_en(x_reg_wr_en),
     .s_done(done_store),
+    .is_vector(is_vector),
     .is_vconfig(is_vconfig),
     .v_alu_op(v_alu_op),
     .is_mul(is_mul),
