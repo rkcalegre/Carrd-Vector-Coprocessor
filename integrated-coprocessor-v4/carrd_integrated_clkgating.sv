@@ -181,10 +181,12 @@ module carrd_integrated #(
         .nrst(nrst),
         .lmul(vlmul),
         .sew(vsew),
-	    .el_wr_en(el_wr_en),
-        .el_wr_addr(el_wr_addr),
-        .el_reg_wr_addr(el_reg_wr_addr),
-        .el_wr_data(el_wr_data),
+	    .el_wr_en(el_wr_en), //signal from v_writeback
+        .el_wr_addr(el_wr_addr), //signal from v_writeback
+        //.el_reg_wr_addr(el_reg_wr_addr),
+        .el_reg_wr_addr(vd),
+        //.el_wr_data(el_wr_data),
+        .el_wr_data(reg_wr_data), //signal from v_writeback
         .reg_wr_en(reg_wr_en),
         .reg_wr_addr(vd),
 	    .reg_wr_data(reg_wr_data), //signal from v_writeback
@@ -241,7 +243,7 @@ module carrd_integrated #(
 
 	v_decoder vdecoder(
     .instr(instr),
-    .v_reg_wr_en(reg_wr_en),
+    .v_reg_wr_en(reg_wr_en || el_wr_en), //from writeback
     .x_reg_wr_en(x_reg_wr_en),
     .s_done(done_store),
     .is_vconfig(is_vconfig),
@@ -527,6 +529,7 @@ module carrd_integrated #(
         .v_reg_wr_en(reg_wr_en),
         .x_reg_wr_en(x_reg_wr_en),
         .el_wr_en(el_wr_en), 
+        .el_wr_addr(el_wr_addr),
         .reg_wr_data(reg_wr_data),
         .reg_wr_data_2(reg_wr_data_2), 
         .reg_wr_data_3(reg_wr_data_3), 

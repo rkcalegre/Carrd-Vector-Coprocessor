@@ -65,6 +65,10 @@ module v_lanes(
 
     bit [2:0] step_alu, step_mul;
 
+    logic [31:0] result_valu_32b_1a;
+
+    assign result_valu_32b_1a = result_valu_32b_1[31:0];
+
     genvar i;
     generate
         for (i = 0; i < 4; i++) begin
@@ -130,7 +134,11 @@ module v_lanes(
             //always @(negedge clk) begin 
                 case (step_alu)
                         2'd0: begin
-                            result_valu_1[(i*32)+32-1:i*32] = result_valu_32b_1[(i*32)+32-1:i*32];
+                            if (i == 0 && (op_instr_alu !=0)) begin
+                                result_valu_1[31:0] = result_valu_32b_1[31:0];
+                            //end else if (i==0) result_valu_1[(i*32)+32-1:i*32] = result_valu_32b_1a;
+                            end else if (i>0 && (op_instr_alu !=0))result_valu_1[(i*32)+32-1:i*32] = result_valu_32b_1[(i*32)+32-1:i*32];
+                            //result_valu_1[(i*32)+32-1:i*32] = result_valu_32b_1[(i*32)+32-1:i*32];
                             if (i == 3 && (op_instr_alu !=0)) begin
                                     // done_valu = (lanes == 2'b00 && lmul==3'b01)? 0: (lanes == 2'b00 && lmul==3'b10)? 0 : (lanes == 2'b01 && lmul==3'b10)? 0: 1; //LMUL==2'b11 returns 1
                                     // step_alu = (lanes == 2'b00 && lmul==3'b01)? 1: (lanes == 2'b00 && lmul==3'b10)? 2'd1 : (lanes == 2'b01 && lmul==3'b10)? 2'd2: 0;                                  
