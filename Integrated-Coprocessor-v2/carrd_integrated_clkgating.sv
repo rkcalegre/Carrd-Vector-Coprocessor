@@ -467,8 +467,8 @@ module carrd_integrated #(
 
     v_lanes vlanes(
         //.clk(clk),
-        .valu_clk(valu_clk),
-        .vmul_clk(vmul_clk),
+        .valu_clk(clk),
+        .vmul_clk(clk),
         .nrst(nrst),
         .op_instr_alu(v_alu_op),
         .is_mul(is_mul),

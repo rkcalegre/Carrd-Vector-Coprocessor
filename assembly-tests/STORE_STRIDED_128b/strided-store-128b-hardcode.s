@@ -1,5 +1,5 @@
 ADDI x5, x0, 16         # x5 = 16
-vsetivli x20, x5, 1     # 8-bit elements 256-bit vector
+vsetivli x20, x5, 0     # 8-bit elements 128-bit vector
 ADDI x5, x5, 16
 ADDI x1, x0, 0          # store address: x1 = 0
 ADDI x2, x0, 2          # stride/looper: x2 = 2
@@ -16,18 +16,90 @@ C.NOP
 C.NOP
 # stride = 2
 vsse32.v v4, x1, x2   
+ADDI x1, x1, 8      # change depending on lmul (128/32 * stride)
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vsse16.v v8, x1, x2
+ADDI x1, x1, 16     # change depending on lmul (lmul/vsew * stride)
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vsse8.v v4, x1, x2
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+ADDI x1, x1, 32     # change depending on lmul
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+ADDI x2, x2, 1         # stride++
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+# stride = 3
+vsse32.v v4, x1, x2   
+ADDI x1, x1, 12      # change depending on lmul (128/32 * stride)
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vsse16.v v8, x1, x2
+ADDI x1, x1, 24     # change depending on lmul (lmul/vsew * stride)
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vsse8.v v4, x1, x2
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+ADDI x1, x1, 48     # change depending on lmul
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+ADDI x2, x2, 1         # stride++
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+# stride = 4
+vsse32.v v4, x1, x2   
 ADDI x1, x1, 16      # change depending on lmul (128/32 * stride)
 C.NOP
 C.NOP
 C.NOP
 C.NOP
 vsse16.v v8, x1, x2
+C.NOP
+C.NOP
+C.NOP
+C.NOP
 ADDI x1, x1, 32     # change depending on lmul (lmul/vsew * stride)
 C.NOP
 C.NOP
 C.NOP
 C.NOP
 vsse8.v v4, x1, x2
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+C.NOP
 C.NOP
 C.NOP
 C.NOP
@@ -42,93 +114,21 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-# stride = 3
-vsse32.v v4, x1, x2   
-ADDI x1, x1, 24      # change depending on lmul (128/32 * stride)
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-vsse16.v v8, x1, x2
-ADDI x1, x1, 48     # change depending on lmul (lmul/vsew * stride)
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-vsse8.v v4, x1, x2
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-ADDI x1, x1, 96     # change depending on lmul
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-ADDI x2, x2, 1         # stride++
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-# stride = 4
-vsse32.v v4, x1, x2   
-ADDI x1, x1, 32      # change depending on lmul (128/32 * stride)
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-vsse16.v v8, x1, x2
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-ADDI x1, x1, 64     # change depending on lmul (lmul/vsew * stride)
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-vsse8.v v4, x1, x2
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-ADDI x1, x1, 128     # change depending on lmul
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-ADDI x2, x2, 1         # stride++
-C.NOP
-C.NOP
-C.NOP
-C.NOP
 # stride = 5
 vsse32.v v4, x1, x2   
-ADDI x1, x1, 40      # change depending on lmul (128/32 * stride)
+ADDI x1, x1, 20      # change depending on lmul (128/32 * stride)
 C.NOP
 C.NOP
 C.NOP
 C.NOP
 vsse16.v v8, x1, x2
-ADDI x1, x1, 80     # change depending on lmul (lmul/vsew * stride)
+ADDI x1, x1, 40     # change depending on lmul (lmul/vsew * stride)
 C.NOP
 C.NOP
 C.NOP
 C.NOP
 vsse8.v v4, x1, x2
-ADDI x1, x1, 160     # change depending on lmul
+ADDI x1, x1, 80     # change depending on lmul
 C.NOP
 C.NOP
 C.NOP
@@ -158,3 +158,6 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
+
+
+

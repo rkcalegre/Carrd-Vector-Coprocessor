@@ -24,10 +24,22 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
+vsetivli x20, x5, 8    # 16 bit elements, 128-bit vector
+C.NOP
+C.NOP
+vadd.vi v5, v0, 10      # v5 = 10
+C.NOP
+C.NOP
 vsse16.v v5, x1, x2      # m[x1 = 4] = 15
 ADDI x1, x1, 16          # x1 = x1 + 4 = 4 + 4 = 8
 C.NOP
 C.NOP
+C.NOP
+C.NOP
+vsetivli x20, x5, 0    # 8 bit elements, 128-bit vector
+C.NOP
+C.NOP
+vadd.vi v4, v0, 15      # v5 = 10
 C.NOP
 C.NOP
 vsse8.v v4, x1, x2       # m[x1 = 8] = 15
