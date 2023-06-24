@@ -117,8 +117,8 @@ module carrd_integrated#(
         .sew(vsew),
 	    .el_wr_en(el_wr_en),
         .el_wr_addr(el_wr_addr),
-        .el_reg_wr_addr(el_reg_wr_addr),
-        .el_wr_data(el_wr_data),
+        .el_reg_wr_addr(dest_wb),
+        .el_wr_data(reg_wr_data),
         .reg_wr_en(reg_wr_en),
         .reg_wr_addr(dest_wb),
 	    .reg_wr_data(reg_wr_data), //signal from v_writeback
@@ -167,6 +167,7 @@ module carrd_integrated#(
 
 
     //Decoder Block
+    logic is_vector;
     logic [3:0] v_alu_op;
     logic [3:0] v_lsu_op;
     logic is_mul;    
@@ -180,8 +181,9 @@ module carrd_integrated#(
 
 	v_decoder vdecoder(
     .instr(instr),
-    .v_reg_wr_en(reg_wr_en),
+    .v_reg_wr_en(reg_wr_en || el_wr_en),
     .x_reg_wr_en(x_reg_wr_en),
+    .is_vector(is_vector),
     .is_vconfig(is_vconfig),
     .v_alu_op(v_alu_op),
     .is_mul(is_mul),
@@ -254,6 +256,7 @@ module carrd_integrated#(
         .src_B(vs2),
         .dest(vd),
         .imm(imm),
+        .is_vector(is_vector),
         .is_vstype(is_vstype),
         .v_alu_op(v_alu_op),
         .is_mul(is_mul),
@@ -324,6 +327,7 @@ module carrd_integrated#(
         .v_reg_wr_en(reg_wr_en),
         .x_reg_wr_en(x_reg_wr_en),
         .el_wr_en(el_wr_en), 
+        .el_wr_addr(el_wr_addr),
         .reg_wr_data(reg_wr_data),
         .reg_wr_data_2(reg_wr_data_2), 
         .reg_wr_data_3(reg_wr_data_3), 
