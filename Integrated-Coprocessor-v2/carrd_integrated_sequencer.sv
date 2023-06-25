@@ -105,7 +105,7 @@ module carrd_integrated#(
     //assign which fi
 //    assign dest = optype_wb == 3'b001 ? Fi_alu: optype_wb == 3'b010 ? Fi_mul: optype_wb == 3'b011 ? Fi_lsu: optype_wb == 3'b100 ? Fi_sldu: optype_wb == 3'b101 ? Fi_alu: 0;
     //assign which fj
-    assign src_A = optype == 3'b001 ? Fj_alu: optype == 3'b010 ? Fj_mul: optype == 3'b011 ? Fj_lsu: optype == 3'b100 ? Fj_sldu: optype == 3'b101 ? Fj_red: 0;
+    assign src_A = optype == 3'b001 ? Fj_alu: optype == 3'b010 ? Fj_mul: optype == 3'b011 ? Fi_lsu: optype == 3'b100 ? Fj_sldu: optype == 3'b101 ? Fj_red: 0;
     //assign which fk
     assign src_B = optype == 3'b001 ? Fk_alu: optype == 3'b010 ? Fk_mul: optype == 3'b011 ? Fk_lsu: optype == 3'b100 ? Fk_sldu: optype == 3'b101 ? Fk_red: 0;
    
@@ -268,7 +268,7 @@ module carrd_integrated#(
         .done_mul(done_vmul),
         .done_red(done_vred),
         .done_sldu(done_vsldu),        
-        .done_lsu(done_vloadu),  
+        .done_lsu(done_vloadu || done_store),  
         .result_vlsu(result_vloadu),
         .result_valu_1(result_valu_1),
         .result_valu_2(result_valu_2),
@@ -579,7 +579,7 @@ module carrd_integrated#(
     .address(op_A_lsu[31:0]), 
     .l_data_out(result_vloadu),
     .l_done(done_vloadu),
-    .s_data(op_C),                 // DOUBLE CHECK
+    .s_data({reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,reg_data_out_v1_a}),                 // DOUBLE CHECK
     .data_addr0(data_addr0),
     .data_addr1(data_addr1),
     .data_addr2(data_addr2),
