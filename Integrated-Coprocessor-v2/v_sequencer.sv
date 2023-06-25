@@ -170,8 +170,6 @@ module v_sequencer #(
     end
 
     always @(*) begin
-
-
     // ******************ISSUE******************
         #1
         if (instr_1[29:27] != 0 && instr_1[2:0] == 3'b001) begin
@@ -226,7 +224,7 @@ module v_sequencer #(
         instr_read_index = ((instr_1[2:0] == 3'b010) ? 0: (instr_2[2:0] == 3'b010) ? 1: (instr_3[2:0] == 3'b010) ? 2: (instr_4[2:0] == 3'b010) ? 3: (instr_5[2:0] == 3'b010) ? 4: (instr_6[2:0] == 3'b010) ? 5: (instr_7[2:0] == 3'b010) ? 6: (instr_8[2:0] == 3'b010) ? 7: 0);
     
         if (instr_read != 0 && instr_read[29:27] == 3'b001) begin
-            if(!busy_alu) begin
+            if(busy_alu == 0 && alu_exec == 0) begin
                 optype_read = instr_read[29:27];
                 sel_dest_alu = instr_read[39:38];
                 vsew_alu = instr_read[37:36];
@@ -248,7 +246,7 @@ module v_sequencer #(
 
         //mul
         if (instr_read != 0 && instr_read[29:27] == 3'b010) begin
-            if(!busy_mul) begin
+            if(busy_mul == 0 && mul_exec == 0) begin
                 optype_read = instr_read[29:27];
                 sel_dest_mul = instr_read[39:38];
                 vsew_mul = instr_read[37:36];
@@ -270,7 +268,7 @@ module v_sequencer #(
 
         //lsu
         if (instr_read != 0 && instr_read[29:27] == 3'b011) begin
-            if(busy_lsu== 0 && lsu_exec == 0) begin
+            if(busy_lsu == 0 && lsu_exec == 0) begin
                 optype_read = instr_read[29:27];
                 sel_dest_lsu = instr_read[39:38];
                 vsew_lsu = instr_read[37:36];
@@ -292,7 +290,7 @@ module v_sequencer #(
 
         //sldu
         if (instr_read != 0 && instr_read[29:27] == 3'b100) begin
-            if(!busy_sldu) begin
+            if(busy_sldu == 0 && sldu_exec == 0) begin
                 optype_read = instr_read[29:27];
                 sel_dest_sldu = instr_read[39:38];
                 vsew_sldu = instr_read[37:36];
@@ -314,7 +312,7 @@ module v_sequencer #(
 
         //red
         if (instr_read != 0 && instr_read[29:27] == 3'b101) begin
-            if(!busy_red ) begin
+            if(busy_red == 0 && red_exec == 0) begin
                 optype_read = instr_read[29:27];
                 sel_dest_red = instr_read[39:38];
                 vsew_red = instr_read[37:36];
@@ -341,7 +339,7 @@ module v_sequencer #(
         dest_wb = (wb_instr != 0) ? wb_instr[12:8] : dest_wb;   
 
         el_wr_en = (wb_instr[29:27] == 3'b101 && wb_instr[39:38]==1) ? 1: 0; 
-        v_reg_wr_en = (wb_instr[29:27] == 3'b101) ? 0: (wb_instr[39:38]==1) ? 1: 0;
+        v_reg_wr_en = ((wb_instr[29:27] == 3'b011) && ((wb_instr[26:23] == 4'b0111)||(wb_instr[26:23] == 4'b1000)||(wb_instr[26:23] == 4'b1001))) ? 0:(wb_instr[29:27] == 3'b101) ? 0: (wb_instr[39:38]==1) ? 1: 0;
         x_reg_wr_en = (wb_instr[39:38]==2) ? 1: 0;
                
         case (wb_instr[29:27])
@@ -351,28 +349,28 @@ module v_sequencer #(
                 reg_wr_data_2 <= result_valu_2;
                 reg_wr_data_3 <= result_valu_3;
                 reg_wr_data_4 <= result_valu_4;
-                busy_alu = alu_exec[29:27 != 0] ? 1: 0;
+                busy_alu = alu_exec[29:27] != 0 ? 1: 0;
             end
             3'b010: begin
                 reg_wr_data <= result_vmul_1;
                 reg_wr_data_2 <= result_vmul_2;
                 reg_wr_data_3 <= result_vmul_3;
                 reg_wr_data_4 <= result_vmul_4; 
-                busy_mul = mul_exec[29:27 != 0] ? 1: 0;
+                busy_mul = mul_exec[29:27] != 0 ? 1: 0;
             end
             3'b011: begin
                 reg_wr_data <= result_vlsu[127:0];
                 reg_wr_data_2 <= result_vlsu[255:128];
                 reg_wr_data_3 <= result_vlsu[383:256];
                 reg_wr_data_4 <= result_vlsu[511:384];
-                busy_lsu = lsu_exec[29:27 != 0] ? 1: 0;
+                busy_lsu = lsu_exec[29:27] != 0 ? 1: 0;
             end
             3'b100: begin
                 reg_wr_data <= result_vsldu[127:0];
                 reg_wr_data_2 <= result_vsldu[255:128];
                 reg_wr_data_3 <= result_vsldu[383:256];
                 reg_wr_data_4 <= result_vsldu[511:384];  
-                busy_sldu = sldu_exec[29:27 != 0] ? 1: 0;
+                busy_sldu = sldu_exec[29:27] != 0 ? 1: 0;
             end
             3'b101: begin
                 el_wr_addr = 0;
@@ -380,7 +378,7 @@ module v_sequencer #(
                 reg_wr_data_2 = {128{1'b0}};
                 reg_wr_data_3 = {128{1'b0}};
                 reg_wr_data_4 = {128{1'b0}};   
-                busy_red = red_exec[29:27 != 0] ? 1: 0;
+                busy_red = red_exec[29:27] != 0 ? 1: 0;
             end
         endcase     
     end
