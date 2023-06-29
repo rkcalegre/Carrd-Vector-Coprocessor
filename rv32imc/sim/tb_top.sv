@@ -37,7 +37,6 @@ module tb_top();
 	wire ck_io39;
 
 	reg [3:0] con_write = TOP.RISCVCORE.con_write;
-	//reg [`DATAMEM_BITS-1:0] con_addr = TOP.RISCVCORE.con_addr;
 	reg [13:0] con_addr;
 	reg [`WORD_WIDTH-1:0] con_in = TOP.RISCVCORE.con_in;
 	wire [`WORD_WIDTH-1:0] con_out = TOP.RISCVCORE.con_out;
@@ -62,10 +61,6 @@ module tb_top();
 	);
 
 	answerkey AK();
-	answerkey0 AK0();
-	answerkey1 AK1();
-	answerkey2 AK2();
-	answerkey3 AK3();
 
 	integer i, j, check, done, pass, consecutive_nops;
 	integer total_test_cases = 0;
@@ -73,6 +68,8 @@ module tb_top();
 	integer nop_counter;
 	integer max_data_addr;
 	wire [31:0] INST;
+	integer clock_counter;
+	integer valu_clk_counter, vmul_clk_counter, vlsu_clk_counter, vred_clk_counter, vsldu_clk_counter;
 	assign INST = TOP.RISCVCORE.if_inst;
 	//assign TOP.RISCVCORE.con_addr = con_addr;
 
@@ -94,6 +91,14 @@ module tb_top();
 		pass = 0;
 		i = 0;
 		j = 0;
+
+		// Initializing counters
+		clock_counter = 0;
+		valu_clk_counter = 0;
+		vmul_clk_counter = 0;
+		vlsu_clk_counter = 0;
+		vred_clk_counter = 0;
+		vsldu_clk_counter = 0;
 
 		#100 nrst = 1;
 	end
@@ -316,24 +321,6 @@ module tb_top();
 	assign ck_io39 = 1'b1;
 	assign ck_io38 = 1'b1;
 	
-	
-	// dump all variables
-//	initial begin
-//	   $dumpfile("D:/Files/CIDR/RV32IMC-Redeployment/top_sim_cdchange.vcd");
-//	   $dumpvars(0, TOP);
-//	   $dumpvars(0, TOP.RISCVCORE.RF);
-//	   $dumpvars(0, TOP.RISCVCORE.SF_CONTROLLER);
-//	   $dumpvars(0, TOP.RISCVCORE.DATAMEM);
-//	   $dumpvars(0, TOP.RISCVCORE.BRANCHPREDICTOR);
-	   	   
-//	   $dumpoff;
-//	   #14480000;
-//	   $dumpon;
-//	   #800000;
-//	   $dumpoff;
-//	   #400000;
-//	   $finish;
-//	end
 
 	always@(posedge CLK100MHZ) begin
 	    if (!nrst) begin
@@ -356,6 +343,7 @@ module tb_top();
                     check = 0;
                 end
 	end
+
 	// This controls the NOP counter
 	always@(posedge CLK100MHZ) begin
 	   if (!done)
@@ -365,9 +353,41 @@ module tb_top();
                 if(INST[15:0] == 16'h0001 || INST == 32'h00000013)
                     nop_counter <= nop_counter + 1;
 	end
-	// This controlls the done flag
+
+	// This controls the done flag
 	always@(posedge CLK100MHZ) begin
 		if(check == 49 || consecutive_nops == 16) done = 1;
+	end
+
+	// Tracking how many clock cycles it takes to execute the program
+	always@(posedge CLK100MHZ) begin
+		if(!nrst) clock_counter <= 0;
+		else if(!done) clock_counter <= clock_counter + 1;
+	end
+
+	always@(posedge TOP.CARRD.valu_clk) begin
+		if(!nrst) valu_clk_counter <= 0;
+		else if(!done) valu_clk_counter <= valu_clk_counter + 1;
+	end
+
+	always@(posedge TOP.CARRD.vmul_clk) begin
+		if(!nrst) vmul_clk_counter <= 0;
+		else if(!done) vmul_clk_counter <= vmul_clk_counter + 1;
+	end
+
+	always@(posedge TOP.CARRD.vred_clk) begin
+		if(!nrst) vred_clk_counter <= 0;
+		else if(!done) vred_clk_counter <= vred_clk_counter + 1;
+	end
+
+	always@(posedge TOP.CARRD.vlsu_clk) begin
+		if(!nrst) vlsu_clk_counter <= 0;
+		else if(!done) vlsu_clk_counter <= vlsu_clk_counter + 1;
+	end
+
+	always@(posedge TOP.CARRD.vsldu_clk) begin
+		if(!nrst) vsldu_clk_counter <= 0;
+		else if(!done) vsldu_clk_counter <= vsldu_clk_counter + 1;
 	end
 
 	// This controls max_data_addr
@@ -375,60 +395,19 @@ module tb_top();
 		if(!nrst)
 			max_data_addr <= 0;
 		else if(!done) 
-			max_data_addr <= 14'd35;
+			max_data_addr <= 14'd335;
 			/*
 			if((CORE.exe_is_stype && |CORE.exe_dm_write && CORE.exe_ALUout[15:2] > max_data_addr) && (CORE.exe_ALUout[15:2] < 14'h2c))
 				max_data_addr <= CORE.exe_ALUout[15:2];
 			*/
 	end
 
-	// The following code is for checking the contents
-	// of BLOCKMEM
+	// The following code is for checking the contents of BLOCKMEM
 	always@(posedge done) begin
 		$display("---------| SUMMARY |---------");
 		$display("Address\t  Actual  \tExpected ");
 		$display("=======\t==========\t==========");	
 	end
-
-	/*
-	always@(negedge CLK100MHZ) begin
-		if(done) begin
-			if (con_addr[1:0] == 2'b00) begin
-				if(con_out == AK0.memory0[con_addr[`DATAMEM_BITS-1:2]]) begin
-					//$display("0x%3X\t0x%X\t0x%X\tPass", con_addr, con_out, AK.memory[con_addr]);
-					pass = pass + 1;
-				end else begin
-					$display("0x%3X\t0x%X\t0x%X\tFail--------------------", con_addr, con_out, AK0.memory0[con_addr[`DATAMEM_BITS-1:2]]);
-				end
-			end else if (con_addr[1:0] == 2'b01) begin
-				if(con_out == AK1.memory1[con_addr[`DATAMEM_BITS-1:2]]) begin
-					//$display("0x%3X\t0x%X\t0x%X\tPass", con_addr, con_out, AK.memory[con_addr]);
-					pass = pass + 1;
-				end else begin
-					$display("0x%3X\t0x%X\t0x%X\tFail--------------------", con_addr, con_out, AK1.memory1[con_addr[`DATAMEM_BITS-1:2]]);
-				end
-			end	else if (con_addr[1:0] == 2'b10) begin
-				if(con_out == AK2.memory2[con_addr[`DATAMEM_BITS-1:2]]) begin
-					//$display("0x%3X\t0x%X\t0x%X\tPass", con_addr, con_out, AK.memory[con_addr]);
-					pass = pass + 1;
-				end else begin
-					$display("0x%3X\t0x%X\t0x%X\tFail--------------------", con_addr, con_out, AK2.memory2[con_addr[`DATAMEM_BITS-1:2]]);
-				end
-			end else begin
-				if(con_out == AK3.memory3[con_addr[`DATAMEM_BITS-1:2]]) begin
-					//$display("0x%3X\t0x%X\t0x%X\tPass", con_addr, con_out, AK.memory[con_addr]);
-					pass = pass + 1;
-				end else begin
-					$display("0x%3X\t0x%X\t0x%X\tFail--------------------", con_addr, con_out, AK3.memory3[con_addr[`DATAMEM_BITS-1:2]]);
-				end
-			end
-
-			total_test_cases = total_test_cases + 1;
-			if (con_addr == max_data_addr) print_metrics = 1;
-			con_addr = con_addr + 1;
-		end
-	end
-	*/
 	
 	always@(negedge CLK100MHZ) begin
 		if(done) begin	
@@ -445,11 +424,22 @@ module tb_top();
 		end
 	end
 	
-
 	always @(posedge print_metrics) begin
 		done = 0;
 		$display("\n");
 		$display("Passed %0d/%0d test cases.", pass, total_test_cases);
+		$display("Clock cycles: %0d", clock_counter-16);
+		$display("Total NOPs: %0d", nop_counter-16);
+		$display("=================\n");
+
+		// Clock gating counters
+		$display("---| Clock Gating Metrics |---");
+		$display("VALU clock: %0d/%0d cycles", valu_clk_counter, clock_counter-16);
+		$display("VMUL clock: %0d/%0d cycles", vmul_clk_counter, clock_counter-16);
+		$display("VRED clock: %0d/%0d cycles", vred_clk_counter, clock_counter-16);
+		$display("VLSU clock: %0d/%0d cycles", vlsu_clk_counter, clock_counter-16);
+		$display("VSLDU clock: %0d/%0d cycles", vsldu_clk_counter, clock_counter-16);
+		$display("=================\n");
 		$finish;
 	end
 
@@ -459,33 +449,5 @@ module answerkey();
 	reg [31:0] memory [0:1023];
 	initial begin
 		$readmemh("answerkey.mem", memory);
-	end
-endmodule
-
-module answerkey0();
-	reg [31:0] memory0 [0:255];
-	initial begin
-		$readmemh("answerkey0.mem", memory0);
-	end
-endmodule
-
-module answerkey1();
-	reg [31:0] memory1 [0:255];
-	initial begin
-		$readmemh("answerkey1.mem", memory1);
-	end
-endmodule
-
-module answerkey2();
-	reg [31:0] memory2 [0:255];
-	initial begin
-		$readmemh("answerkey2.mem", memory2);
-	end
-endmodule
-
-module answerkey3();
-	reg [31:0] memory3 [0:255];
-	initial begin
-		$readmemh("answerkey3.mem", memory3);
 	end
 endmodule
