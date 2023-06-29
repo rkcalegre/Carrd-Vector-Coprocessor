@@ -194,8 +194,8 @@ ADDI x1, x1, 16
 # VMUL
 ADDI x3, x0, 2
 C.NOP
-vadd.vi v8, v0, 2
-vmul.vv v12, v8, v8
+vadd.vi v20, v0, 2
+vmul.vv v12, v8, v20
 vmul.vx v16, v4, x3
 vse32.v v12, x1          # m[x1 = 0] = v8
 ADDI x1, x1, 16
