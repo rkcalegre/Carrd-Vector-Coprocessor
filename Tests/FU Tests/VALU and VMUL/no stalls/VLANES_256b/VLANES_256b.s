@@ -1,6 +1,7 @@
 ADDI x5, x0, 16         # x5 = 16
 vsetivli x20, x5, 17    # 32 bit elements 256-bit vector
 ADDI x5, x5, 16         # x5 = x5 + 16 = 32
+vle32.v v28, x0
 C.NOP
 C.NOP
 C.NOP
@@ -144,6 +145,8 @@ vsll.vv v12, v8, v24
 vsll.vx v16, v4, x3
 vsll.vi v20, v4, 4
 vse32.v v12, x1          # m[x1 = 0] = v8
+C.NOP
+C.NOP
 ADDI x1, x1, 8
 C.NOP
 C.NOP
@@ -178,6 +181,7 @@ C.NOP
 C.NOP
 vse32.v v16, x1          # m[x1 = 4] = v12
 ADDI x1, x1, 8
+C.NOP
 C.NOP
 C.NOP
 C.NOP
