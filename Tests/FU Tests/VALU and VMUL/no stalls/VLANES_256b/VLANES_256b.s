@@ -124,7 +124,7 @@ ADDI x1, x1, 8
 C.NOP
 
 # VSRL
-vsrl.vv v12, v8, v9    
+vsrl.vv v12, v8, v28    
 vsrl.vx v16, v4, x3      
 vsrl.vi v20, v4, 1
 vse32.v v12, x1          # m[x1 = 0] = v8
@@ -144,7 +144,7 @@ ADDI x1, x1, 8
 C.NOP
 
 # VSRA
-vsra.vv v12, v8, v9     
+vsra.vv v12, v8, v28     
 vsra.vx v16, v4, x3      
 vsra.vi v20, v4, 2
 vse32.v v12, x1          # m[x1 = 0] = v8
