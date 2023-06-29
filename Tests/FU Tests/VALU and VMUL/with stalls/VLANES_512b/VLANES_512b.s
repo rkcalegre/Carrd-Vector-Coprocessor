@@ -1,6 +1,7 @@
 ADDI x5, x0, 16         # x5 = 16
 vsetivli x20, x5, 18    # 32 bit elements 256-bit vector
 ADDI x5, x5, 16         # x5 = x5 + 16 = 32
+vle32.v v28, x0
 C.NOP
 C.NOP
 C.NOP
