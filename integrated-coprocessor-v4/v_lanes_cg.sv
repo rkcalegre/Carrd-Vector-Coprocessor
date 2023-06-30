@@ -73,6 +73,19 @@ module v_lanes(
 
     bit [2:0] step_alu, step_mul;
 
+    initial begin
+        result_valu_1 = 0 ;
+        result_valu_2 = 0 ;
+        result_valu_3 = 0 ;
+        result_valu_4 = 0 ;
+        result_vmul_1 = 0 ;
+        result_vmul_2 = 0 ;
+        result_vmul_3 = 0 ;
+        result_vmul_4 = 0 ;
+        done_valu = 0 ;
+        done_vmul = 0 ;
+    end
+
     genvar i;
     generate
         for (i = 0; i < 4; i++) begin
@@ -277,7 +290,7 @@ module v_lanes(
                             default: result_valu_2[((i-4)*32)+32-1:(i-4)*32] = result_valu_32b_2[((i-4)*32)+32-1:(i-4)*32] ;
                     endcase                        
                 end else begin
-                    if (op_instr_alu ==0) result_valu_2[((i-4)*32)+32-1:(i-4)*32] = 0;
+                    //if (op_instr_alu ==0) result_valu_2[((i-4)*32)+32-1:(i-4)*32] = 0;
                 end     
             end
 
@@ -294,7 +307,7 @@ module v_lanes(
                             default: result_vmul_2[((i-4)*32)+32-1:(i-4)*32] = result_vmul_32b_2[((i-4)*32)+32-1:(i-4)*32];
                     endcase                    
                 end else begin
-                    if (is_mul ==0) result_vmul_2[((i-4)*32)+32-1:(i-4)*32] = 0;
+                    //if (is_mul ==0) result_vmul_2[((i-4)*32)+32-1:(i-4)*32] = 0;
                 end 
             end
         end
@@ -316,7 +329,7 @@ module v_lanes(
                 .vsew(vsew),
                 .op_A(alu_op_A_3[((i-8)*32)+32-1:(i-8)*32]),
                 .op_B(alu_op_B_3[((i-8)*32)+32-1:(i-8)*32]),
-                .result(result_valu_3[((i-8)*32)+32-1:(i-8)*32])
+                .result(result_valu_32b_3[((i-8)*32)+32-1:(i-8)*32])
 
             );
 
@@ -329,9 +342,21 @@ module v_lanes(
                 .sew(vsew),
                 .op_A(mul_op_A_3[((i-8)*32)+32-1:(i-8)*32]),
                 .op_B(mul_op_B_3[((i-8)*32)+32-1:(i-8)*32]),
-                .result(result_vmul_3[((i-8)*32)+32-1:(i-8)*32])
+                .result(result_vmul_32b_3[((i-8)*32)+32-1:(i-8)*32])
             );
             
+            always @(valu_clk) begin
+                if ((lanes == 2'b10) && (op_instr_alu inside {[1:10]})) begin
+                    result_valu_3[((i-8)*32)+32-1:(i-8)*32] = result_valu_32b_3[((i-8)*32)+32-1:(i-8)*32];                                            
+                end
+            end
+
+            always @(vmul_clk) begin
+                if ((lanes == 2'b10) && is_mul == 1) begin    
+                    result_vmul_3[((i-8)*32)+32-1:(i-8)*32] = result_vmul_32b_3[((i-8)*32)+32-1:(i-8)*32];
+                end
+        end
+
         end
 
         for (i = 12; i < 16; i++) begin
@@ -345,7 +370,7 @@ module v_lanes(
                 .vsew(vsew),
                 .op_A(alu_op_A_4[((i-12)*32)+32-1:(i-12)*32]),
                 .op_B(alu_op_B_4[((i-12)*32)+32-1:(i-12)*32]),
-                .result(result_valu_4[((i-12)*32)+32-1:(i-12)*32])
+                .result(result_valu_32b_4[((i-12)*32)+32-1:(i-12)*32])
 
             );
 
@@ -358,8 +383,19 @@ module v_lanes(
                 .sew(vsew),
                 .op_A(mul_op_A_4[((i-12)*32)+32-1:(i-12)*32]),
                 .op_B(mul_op_B_4[((i-12)*32)+32-1:(i-12)*32]),
-                .result(result_vmul_4[((i-12)*32)+32-1:(i-12)*32])
+                .result(result_vmul_32b_4[((i-12)*32)+32-1:(i-12)*32])
             );
+            always @(valu_clk) begin
+                if ((lanes == 2'b10) && (op_instr_alu inside {[1:10]})) begin
+                    result_valu_4[((i-12)*32)+32-1:(i-12)*32] = result_valu_32b_4[((i-12)*32)+32-1:(i-12)*32];                                            
+                end
+            end
+
+            always @(vmul_clk) begin
+                if ((lanes == 2'b10) && is_mul == 1) begin    
+                    result_vmul_4[((i-12)*32)+32-1:(i-12)*32] = result_vmul_32b_4[((i-12)*32)+32-1:(i-12)*32];
+                end
+            end
 
         end        
     endgenerate
