@@ -403,7 +403,7 @@ C.NOP
 C.NOP
 
 # VMSLT
-vmslt.vv v12, v4, v5
+vmslt.vv v12, v4, v8
 C.NOP
 C.NOP
 C.NOP
