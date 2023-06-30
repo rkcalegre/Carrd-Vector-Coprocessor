@@ -308,7 +308,7 @@ C.NOP
 C.NOP
 
 # VMSLT
-vmslt.vv v12, v4, v5
+vmslt.vv v12, v4, v8
 vmslt.vx v16, v4, x2
 vse32.v v12, x1
 ADDI x1, x1, 8
