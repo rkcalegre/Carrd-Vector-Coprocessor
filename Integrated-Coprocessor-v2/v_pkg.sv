@@ -68,7 +68,7 @@ typedef enum logic [5:0] {
 } funct6_sldu;
 
 typedef enum logic [5:0] { 
-    VMOVE1        = 6'b010000,
+    VMOVE1      = 6'b010000,       
     VSLIDE1UP    = 6'b001110,      
     VSLIDE1DOWN  = 6'b001111
 } funct6_sldu1;
@@ -84,7 +84,12 @@ typedef enum logic [5:0] {
     VXOR       = 6'b001011,
     VSLL       = 6'b100101,
     VSRL       = 6'b101000,
-    VSRA       = 6'b101001
+    VSRA       = 6'b101001,
+    VMSEQ      = 6'b011000,
+    VMSNE      = 6'b011001,
+    VMSLT      = 6'b011011,
+    VMSLE      = 6'b011101,
+    VMSGT      = 6'b011111
 } funct6_alu;
 
 typedef enum logic [5:0] {
@@ -92,16 +97,21 @@ typedef enum logic [5:0] {
 } funct6_mul;
 
 typedef enum logic [3:0] {
-    VALU_VADD = 4'd1,
-    VALU_VSUB = 4'd2,
-    VALU_VAND = 4'd3,
-    VALU_VOR  = 4'd4,
-    VALU_VXOR = 4'd5,
-    VALU_VSLL = 4'd6,
-    VALU_VSRL = 4'd7,
-    VALU_VSRA = 4'd8,
-    VALU_VMIN = 4'd9,
-    VALU_VMAX = 4'd10
+    VALU_VADD  = 4'd1,
+    VALU_VSUB  = 4'd2,
+    VALU_VAND  = 4'd3,
+    VALU_VOR   = 4'd4,
+    VALU_VXOR  = 4'd5,
+    VALU_VSLL  = 4'd6,
+    VALU_VSRL  = 4'd7,
+    VALU_VSRA  = 4'd8,
+    VALU_VMIN  = 4'd9,
+    VALU_VMAX  = 4'd10,
+    VALU_VMSEQ = 4'd11,
+    VALU_VMSNE = 4'd12,
+    VALU_VMSLT = 4'd13,
+    VALU_VMSLE = 4'd14,
+    VALU_VMSGT = 4'd15
 } valu_op;
 
 typedef enum logic [2:0] {
