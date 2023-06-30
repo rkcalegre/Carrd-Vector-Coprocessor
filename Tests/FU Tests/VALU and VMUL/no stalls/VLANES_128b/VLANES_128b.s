@@ -169,7 +169,98 @@ C.NOP
 C.NOP
 C.NOP
 vse32.v v7, x1          # m[x1 = 4] = v6
+
+#VMSEQ
+vadd.vi v9, v0, 20
+vmseq.vv v6, v5, v9
+vmseq.vx v7, v4, x2
+vmseq.vi v8, v4, 15
+vse32.v v6, x1
 ADDI x1, x1, 4
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vse32.v v7, x1
+ADDI x1, x1, 4
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vse32.v v8, x1
+ADDI x1, x1, 4
+C.NOP
+
+#VMSNE
+vmsne.vv v6, v5, v9
+vmsne.vx v7, v4, x2
+vmsne.vi v8, v4, 15
+vse32.v v6, x1
+ADDI x1, x1, 4
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vse32.v v7, x1
+ADDI x1, x1, 4
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vse32.v v8, x1
+ADDI x1, x1, 4
+C.NOP
+C.NOP
+
+# VMSLT
+vmslt.vv v6, v4, v5
+vmslt.vx v7, v4, x2
+vse32.v v6, x1
+ADDI x1, x1, 4
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vse32.v v7, x1
+ADDI x1, x1, 4
+C.NOP
+
+# VMSLE
+vmsle.vv v6, v4, v5
+vmsle.vx v7, v4, x2
+vmsle.vi v8, v4, 15
+vse32.v v6, x1
+ADDI x1, x1, 4
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vse32.v v7, x1
+ADDI x1, x1, 4
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vse32.v v8, x1
+ADDI x1, x1, 4
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+
+# VMSGT
+vmsgt.vx v7, v4, x2
+vmsgt.vi v8, v4, 10
+vse32.v v7, x1
+ADDI x1, x1, 4
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vse32.v v8, x1
+ADDI x1, x1, 4
+
+# VMUL
 ADDI x3, x0, 2
 vadd.vi v8, v0, 2
 vmul.vv v6, v5, v8
