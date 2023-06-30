@@ -50,6 +50,17 @@ module v_alu #(
     wire CE = (op_instr == VALU_VADD || op_instr == VALU_VSUB)? 1'b1 : 1'b0;
     wire [2:0] carry;
 
+    initial begin
+        op_A_tmp[0] = 0;
+        op_A_tmp[1] = 0;
+        op_A_tmp[2] = 0;
+        op_A_tmp[3] = 0;
+        op_B_tmp[0] = 0;
+        op_B_tmp[1] = 0;
+        op_B_tmp[2] = 0;
+        op_B_tmp[3] = 0;
+    end
+
     always_comb begin
         if (op_instr == VALU_VADD || op_instr == VALU_VSUB) begin
             case (vsew)     // SIGN EXTEND
@@ -80,8 +91,8 @@ module v_alu #(
         for (i = 0; i < 4; i++) begin
             c_addsub_0 addsub (
                 .CLK(clk), 
-                .A(op_A_tmp[i]), 
-                .B(op_B_tmp[i]), 
+                .A(op_B_tmp[i]), 
+                .B(op_A_tmp[i]), 
                 .ADD(ADD), 
                 .CE(CE), 
                 .S(addsub_res[i])
@@ -247,7 +258,7 @@ module v_alu #(
                 // result = (vm.mask)? op_A : op_B; // vm.mask still does not exist: TBA  
             end
             */
-            default: ;
+            default: res_tmp = 0;
         endcase
     end
 
