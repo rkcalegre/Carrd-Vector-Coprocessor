@@ -169,6 +169,7 @@ C.NOP
 C.NOP
 C.NOP
 vse32.v v7, x1          # m[x1 = 104] = v6
+ADDI x1, x1, 4
 
 #VMSEQ
 vadd.vi v9, v0, 20
