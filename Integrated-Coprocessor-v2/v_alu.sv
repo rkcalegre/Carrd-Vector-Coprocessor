@@ -50,6 +50,17 @@ module v_alu #(
     wire CE = (op_instr == VALU_VADD || op_instr == VALU_VSUB)? 1'b1 : 1'b0;
     wire [2:0] carry;
 
+    initial begin
+        op_A_tmp[0] = 0;
+        op_A_tmp[1] = 0;
+        op_A_tmp[2] = 0;
+        op_A_tmp[3] = 0;
+        op_B_tmp[0] = 0;
+        op_B_tmp[1] = 0;
+        op_B_tmp[2] = 0;
+        op_B_tmp[3] = 0;
+    end
+
     always_comb begin
         if (op_instr == VALU_VADD || op_instr == VALU_VSUB) begin
             case (vsew)     // SIGN EXTEND
@@ -80,8 +91,8 @@ module v_alu #(
         for (i = 0; i < 4; i++) begin
             c_addsub_0 addsub (
                 .CLK(clk), 
-                .A(op_A_tmp[i]), 
-                .B(op_B_tmp[i]), 
+                .A(op_B_tmp[i]), 
+                .B(op_A_tmp[i]), 
                 .ADD(ADD), 
                 .CE(CE), 
                 .S(addsub_res[i])
@@ -209,28 +220,53 @@ module v_alu #(
                     default: ;
                 endcase
             end
-            /*
-            VMSEQ: begin 
-                //vector mask set if equal
-                result = op_1 == op_2 ? 1 : 0 ;
+            
+            VALU_VMSEQ: begin 
+                //Set if equal
+                case (vsew) 
+                    VSEW_8: res_tmp = {((op_B[31:24] == op_A[31:24]) ? 1 : 0), ((op_B[23:16] == op_A[23:16]) ? 1 : 0), ((op_B[15:8] == op_A[15:8]) ? 1 : 0), ((op_B[7:0] == op_A[7:0]) ? 1 : 0)};
+                    VSEW_16: res_tmp = {((op_B[31:16] == op_A[31:16]) ? 1 : 0), ((op_B[15:0] == op_A[15:0]) ? 1 : 0)};
+                    VSEW_32: res_tmp = (op_B == op_A) ? 1 : 0;
+                    default: ;
+                endcase
             end
-            VMSNE: begin 
-                //vector mask set if not equal
-                result = op_1 != op_2 ? 1 : 0 ;
+            VALU_VMSNE: begin 
+                //Set if not equal
+                case (vsew) 
+                    VSEW_8: res_tmp = {((op_B[31:24] != op_A[31:24]) ? 1 : 0), ((op_B[23:16] != op_A[23:16]) ? 1 : 0), ((op_B[15:8] != op_A[15:8]) ? 1 : 0), ((op_B[7:0] == op_A[7:0]) ? 1 : 0)};
+                    VSEW_16: res_tmp = {((op_B[31:16] != op_A[31:16]) ? 1 : 0), ((op_B[15:0] != op_A[15:0]) ? 1 : 0)};
+                    VSEW_32: res_tmp = (op_B != op_A) ? 1 : 0;
+                    default: ;
+                endcase
             end
-            VMSLT: begin 
-                //vector mask Set if less than, signed
-                result = op_1 < op_2 ? 1 : 0 ;            
+            VALU_VMSLT: begin 
+                //Set if less than, signed
+                case (vsew) 
+                    VSEW_8: res_tmp = {((op_B[31:24] < op_A[31:24]) ? 1 : 0), ((op_B[23:16] < op_A[23:16]) ? 1 : 0), ((op_B[15:8] < op_A[15:8]) ? 1 : 0), ((op_B[7:0] == op_A[7:0]) ? 1 : 0)};
+                    VSEW_16: res_tmp = {((op_B[31:16] < op_A[31:16]) ? 1 : 0), ((op_B[15:0] < op_A[15:0]) ? 1 : 0)};
+                    VSEW_32: res_tmp = (op_B < op_A) ? 1 : 0;
+                    default: ;
+                endcase           
             end
-            VMSLE: begin 
-                //vector mask Set if less than or equal, signed
-                result = op_1 <= op_2 ? 1 : 0 ;            
+            VALU_VMSLE: begin 
+                //Set if less than or equal, signed
+                case (vsew) 
+                    VSEW_8: res_tmp = {((op_B[31:24] <= op_A[31:24]) ? 1 : 0), ((op_B[23:16] <= op_A[23:16]) ? 1 : 0), ((op_B[15:8] <= op_A[15:8]) ? 1 : 0), ((op_B[7:0] == op_A[7:0]) ? 1 : 0)};
+                    VSEW_16: res_tmp = {((op_B[31:16] <= op_A[31:16]) ? 1 : 0), ((op_B[15:0] <= op_A[15:0]) ? 1 : 0)};
+                    VSEW_32: res_tmp = (op_B <= op_A) ? 1 : 0;
+                    default: ;
+                endcase            
             end
-            VMSGT: begin 
-                //vector mask Set if greater than, signed
-                result = op_1 >= op_2 ? 1 : 0 ;
+            VALU_VMSGT: begin 
+                //Set if greater than, signed
+                case (vsew) 
+                    VSEW_8: res_tmp = {((op_B[31:24] >= op_A[31:24]) ? 1 : 0), ((op_B[23:16] >= op_A[23:16]) ? 1 : 0), ((op_B[15:8] >= op_A[15:8]) ? 1 : 0), ((op_B[7:0] >= op_A[7:0]) ? 1 : 0)};
+                    VSEW_16: res_tmp = {((op_B[31:16] >= op_A[31:16]) ? 1 : 0), ((op_B[15:0] >= op_A[15:0]) ? 1 : 0)};
+                    VSEW_32: res_tmp = (op_B >= op_A) ? 1 : 0;
+                    default: ;
+                endcase
             end 
-            */                                    
+                                                
             VALU_VMIN: begin
                 // VMIN
                 res_tmp = (op_A < op_B)? op_A : op_B;
@@ -247,7 +283,7 @@ module v_alu #(
                 // result = (vm.mask)? op_A : op_B; // vm.mask still does not exist: TBA  
             end
             */
-            default: ;
+            default: res_tmp = 0;
         endcase
     end
 
