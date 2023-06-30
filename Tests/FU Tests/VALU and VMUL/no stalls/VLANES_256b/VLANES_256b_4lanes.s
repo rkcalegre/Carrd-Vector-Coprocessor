@@ -260,6 +260,101 @@ C.NOP
 C.NOP
 C.NOP
 
+#VMSEQ
+vadd.vi v28, v0, 20
+vmseq.vv v12, v8, v28
+vmseq.vx v16, v4, x2
+vmseq.vi v20, v4, 15
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vse32.v v12, x1
+ADDI x1, x1, 8
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vse32.v v16, x1
+ADDI x1, x1, 8
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vse32.v v20, x1
+ADDI x1, x1, 8
+C.NOP
+C.NOP
+
+#VMSNE
+vmsne.vv v12, v8, v28
+vmsne.vx v16, v4, x2
+vmsne.vi v20, v4, 15
+vse32.v v12, x1
+ADDI x1, x1, 8
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vse32.v v16, x1
+ADDI x1, x1, 8
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vse32.v v20, x1
+ADDI x1, x1, 8
+C.NOP
+C.NOP
+
+# VMSLT
+vmslt.vv v12, v4, v5
+vmslt.vx v16, v4, x2
+vse32.v v12, x1
+ADDI x1, x1, 8
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vse32.v v16, x1
+ADDI x1, x1, 8
+C.NOP
+
+# VMSLE
+vmsle.vv v12, v4, v8
+vmsle.vx v16, v4, x2
+vmsle.vi v20, v4, 15
+vse32.v v12, x1
+ADDI x1, x1, 8
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vse32.v v16, x1
+ADDI x1, x1, 8
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vse32.v v20, x1
+ADDI x1, x1, 8
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+
+# VMSGT
+vmsgt.vx v12, v4, x2
+vmsgt.vi v16, v4, 10
+vse32.v v12, x1
+ADDI x1, x1, 8
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vse32.v v16, x1
+ADDI x1, x1, 8
+
 ################### VMUL TESTS ######################
 # VMUL
 ADDI x3, x0, 2
