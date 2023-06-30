@@ -293,7 +293,9 @@ C.NOP
 vmin.vv v12, v8, v4
 C.NOP
 C.NOP
+C.NOP
 vmin.vx v16, v4, x2
+C.NOP
 C.NOP
 C.NOP
 vse32.v v12, x1          # m[x1 = 0] = v8
