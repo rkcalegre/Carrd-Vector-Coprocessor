@@ -293,7 +293,7 @@ vmseq.vv v12, v8, v28
 vmseq.vx v16, v4, x2
 vmseq.vi v20, v4, 15
 vse32.v v12, x1
-ADDI x1, x1, 8
+addi x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
@@ -303,7 +303,7 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-ADDI x1, x1, 8
+addi x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
@@ -313,7 +313,7 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-ADDI x1, x1, 8
+addi x1, x1, 16
 C.NOP
 
 #VMSNE
@@ -325,7 +325,7 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-ADDI x1, x1, 8
+addi x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
@@ -335,7 +335,7 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-ADDI x1, x1, 8
+addi x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
@@ -345,7 +345,7 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-ADDI x1, x1, 8
+addi x1, x1, 16
 C.NOP
 C.NOP
 
@@ -357,7 +357,7 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-ADDI x1, x1, 8
+addi x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
@@ -367,7 +367,7 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-ADDI x1, x1, 8
+addi x1, x1, 16
 C.NOP
 
 # VMSLE
@@ -379,7 +379,7 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-ADDI x1, x1, 8
+addi x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
@@ -389,7 +389,7 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-ADDI x1, x1, 8
+addi x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
@@ -399,7 +399,7 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-ADDI x1, x1, 8
+addi x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
@@ -413,7 +413,7 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-ADDI x1, x1, 8
+addi x1, x1, 16
 C.NOP
 C.NOP
 C.NOP
@@ -423,7 +423,7 @@ C.NOP
 C.NOP
 C.NOP
 C.NOP
-ADDI x1, x1, 8
+addi x1, x1, 16
 
 ################### VMUL TESTS ######################
 # VMUL
