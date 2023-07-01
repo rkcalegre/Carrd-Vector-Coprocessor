@@ -36,13 +36,13 @@ module v_sequencer #(
     output logic [2:0] optype_read,
     output logic [4:0] dest_wb,
     output logic [3:0] op_alu, op_mul, op_lsu, op_sldu, op_red,        // vector operation (6) (decoder)
-    output logic [2:0] vsew_alu, vsew_mul, vsew_lsu, vsew_sldu, vsew_red,        // Functional unit producing Fj (3) 
-    output logic [2:0] lmul_alu, lmul_mul, lmul_lsu, lmul_sldu, lmul_red,       // Functional unit producing Fk(3) (is_type)
-    output logic [2:0] Qj_alu, Qj_mul, Qj_lsu, Qj_sldu, Qj_red,        // Functional unit producing Fj (3) 
-    output logic [2:0] Qk_alu, Qk_mul, Qk_lsu, Qk_sldu, Qk_red, Qi_lsu,      // Functional unit producing Fk(3) (is_type)
+    output logic [2:0] vsew_alu, vsew_mul, vsew_lsu, vsew_sldu, vsew_red, vsew_wb,      // Functional unit producing Fj (3) 
+    output logic [2:0] lmul_alu, lmul_mul, lmul_lsu, lmul_sldu, lmul_red, lmul_wb,      // Functional unit producing Fk(3) (is_type)
+    output logic [2:0] Qj_alu, Qj_mul, Qj_lsu, Qj_sldu, Qj_red, Qi_lsu,       // Functional unit producing Fj (3) 
+    output logic [2:0] Qk_alu, Qk_mul, Qk_lsu, Qk_sldu, Qk_red, Qi_sldu,      // Functional unit producing Fk(3) (is_type)
     output logic [4:0] Fj_alu, Fj_mul, Fj_lsu, Fj_sldu, Fj_red,        // source register 1 (5) (decoder)
     output logic [4:0] Fk_alu, Fk_mul, Fk_lsu, Fk_sldu, Fk_red,        // source register 2 (5) (decoder)
-    output logic [4:0] Fi_lsu,       // destination reg (5) (decoder)
+    output logic [4:0] Fi_lsu, Fi_sldu,      // destination reg (5) (decoder)
     output logic [4:0] Imm_alu, Imm_mul, Imm_lsu, Imm_sldu, Imm_red,  // scalar operand (5) (decoder)
     output logic v_reg_wr_en, x_reg_wr_en, el_wr_en,
     output logic [127:0]  reg_wr_data, reg_wr_data_2, reg_wr_data_3, reg_wr_data_4,
@@ -108,7 +108,6 @@ module v_sequencer #(
     logic Ri_lsu = 0;
     logic [5:0] Fi_alu = 0;
     logic [5:0] Fi_mul = 0;
-    logic [5:0] Fi_sldu = 0;
     logic [5:0] Fi_red = 0;
     logic [IST_ENTRY_BITS-1:0] instr_1;
     logic [IST_ENTRY_BITS-1:0] instr_2; 
@@ -142,6 +141,7 @@ module v_sequencer #(
     logic wr_lsu = 0; 
     logic wr_sldu = 0; 
     logic wr_red = 0;
+    logic lsu_raw;
 
     assign fifo_full = (fifo_count == NO_OF_SLOTS);
     assign instr_1 = instr_status_table[0];
@@ -156,7 +156,7 @@ module v_sequencer #(
     assign is_vltype = (op_lsu inside {[1:6]});
     assign op = (v_alu_op != 0) ? 3'b001: (is_mul != 0) ? 3'b010: v_lsu_op != 0 ? 3'b011: (v_sldu_op != 0) ? 3'b100: (v_red_op != 0) ? 3'b101:3'b000;
     assign op_instr = op == 3'b001 ? v_alu_op: op == 3'b010 ? is_mul: op == 3'b011 ? v_lsu_op: op == 3'b100 ? v_sldu_op: 3'b101 ? v_red_op: 0;
-
+    assign lsu_raw = is_vltype == 1 ? 1: is_vstype == 1 ? 0: lsu_raw;
 
     always @(clk) begin      
         // Write to Instruction Status Table
@@ -201,11 +201,11 @@ module v_sequencer #(
             //outputs
             optype_read = 0; dest_wb = 0; el_wr_addr = 0;
             op_alu = 0; op_mul = 0; op_lsu = 0; op_sldu = 0; op_red = 0;
-            vsew_alu = 0; vsew_mul = 0; vsew_lsu = 0; vsew_sldu = 0; vsew_red = 0;
-            lmul_alu = 0; lmul_mul = 0; lmul_lsu = 0; lmul_sldu = 0; lmul_red = 0;
-            Qj_alu = 0; Qj_mul = 0; Qj_lsu = 0; Qj_sldu = 0; Qj_red = 0;
-            Qk_alu = 0; Qk_mul = 0; Qk_lsu = 0; Qk_sldu = 0; Qk_red = 0; Qi_lsu = 0;
-            Fi_lsu = 0;
+            vsew_alu = 0; vsew_mul = 0; vsew_lsu = 0; vsew_sldu = 0; vsew_red = 0; vsew_wb = 0;
+            lmul_alu = 0; lmul_mul = 0; lmul_lsu = 0; lmul_sldu = 0; lmul_red = 0; lmul_wb = 0;
+            Qj_alu = 0; Qj_mul = 0; Qj_lsu = 0; Qj_sldu = 0; Qj_red = 0; Qi_lsu = 0;
+            Qk_alu = 0; Qk_mul = 0; Qk_lsu = 0; Qk_sldu = 0; Qk_red = 0; Qi_sldu = 0;
+            Fi_lsu = 0; Fi_sldu = 0;
             Fj_alu = 0; Fj_mul = 0; Fj_lsu = 0; Fj_sldu = 0; Fj_red = 0;
             Fk_alu = 0; Fk_mul = 0; Fk_lsu = 0; Fk_sldu = 0; Fk_red = 0;
             Imm_alu = 0; Imm_mul = 0; Imm_lsu = 0; Imm_sldu = 0; Imm_red = 0;
@@ -319,10 +319,10 @@ module v_sequencer #(
                 Fj_alu =  instr_read[22:18];
                 Fk_alu = instr_read[17:13];
                 Imm_alu = instr_read[7:3];
-                Qj_alu = ((instr_read[33:32] == 2'b10) ? 3'b110: (instr_read[33:32] == 2'b11) ? 3'b111: (Fj_alu == Fi_alu && wr_alu == 1) ? 3'b001: (Fj_alu == Fi_mul && wr_mul == 1) ? 3'b010: (Fj_alu == Fi_lsu && wr_lsu == 1 && is_vltype == 1) ? 3'b011: (Fj_alu == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fj_alu == Fi_red && wr_red == 1) ? 3'b101: 3'b000);
-                Qk_alu = ((instr_read[31:30] == 2'b10) ? 3'b110: (instr_read[31:30] == 2'b11) ? 3'b111: (Fk_alu == Fi_alu && wr_alu == 1) ? 3'b001: (Fk_alu == Fi_mul && wr_mul == 1) ? 3'b010: (Fk_alu == Fi_lsu && wr_lsu == 1 && is_vltype == 1) ? 3'b011: (Fk_alu == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fk_alu == Fi_red && wr_red == 1) ? 3'b101: 3'b000);                
-                Rj_alu = ((Qj_alu == 3'b000 || Qj_alu == 3'b110 || Qj_alu == 3'b111) ? 1: (busy_alu == 0 && Qj_alu == 3'b001) ? 1: (busy_mul == 0 && Qj_alu == 3'b010) ? 1: (busy_lsu == 0 && Qj_alu == 3'b011) ? 1: (busy_sldu == 0 && Qj_alu == 3'b100) ? 1: (busy_red == 0 && Qj_alu == 3'b101) ? 1: 0);
-                Rk_alu = ((Qk_alu == 3'b000 || Qk_alu == 3'b110 || Qk_alu == 3'b111) ? 1: (busy_alu == 0 && Qk_alu == 3'b001) ? 1: (busy_mul == 0 && Qk_alu == 3'b010) ? 1: (busy_lsu == 0 && Qk_alu == 3'b011) ? 1: (busy_sldu == 0 && Qk_alu == 3'b100) ? 1: (busy_red == 0 && Qk_alu == 3'b101) ? 1: 0);
+                Qj_alu = ((instr_read[33:32] == 2'b10) ? 3'b110: (instr_read[33:32] == 2'b11) ? 3'b111: (Fj_alu == Fi_alu && wr_alu == 1) ? 3'b001: (Fj_alu == Fi_mul && wr_mul == 1) ? 3'b010: (Fj_alu == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fj_alu == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fj_alu == Fi_red && wr_red == 1) ? 3'b101: 3'b000);
+                Qk_alu = ((instr_read[31:30] == 2'b10) ? 3'b110: (instr_read[31:30] == 2'b11) ? 3'b111: (Fk_alu == Fi_alu && wr_alu == 1) ? 3'b001: (Fk_alu == Fi_mul && wr_mul == 1) ? 3'b010: (Fk_alu == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fk_alu == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fk_alu == Fi_red && wr_red == 1) ? 3'b101: 3'b000);                
+                Rj_alu = ((Qj_alu == 3'b000 || Qj_alu == 3'b110 || Qj_alu == 3'b111) ? 1: ((done_alu == 1 || busy_alu == 0) && Qj_alu == 3'b001) ? 1: ((done_mul == 1 || busy_mul == 0) && Qj_alu == 3'b010) ? 1: ((done_lsu == 1 || busy_lsu == 0) && Qj_alu == 3'b011) ? 1: ((done_sldu == 1 || busy_sldu == 0) && Qj_alu == 3'b100) ? 1: ((done_red == 1 || busy_red == 0) && Qj_alu == 3'b101) ? 1: 0);
+                Rk_alu = ((Qk_alu == 3'b000 || Qk_alu == 3'b110 || Qk_alu == 3'b111) ? 1: ((done_alu == 1 || busy_alu == 0) && Qk_alu == 3'b001) ? 1: ((done_mul == 1 || busy_mul == 0) && Qk_alu == 3'b010) ? 1: ((done_lsu == 1 || busy_lsu == 0) && Qk_alu == 3'b011) ? 1: ((done_sldu == 1 || busy_sldu == 0) && Qk_alu == 3'b100) ? 1: ((done_red == 1 || busy_red == 0) && Qk_alu == 3'b101) ? 1: 0);
                 busy_alu = ((Rj_alu == 1 && Rk_alu == 1) ? 1: 0); 
                 if (busy_alu == 1) begin
                     Fi_alu = instr_read[12:8];   
@@ -344,10 +344,10 @@ module v_sequencer #(
                 Fj_mul =  instr_read[22:18];
                 Fk_mul = instr_read[17:13];
                 Imm_mul = instr_read[7:3];
-                Qj_mul = ((instr_read[33:32] == 2'b10) ? 3'b110: (instr_read[33:32] == 2'b11) ? 3'b111: (Fj_mul == Fi_alu && wr_alu == 1) ? 3'b001: (Fj_mul == Fi_mul && wr_mul == 1) ? 3'b010: (Fj_mul == Fi_lsu && wr_lsu == 1 && is_vltype == 1) ? 3'b011: (Fj_mul == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fj_mul == Fi_red && wr_red == 1) ? 3'b101: 3'b000);
-                Qk_mul = ((instr_read[31:30] == 2'b10) ? 3'b110: (instr_read[31:30] == 2'b11) ? 3'b111: (Fk_mul == Fi_alu && wr_alu == 1) ? 3'b001: (Fk_mul == Fi_mul && wr_mul == 1) ? 3'b010: (Fk_mul == Fi_lsu && wr_lsu == 1 && is_vltype == 1) ? 3'b011: (Fk_mul == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fk_mul == Fi_red && wr_red == 1) ? 3'b101: 3'b000);                
-                Rj_mul = ((Qj_mul == 3'b000 || Qj_mul == 3'b110 || Qj_mul == 3'b111) ? 1: (busy_alu == 0 && Qj_mul == 3'b001) ? 1: (busy_mul == 0 && Qj_mul == 3'b010) ? 1: (busy_lsu == 0 && Qj_mul == 3'b011) ? 1: (busy_sldu == 0 && Qj_mul == 3'b100) ? 1: (busy_red == 0 && Qj_mul == 3'b101) ? 1: 0);
-                Rk_mul = ((Qk_mul == 3'b000 || Qk_mul == 3'b110 || Qk_mul == 3'b111) ? 1: (busy_alu == 0 && Qk_mul == 3'b001) ? 1: (busy_mul == 0 && Qk_mul == 3'b010) ? 1: (busy_lsu == 0 && Qk_mul == 3'b011) ? 1: (busy_sldu == 0 && Qk_mul == 3'b100) ? 1: (busy_red == 0 && Qk_mul == 3'b101) ? 1: 0);
+                Qj_mul = ((instr_read[33:32] == 2'b10) ? 3'b110: (instr_read[33:32] == 2'b11) ? 3'b111: (Fj_mul == Fi_alu && wr_alu == 1) ? 3'b001: (Fj_mul == Fi_mul && wr_mul == 1) ? 3'b010: (Fj_mul == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fj_mul == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fj_mul == Fi_red && wr_red == 1) ? 3'b101: 3'b000);
+                Qk_mul = ((instr_read[31:30] == 2'b10) ? 3'b110: (instr_read[31:30] == 2'b11) ? 3'b111: (Fk_mul == Fi_alu && wr_alu == 1) ? 3'b001: (Fk_mul == Fi_mul && wr_mul == 1) ? 3'b010: (Fk_mul == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fk_mul == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fk_mul == Fi_red && wr_red == 1) ? 3'b101: 3'b000);                
+                Rj_mul = ((Qj_mul == 3'b000 || Qj_mul == 3'b110 || Qj_mul == 3'b111) ? 1: ((done_alu == 1 || busy_alu == 0) && Qj_mul == 3'b001) ? 1: ((done_mul == 1 || busy_mul == 0) && Qj_mul == 3'b010) ? 1: ((done_lsu == 1 || busy_lsu == 0) && Qj_mul == 3'b011) ? 1: ((done_sldu == 1 || busy_sldu == 0) && Qj_mul == 3'b100) ? 1: ((done_red == 1 || busy_red == 0) && Qj_mul == 3'b101) ? 1: 0);
+                Rk_mul = ((Qk_mul == 3'b000 || Qk_mul == 3'b110 || Qk_mul == 3'b111) ? 1: ((done_alu == 1 || busy_alu == 0) && Qk_mul == 3'b001) ? 1: ((done_mul == 1 || busy_mul == 0) && Qk_mul == 3'b010) ? 1: ((done_lsu == 1 || busy_lsu == 0) && Qk_mul == 3'b011) ? 1: ((done_sldu == 1 || busy_sldu == 0) && Qk_mul == 3'b100) ? 1: ((done_red == 1 || busy_red == 0) && Qk_mul == 3'b101) ? 1: 0);
                 busy_mul = ((Rj_mul == 1 && Rk_mul == 1) ? 1: 0); 
                 if (busy_mul == 1) begin
                     Fi_mul = instr_read[12:8];   
@@ -369,12 +369,12 @@ module v_sequencer #(
                 Fj_lsu =  instr_read[22:18];
                 Fk_lsu = instr_read[17:13];
                 Imm_lsu = instr_read[7:3];
-                Qi_lsu = (instr_read[26:23] inside {[7:12]}) ? ((instr_read[12:8] == Fi_alu && wr_alu == 1) ? 3'b001: (instr_read[12:8] == Fi_mul && wr_mul == 1) ? 3'b010: (instr_read[12:8] == Fi_lsu && wr_lsu == 1 && is_vltype == 1) ? 3'b011: (instr_read[12:8] == Fi_sldu && wr_sldu == 1) ? 3'b100: (instr_read[12:8] == Fi_red && wr_red == 1) ? 3'b101: 3'b000): 3'b000;
-                Qj_lsu = ((instr_read[33:32] == 2'b10) ? 3'b110: (instr_read[33:32] == 2'b11) ? 3'b111: (Fj_lsu == Fi_alu && wr_alu == 1) ? 3'b001: (Fj_lsu == Fi_mul && wr_mul == 1) ? 3'b010: (Fj_lsu == Fi_lsu && wr_lsu == 1 && is_vltype == 1) ? 3'b011: (Fj_lsu == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fj_lsu == Fi_red && wr_red == 1) ? 3'b101: 3'b000);
-                Qk_lsu = ((instr_read[31:30] == 2'b10) ? 3'b110: (instr_read[31:30] == 2'b11) ? 3'b111: (Fk_lsu == Fi_alu && wr_alu == 1) ? 3'b001: (Fk_lsu == Fi_mul && wr_mul == 1) ? 3'b010: (Fk_lsu == Fi_lsu && wr_lsu == 1 && is_vltype == 1) ? 3'b011: (Fk_lsu == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fk_lsu == Fi_red && wr_red == 1) ? 3'b101: 3'b000);                
-                Rj_lsu = ((Qj_lsu == 3'b000 || Qj_lsu == 3'b110 || Qj_lsu == 3'b111) ? 1: (busy_alu == 0 && Qj_alu == 3'b001) ? 1: (busy_mul == 0 && Qj_lsu == 3'b010) ? 1: (busy_lsu == 0 && Qj_lsu == 3'b011) ? 1: (busy_sldu == 0 && Qj_lsu == 3'b100) ? 1: (busy_red == 0 && Qj_lsu == 3'b101) ? 1: 0);
-                Rk_lsu = ((Qk_lsu == 3'b000 || Qk_lsu == 3'b110 || Qk_lsu == 3'b111) ? 1: (busy_alu == 0 && Qk_alu == 3'b001) ? 1: (busy_mul == 0 && Qk_lsu == 3'b010) ? 1: (busy_lsu == 0 && Qk_lsu == 3'b011) ? 1: (busy_sldu == 0 && Qk_lsu == 3'b100) ? 1: (busy_red == 0 && Qk_lsu == 3'b101) ? 1: 0);
-                Ri_lsu = ((Qi_lsu == 3'b000) ? 1: (busy_alu == 0 && Qi_lsu == 3'b001) ? 1: (busy_mul == 0 && Qi_lsu == 3'b010) ? 1: (busy_lsu == 0 && Qi_lsu == 3'b011) ? 1: (busy_sldu == 0 && Qi_lsu == 3'b100) ? 1: (busy_red == 0 && Qi_lsu == 3'b101) ? 1: (busy_red == 0 && Qi_lsu == 3'b101) ? 1: 0);                
+                Qi_lsu = (instr_read[26:23] inside {[7:12]}) ? ((instr_read[12:8] == Fi_alu && wr_alu == 1) ? 3'b001: (instr_read[12:8] == Fi_mul && wr_mul == 1) ? 3'b010: (instr_read[12:8] == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (instr_read[12:8] == Fi_sldu && wr_sldu == 1) ? 3'b100: (instr_read[12:8] == Fi_red && wr_red == 1) ? 3'b101: 3'b000): 3'b000;
+                Qj_lsu = ((instr_read[33:32] == 2'b10) ? 3'b110: (instr_read[33:32] == 2'b11) ? 3'b111: (Fj_lsu == Fi_alu && wr_alu == 1) ? 3'b001: (Fj_lsu == Fi_mul && wr_mul == 1) ? 3'b010: (Fj_lsu == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fj_lsu == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fj_lsu == Fi_red && wr_red == 1) ? 3'b101: 3'b000);
+                Qk_lsu = ((instr_read[31:30] == 2'b10) ? 3'b110: (instr_read[31:30] == 2'b11) ? 3'b111: (Fk_lsu == Fi_alu && wr_alu == 1) ? 3'b001: (Fk_lsu == Fi_mul && wr_mul == 1) ? 3'b010: (Fk_lsu == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fk_lsu == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fk_lsu == Fi_red && wr_red == 1) ? 3'b101: 3'b000);                
+                Rj_lsu = ((Qj_lsu == 3'b000 || Qj_lsu == 3'b110 || Qj_lsu == 3'b111) ? 1: ((done_alu == 1 || busy_alu == 0) && Qj_lsu == 3'b001) ? 1: ((done_mul == 1 || busy_mul == 0) && Qj_lsu == 3'b010) ? 1: ((done_lsu == 1 || busy_lsu == 0) && Qj_lsu == 3'b011) ? 1: ((done_sldu == 1 || busy_sldu == 0) && Qj_lsu == 3'b100) ? 1: ((done_red == 1 || busy_red == 0) && Qj_lsu == 3'b101) ? 1: 0);
+                Rk_lsu = ((Qk_lsu == 3'b000 || Qk_lsu == 3'b110 || Qk_lsu == 3'b111) ? 1: ((done_alu == 1 || busy_alu == 0) && Qk_lsu == 3'b001) ? 1: ((done_mul == 1 || busy_mul == 0) && Qk_lsu == 3'b010) ? 1: ((done_lsu == 1 || busy_lsu == 0) && Qk_lsu == 3'b011) ? 1: ((done_sldu == 1 || busy_sldu == 0) && Qk_lsu == 3'b100) ? 1: ((done_red == 1 || busy_red == 0) && Qk_lsu == 3'b101) ? 1: 0);
+                Ri_lsu = ((Qi_lsu == 3'b000) ? 1: ((done_alu == 1 || busy_alu == 0) && Qi_lsu == 3'b001) ? 1: ((done_mul == 1 || busy_mul == 0) && Qi_lsu == 3'b010) ? 1: ((done_lsu == 1 || busy_lsu == 0) && Qi_lsu == 3'b011) ? 1: ((done_sldu == 1 || busy_sldu == 0) && Qi_lsu == 3'b100) ? 1: ((done_red == 1 || busy_red == 0) == 0 && Qi_lsu == 3'b101) ? 1: (busy_red == 0 && Qi_lsu == 3'b101) ? 1: 0);                
                 busy_lsu = ((Rj_lsu == 1 && Rk_lsu == 1 && Ri_lsu) ? 1: 0); 
                 if (busy_lsu == 1) begin
                     Fi_lsu = instr_read[12:8];   
@@ -396,10 +396,11 @@ module v_sequencer #(
                 Fj_sldu =  instr_read[22:18];
                 Fk_sldu = instr_read[17:13];
                 Imm_sldu = instr_read[7:3];
-                Qj_sldu = ((instr_read[33:32] == 2'b10) ? 3'b110: (instr_read[33:32] == 2'b11) ? 3'b111: (Fj_sldu == Fi_alu && wr_alu == 1) ? 3'b001: (Fj_sldu == Fi_mul && wr_mul == 1) ? 3'b010: (Fj_sldu == Fi_lsu && wr_lsu == 1 && is_vltype == 1) ? 3'b011: (Fj_sldu == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fj_sldu == Fi_red && wr_red == 1) ? 3'b101: 3'b000);
-                Qk_sldu = ((instr_read[31:30] == 2'b10) ? 3'b110: (instr_read[31:30] == 2'b11) ? 3'b111: (Fk_sldu == Fi_alu && wr_alu == 1) ? 3'b001: (Fk_sldu == Fi_mul && wr_mul == 1) ? 3'b010: (Fk_sldu == Fi_lsu && wr_lsu == 1 && is_vltype == 1) ? 3'b011: (Fk_sldu == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fk_sldu == Fi_red && wr_red == 1) ? 3'b101: 3'b000);                
-                Rj_sldu = ((Qj_sldu == 3'b000 || Qj_sldu == 3'b110 || Qj_sldu == 3'b111) ? 1: (busy_alu == 0 && Qj_sldu == 3'b001) ? 1: (busy_mul == 0 && Qj_sldu == 3'b010) ? 1: (busy_lsu == 0 && Qj_sldu == 3'b011) ? 1: (busy_sldu == 0 && Qj_sldu == 3'b100) ? 1: (busy_red == 0 && Qj_sldu == 3'b101) ? 1: 0);
-                Rk_sldu = ((Qk_sldu == 3'b000 || Qk_sldu == 3'b110 || Qk_sldu == 3'b111) ? 1: (busy_alu == 0 && Qk_sldu == 3'b001) ? 1: (busy_mul == 0 && Qk_sldu == 3'b010) ? 1: (busy_lsu == 0 && Qk_sldu == 3'b011) ? 1: (busy_sldu == 0 && Qk_sldu == 3'b100) ? 1: (busy_red == 0 && Qk_sldu == 3'b101) ? 1:0);
+                Qi_sldu = ((instr_read[12:8] == Fi_alu && wr_alu == 1) ? 3'b001: (instr_read[12:8] == Fi_mul && wr_mul == 1) ? 3'b010: (instr_read[12:8] == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (instr_read[12:8] == Fi_sldu && wr_sldu == 1) ? 3'b100: (instr_read[12:8] == Fi_red && wr_red == 1) ? 3'b101: 3'b000);
+                Qj_sldu = ((instr_read[33:32] == 2'b10) ? 3'b110: (instr_read[33:32] == 2'b11) ? 3'b111: (Fj_sldu == Fi_alu && wr_alu == 1) ? 3'b001: (Fj_sldu == Fi_mul && wr_mul == 1) ? 3'b010: (Fj_sldu == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fj_sldu == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fj_sldu == Fi_red && wr_red == 1) ? 3'b101: 3'b000);
+                Qk_sldu = ((instr_read[31:30] == 2'b10) ? 3'b110: (instr_read[31:30] == 2'b11) ? 3'b111: (Fk_sldu == Fi_alu && wr_alu == 1) ? 3'b001: (Fk_sldu == Fi_mul && wr_mul == 1) ? 3'b010: (Fk_sldu == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fk_sldu == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fk_sldu == Fi_red && wr_red == 1) ? 3'b101: 3'b000);                
+                Rj_sldu = ((Qj_sldu == 3'b000 || Qj_sldu == 3'b110 || Qj_sldu == 3'b111) ? 1: ((done_alu == 1 || busy_alu == 0) && Qj_sldu == 3'b001) ? 1: ((done_mul == 1 || busy_mul == 0) && Qj_sldu == 3'b010) ? 1: ((done_lsu == 1 || busy_lsu == 0) && Qj_sldu == 3'b011) ? 1: ((done_sldu == 1 || busy_sldu == 0) && Qj_sldu == 3'b100) ? 1: ((done_red == 1 || busy_red == 0) && Qj_sldu == 3'b101) ? 1: 0);
+                Rk_sldu = ((Qk_sldu == 3'b000 || Qk_sldu == 3'b110 || Qk_sldu == 3'b111) ? 1: ((done_alu == 1 || busy_alu == 0) && Qk_sldu == 3'b001) ? 1: ((done_mul == 1 || busy_mul == 0) && Qk_sldu == 3'b010) ? 1: ((done_lsu == 1 || busy_lsu == 0) && Qk_sldu == 3'b011) ? 1: ((done_sldu == 1 || busy_sldu == 0) && Qk_sldu == 3'b100) ? 1: ((done_red == 1 || busy_red == 0) && Qk_sldu == 3'b101) ? 1: 0);
                 busy_sldu = ((Rj_sldu == 1 && Rk_sldu == 1) ? 1: 0); 
                 if (busy_sldu == 1) begin
                     Fi_sldu = instr_read[12:8];   
@@ -419,14 +420,13 @@ module v_sequencer #(
             if(busy_red == 0 && red_exec == 0) begin
                 optype_read = instr_read[29:27];
                 sel_dest_red = instr_read[39:38];
-                op_red = instr_read[26:23];
                 Fj_red =  instr_read[22:18];
                 Fk_red = instr_read[17:13];
                 Imm_red = instr_read[7:3];
-                Qj_red = ((instr_read[33:32] == 2'b10) ? 3'b110: (instr_read[33:32] == 2'b11) ? 3'b111: (Fj_red == Fi_alu && wr_alu == 1) ? 3'b001: (Fj_red == Fi_mul && wr_mul == 1) ? 3'b010: (Fj_red == Fi_lsu && wr_lsu == 1 && is_vltype == 1) ? 3'b011: (Fj_red == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fj_red == Fi_red && wr_red == 1) ? 3'b101: 3'b000);
-                Qk_red = ((instr_read[31:30] == 2'b10) ? 3'b110: (instr_read[31:30] == 2'b11) ? 3'b111: (Fk_red == Fi_alu && wr_alu == 1) ? 3'b001: (Fk_red == Fi_mul && wr_mul == 1) ? 3'b010: (Fk_red == Fi_lsu && wr_lsu == 1 && is_vltype == 1) ? 3'b011: (Fk_red == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fk_red == Fi_red && wr_red == 1) ? 3'b101: 3'b000);                
-                Rj_red = ((Qj_red == 3'b000 || Qj_red == 3'b110 || Qj_red == 3'b111) ? 1: (busy_alu == 0 && Qj_red == 3'b001) ? 1: (busy_mul == 0 && Qj_red == 3'b010) ? 1: (busy_lsu == 0 && Qj_red == 3'b011) ? 1: (busy_sldu == 0 && Qj_red == 3'b100) ? 1: (busy_red == 0 && Qj_red == 3'b101) ? 1: 0);
-                Rk_red = ((Qk_red == 3'b000 || Qk_red == 3'b110 || Qk_red == 3'b111) ? 1: (busy_alu == 0 && Qk_red == 3'b001) ? 1: (busy_mul == 0 && Qk_red == 3'b010) ? 1: (busy_lsu == 0 && Qk_red == 3'b011) ? 1: (busy_sldu == 0 && Qk_red == 3'b100) ? 1: (busy_red == 0 && Qk_red == 3'b101) ? 1: 0); 
+                Qj_red = ((instr_read[33:32] == 2'b10) ? 3'b110: (instr_read[33:32] == 2'b11) ? 3'b111: (Fj_red == Fi_alu && wr_alu == 1) ? 3'b001: (Fj_red == Fi_mul && wr_mul == 1) ? 3'b010: (Fj_red == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fj_red == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fj_red == Fi_red && wr_red == 1) ? 3'b101: 3'b000);
+                Qk_red = ((instr_read[31:30] == 2'b10) ? 3'b110: (instr_read[31:30] == 2'b11) ? 3'b111: (Fk_red == Fi_alu && wr_alu == 1) ? 3'b001: (Fk_red == Fi_mul && wr_mul == 1) ? 3'b010: (Fk_red == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fk_red == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fk_red == Fi_red && wr_red == 1) ? 3'b101: 3'b000);                
+                Rj_red = ((Qj_red == 3'b000 || Qj_red == 3'b110 || Qj_red == 3'b111) ? 1: ((done_alu == 1 || busy_alu == 0) && Qj_red == 3'b001) ? 1: ((done_mul == 1 || busy_mul == 0) && Qj_red == 3'b010) ? 1: ((done_lsu == 1 || busy_lsu == 0) && Qj_red == 3'b011) ? 1: ((done_sldu == 1 || busy_sldu == 0) && Qj_red == 3'b100) ? 1: ((done_red == 1 || busy_red == 0) && Qj_red == 3'b101) ? 1: 0);
+                Rk_red = ((Qk_red == 3'b000 || Qk_red == 3'b110 || Qk_red == 3'b111) ? 1: ((done_alu == 1 || busy_alu == 0) && Qk_red == 3'b001) ? 1: ((done_mul == 1 || busy_mul == 0) && Qk_red == 3'b010) ? 1: ((done_lsu == 1 || busy_lsu == 0) && Qk_red == 3'b011) ? 1: ((done_sldu == 1 || busy_sldu == 0) && Qk_red == 3'b100) ? 1: ((done_red == 1 || busy_red == 0) && Qk_red == 3'b101) ? 1: 0);
                 busy_red = ((Rj_red == 1 && Rk_red == 1) ? 1: 0); 
                 if (busy_red == 1) begin
                     Fi_red = instr_read[12:8];   
@@ -446,6 +446,8 @@ module v_sequencer #(
         wb_instr = ((instr_1[2:0] == 3'b100) ? instr_1: (instr_2[2:0] == 3'b100) ? instr_2: (instr_3[2:0] == 3'b100) ? instr_3: (instr_4[2:0] == 3'b100) ? instr_4: (instr_5[2:0] == 3'b100) ? instr_5: (instr_6[2:0] == 3'b100) ? instr_6: (instr_7[2:0] == 3'b100) ? instr_7: (instr_8[2:0] == 3'b100) ? instr_8: 0);
         wb_instr_index = ((instr_1[2:0] == 3'b100) ? 0: (instr_2[2:0] == 3'b100) ? 1: (instr_3[2:0] == 3'b100) ? 2: (instr_4[2:0] == 3'b100) ? 3: (instr_5[2:0] == 3'b100) ? 4: (instr_6[2:0] == 3'b100) ? 5: (instr_7[2:0] == 3'b100) ? 6: (instr_8[2:0] == 3'b100) ? 7: 0);
         dest_wb = (wb_instr != 0) ? wb_instr[12:8] : dest_wb;   
+        vsew_wb = (wb_instr != 0) ? wb_instr [37:36] : vsew_wb;
+        lmul_wb = (wb_instr != 0) ? wb_instr [35:34] : lmul_wb;
         if (wb_instr != 0 && wb_instr_index == 0) begin
             el_wr_en = (wb_instr[29:27] == 3'b101 && wb_instr[39:38]==1) ? 1: 0; 
             v_reg_wr_en = ((wb_instr[29:27] == 3'b011) && ((wb_instr[26:23] == 4'b0111)||(wb_instr[26:23] == 4'b1000)||(wb_instr[26:23] == 4'b1001))) ? 0:(wb_instr[29:27] == 3'b101) ? 0: (wb_instr[39:38]==1) ? 1: 0;
