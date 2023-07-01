@@ -7,7 +7,7 @@ ADDI x28, x0, 4            # value for a
 jal, x0, parametric_relu
 
 
-parametric_relu:                # f(x) = max(ax, 0)
+parametric_relu:                # f(x) = max(ax, x)
     BEQ x8, x30, end
     LW x18, 0(x8)
     MUL x19, x18, x28
