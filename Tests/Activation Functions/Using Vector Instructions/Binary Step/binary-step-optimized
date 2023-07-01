@@ -6,7 +6,7 @@ vsetivli x20, x5, 10            # 16-bit elements, 512-bit vector
 jal, x0, binary_step
 
 
-binary_step:              # f(x) = x
+binary_step:              # f(x) = x < 0, 0: x >= 0 1
     addi x0, x0, 0
     beq x29, x9, end
     vle32.v v4, x28
