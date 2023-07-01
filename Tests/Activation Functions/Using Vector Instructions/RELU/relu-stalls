@@ -6,7 +6,7 @@ vsetivli x20, x5, 10            # 16-bit elements, 512-bit vector
 jal, x0, relu
 
 
-relu:              # f(x) = x
+relu:              # f(x) = max(0 , x)
     addi x0, x0, 0
     beq x29, x9, end
     vle32.v v4, x28
