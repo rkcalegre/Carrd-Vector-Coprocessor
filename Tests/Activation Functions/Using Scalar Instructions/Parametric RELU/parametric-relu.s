@@ -4,7 +4,7 @@ ADDI x7, x0, 0              # looper
 ADDI x30, x0, 3         
 SLLI x30, x30, 4
 ADDI x30, x30, 1
-SLLI x30, x30, 6            # max loop = 784 = 28*28 dataset
+SLLI x30, x30, 6           # max loop = 784 (28*28 dataset) * 4 (stalls for load/store)
 ADDI x28, x0, 4            # value for a
 jal, x0, parametric_relu
 
