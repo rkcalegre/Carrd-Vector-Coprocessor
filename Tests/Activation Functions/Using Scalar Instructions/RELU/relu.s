@@ -1,22 +1,22 @@
-addi x5, x0, 0          # store data address - load data from m[0]
-addi x6, x0, 0          # answer comparer
-addi x7, x0, 0          # looper
-addi x30, x0, 3         
-slli x30, x30, 4
-addi x30, x30, 1
-slli x30, x30, 4        # max loop = 784 = 28*28 dataset
+ADDI x8, x0, 0              # store data address - load data from m[0]
+ADDI x30, x0, 3         
+SLLI x30, x30, 4
+ADDI x30, x30, 1
+SLLI x30, x30, 6           # max loop = 784 (28*28 dataset) * 4 (stalls for load/store)
 jal, x0, relu
 
-relu:                   # f(x) = max(0 , x)
-    beq x7, x30, end
-    lw x18, 0(x5)
-    slt x19, x18, x6    # R[rd] = (rs1 < rs2) ? 1 : 0
-    slli x19, x19, 31
-    srai x19, x19, 31
-    and x19, x19, x18
-    addi x7, x7, 1
-    sw x19, 0(x5)
-    addi x5, x5, 1      # data_address++ 
+
+relu:                # f(x) = max(x, 0)
+    BEQ x8, x30, end
+    LW x18, 0(x8)
+    BLT x18, x0, less_than
+    SW x18, 0(x8)
+    ADDI x8, x8, 1          # data_address++ 
+    jal, x0, relu
+
+less_than:
+    SW x0, 0(x8)
+    ADDI x8, x8, 1          # data_address++ 
     jal, x0, relu
 
 end:
@@ -37,4 +37,3 @@ end:
     C.NOP
     C.NOP
     C.NOP
-
