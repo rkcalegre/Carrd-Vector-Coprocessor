@@ -203,14 +203,14 @@ module v_regfile (
     end
     // Pick the Data and push them to the Output
         assign reg_data_out_v1_a = regfile[reg_rd_addr_v1];
-        assign reg_data_out_v1_b = (lmul==3'b01 || lmul == 3'b10)? regfile[reg_rd_addr_v1 + 5'd1]:{128{1'b0}};
-        assign reg_data_out_v1_c = (lmul == 3'b10)? regfile[reg_rd_addr_v1 + 5'd2]:{128{1'b0}};
-        assign reg_data_out_v1_d = (lmul == 3'b10)? regfile[reg_rd_addr_v1 + 5'd3]:{128{1'b0}};
+        assign reg_data_out_v1_b = regfile[reg_rd_addr_v1 + 5'd1];
+        assign reg_data_out_v1_c = regfile[reg_rd_addr_v1 + 5'd2];
+        assign reg_data_out_v1_d = regfile[reg_rd_addr_v1 + 5'd3];
 
         assign reg_data_out_v2_a = regfile[reg_rd_addr_v2];
-        assign reg_data_out_v2_b = (lmul==3'b01 || lmul == 3'b10)? regfile[reg_rd_addr_v2 + 5'd1]:{128{1'b0}};
-        assign reg_data_out_v2_c = (lmul == 3'b10)? regfile[reg_rd_addr_v2 + 5'd2]:{128{1'b0}};
-        assign reg_data_out_v2_d = (lmul == 3'b10)? regfile[reg_rd_addr_v2 + 5'd3]:{128{1'b0}};
+        assign reg_data_out_v2_b = regfile[reg_rd_addr_v2 + 5'd1];
+        assign reg_data_out_v2_c = regfile[reg_rd_addr_v2 + 5'd2];
+        assign reg_data_out_v2_d = regfile[reg_rd_addr_v2 + 5'd3];
 
     // assign reg_data_out_v1 = regfile[reg_rd_addr_v1];
     // assign reg_data_out_v2 = regfile[reg_rd_addr_v2];
