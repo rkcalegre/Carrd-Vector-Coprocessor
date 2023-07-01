@@ -1,35 +1,26 @@
-addi x5, x0, 0              # store data address - load data from m[0]
-addi x6, x0, 0              # answer comparer
-addi x7, x0, 0              # looper
-addi x30, x0, 3         
-slli x30, x30, 4
-addi x30, x30, 1
-slli x30, x30, 4            # max loop = 784 = 28*28 dataset
-addi x28, x0, 15            # value for a
+ADDI x8, x0, 0              # store data address - load data from m[0]
+ADDI x6, x0, 0              # anSWer comparer
+ADDI x7, x0, 0              # looper
+ADDI x30, x0, 3         
+SLLI x30, x30, 4
+ADDI x30, x30, 1
+SLLI x30, x30, 6            # max loop = 784 = 28*28 dataset
+ADDI x28, x0, 4            # value for a
 jal, x0, parametric_relu
 
-parametric_relu:            # f(x) = max(ax , x)
-    beq x7, x30, end
-    lw x18, 0(x5)
-    mul x19, x18, x28       # x19 = ax
-    slt x20, x19, x18       # R[rd] = (rs1 < rs2) ? 1 : 0
-    slli x20, x20, 31
-    srai x20, x20, 31
-    beq x20, x6, skip
-    and x21, x20, x19
-    addi x7, x7, 1
-    sw x21, 0(x5)
-    addi x5, x5, 1          # data_address++ 
+
+parametric_relu:                # f(x) = max(ax, 0)
+    beq x8, x30, end
+    lw x18, 0(x8)
+    mul x19, x18, x28
+    sw x19, 0(x8)
+    addi x8, x8, 1          # data_address++ 
     jal, x0, parametric_relu
 
-skip:
-    addi x20, x20, 1
-    slli x20, x20, 31
-    srai x20, x20, 31
-    and x21, x20, x18
-    addi x7, x7, 1
-    sw x21, 0(x5)
-    addi x5, x5, 1          # data_address++ 
+less_than:
+    add x20, x19, x8
+    sw x18, 0(x8)
+    addi x8, x8, 1          # data_address++ 
     jal, x0, parametric_relu
 
 end:
@@ -50,4 +41,3 @@ end:
     C.NOP
     C.NOP
     C.NOP
-
