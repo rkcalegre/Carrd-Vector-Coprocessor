@@ -28,7 +28,7 @@ module carrd_integrated#(
 	0 - 4 lanes
 	1 - 8 lanes
 	2 - 16 lanes **/
-    parameter int LANES = 0                     // To be set before synthesizing the project. 
+    parameter int LANES = 2                     // To be set before synthesizing the project. 
 )(
 	input clk,
 	input nrst,
@@ -173,18 +173,20 @@ module carrd_integrated#(
     //assign data_addr3 = (is_vltype)? l_data_addr3 : s_data_addr3;
 
     logic [4:0] src_A, src_B, src_C, dest_wb;
+    logic [1:0] vsew_reg, lmul_reg;
     //assign which fi
     //assign which fj
     assign src_A = optype == 3'b001 ? Fj_alu: optype == 3'b010 ? Fj_mul: optype == 3'b011 ? Fj_lsu: optype == 3'b100 ? Fj_sldu: optype == 3'b101 ? Fj_red: 0;
     //assign which fk
     assign src_B = optype == 3'b001 ? Fk_alu: optype == 3'b010 ? Fk_mul: optype == 3'b011 ? Fk_lsu: optype == 3'b100 ? Fk_sldu: optype == 3'b101 ? Fk_red: 0;
-    assign src_C = (op_lsu inside {[7:12]}) ? Fi_lsu: src_A;
+    assign src_C = (optype == 3'b011 && is_vstype == 1) ? Fi_lsu: src_A;
+    assign src_D = (optype == 3'b100) ? Fi_sldu: src_B;
 
 	v_regfile vregfile(
         .clk(clk),
         .nrst(nrst),
-        .lmul(vlmul),
-        .sew(vsew),
+        .lmul({1'b0, lmul_reg}),
+        .sew({1'b0, vsew_reg}),
 	    .el_wr_en(el_wr_en),
         .el_wr_addr(el_wr_addr),
         .el_reg_wr_addr(dest_wb),
@@ -204,7 +206,7 @@ module carrd_integrated#(
 	    .el_data_out_2(el_data_out_2),
         .mask(mask),
         .reg_rd_addr_v1(src_C),
-        .reg_rd_addr_v2(src_B),
+        .reg_rd_addr_v2(src_D),
         .reg_data_out_v1_a(reg_data_out_v1_a),
         .reg_data_out_v1_b(reg_data_out_v1_b),
         .reg_data_out_v1_c(reg_data_out_v1_c),
@@ -304,7 +306,7 @@ module carrd_integrated#(
     logic [2:0] Qk_alu, Qk_mul, Qk_lsu, Qk_sldu, Qk_red, Qi_lsu;       // Functional unit producing Fk(3) (is_type)
     logic [4:0] Fj_alu, Fj_mul, Fj_lsu, Fj_sldu, Fj_red;        // source register 1 (5) (decoder)
     logic [4:0] Fk_alu, Fk_mul, Fk_lsu, Fk_sldu, Fk_red;        // source register 2 (5) (decoder)
-    logic [4:0] Fi_lsu;       // destination reg (5) (decoder)
+    logic [4:0] Fi_lsu, Fi_sldu;       // destination reg (5) (decoder)
     logic [4:0] Imm_alu, Imm_mul, Imm_lsu, Imm_sldu, Imm_red;  // scalar operand (5) (decoder)
     logic [3:0] op_alu, op_mul, op_lsu, op_sldu, op_red;   
     logic [2:0] optype, optype_wb;
@@ -336,7 +338,7 @@ module carrd_integrated#(
         .done_mul(done_vmul),
         .done_red(done_vred),
         .done_sldu(done_vsldu),        
-        .done_lsu(done_vloadu || done_store),  
+        .done_lsu(done_vloadu == 1 || done_store == 1),  
         .result_vlsu(result_vloadu),
         .result_valu_1(result_valu_1),
         .result_valu_2(result_valu_2),
@@ -374,6 +376,7 @@ module carrd_integrated#(
         .Qk_sldu(Qk_sldu),
         .Qk_red(Qk_red),
         .Qi_lsu(Qi_lsu),
+        .Qi_sldu(Qi_sldu),
         .Fj_alu(Fj_alu),
         .Fj_mul(Fj_mul),
         .Fj_lsu(Fj_lsu),
@@ -385,6 +388,7 @@ module carrd_integrated#(
         .Fk_sldu(Fk_sldu),
         .Fk_red(Fk_red),
         .Fi_lsu(Fi_lsu),
+        .Fi_sldu(Fi_sldu),
         .Imm_alu(Imm_alu),
         .Imm_mul(Imm_mul),
         .Imm_lsu(Imm_lsu),
@@ -399,12 +403,14 @@ module carrd_integrated#(
         .reg_wr_data_3(reg_wr_data_3), 
         .reg_wr_data_4(reg_wr_data_4),
         .optype_read(optype),
-        .dest_wb(dest_wb)
+        .dest_wb(dest_wb),
+        .vsew_wb(vsew_reg),
+        .lmul_wb(lmul_reg)
     );
 
         logic [511:0] op_A_alu, op_A_mul, op_A_lsu, op_A_sldu, op_A_red;
         logic [511:0] op_B_alu, op_B_mul, op_B_lsu, op_B_sldu, op_B_red;
-        logic [511:0] op_C_lsu;
+        logic [511:0] op_C_lsu, op_C_sldu;
         //assign source_a for each fu
         assign op_A_alu = (optype == 3'b001 && op_alu != 0)?((Qj_alu == 0) ? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,reg_data_out_v1_a}:  //vs1 data
                   (Qj_alu == 1) ? {result_valu_4, result_valu_3, result_valu_2, result_valu_1}:
@@ -533,6 +539,16 @@ module carrd_integrated#(
                                     (vsew_lsu == 3'b001) ? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,{reg_data_out_v1_a[127:16],result_vred[15:0]}}: 
                                     (vsew_lsu == 3'b010) ? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,{reg_data_out_v1_a[127:32],result_vred}}: op_C_lsu): op_C_lsu): op_C_lsu;
                   //(Qi_lsu == 5) ? {{480{1'b0}}, result_vred}: 0;  //immediate data 
+        
+         assign op_C_sldu = (optype == 3'b100) ? ((Qi_lsu == 0)? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,reg_data_out_v1_a}:  //vs1 data
+                  (Qi_sldu == 1) ? {result_valu_4, result_valu_3, result_valu_2, result_valu_1}:
+                  (Qi_sldu == 2) ? {result_vmul_4, result_vmul_3, result_vmul_2, result_vmul_1}:
+                  (Qi_sldu == 3) ? result_vloadu:
+                  (Qi_sldu == 4) ? result_vsldu:
+                  (Qi_sldu == 5) ? ((vsew_lsu == 3'b000) ? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,{reg_data_out_v1_a[127:8],result_vred[7:0]}}: 
+                                    (vsew_lsu == 3'b001) ? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,{reg_data_out_v1_a[127:16],result_vred[15:0]}}: 
+                                    (vsew_lsu == 3'b010) ? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,{reg_data_out_v1_a[127:32],result_vred}}: op_C_lsu): op_C_lsu): op_C_lsu;
+                  //(Qi_lsu == 5) ? {{480{1'b0}}, result_vred}: 0;  //immediate data 
 
     //Vector Reduction Blok
     logic done_vred;
@@ -568,6 +584,7 @@ module carrd_integrated#(
 	.vs2_2(op_B_sldu[255:128]),
 	.vs2_3(op_B_sldu[383:256]),
 	.vs2_4(op_B_sldu[511:384]),
+    .vd(op_C_sldu),
 	.rs1(op_A_sldu[127:0]),
     .done_vsldu(done_vsldu),
 	.result(result_vsldu)
