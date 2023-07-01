@@ -30,17 +30,14 @@ module v_sldu #(
     input logic [VECTOR_LENGTH-1:0] vs2_2,//vs2
     input logic [VECTOR_LENGTH-1:0] vs2_3,//vs2
     input logic [VECTOR_LENGTH-1:0] vs2_4,//vs2 to accomodate lmul=4
+    input logic [511:0] vd,//vd previous value
     input logic [VECTOR_LENGTH-1:0] rs1,//rs1     redefine limit of range (currently VECTOR_LENGTH)
     output bit done_vsldu,
     output logic [4*VECTOR_LENGTH-1:0] result //vd
 );
 
-    //logic [VALU_OP_W_MAX-1:0] element = vs2[0:VALU_OP_W_MAX-1]; //vs2            
-    //logic [VALU_OP_W_MAX-1:0] result;  //vd
-
     import v_pkg::*;
     logic [4*VECTOR_LENGTH-1:0] vector; //vs2
-    //logic [6:0] temp_rs1 = rs1[6:0];         
 
     assign vector ={vs2_4,vs2_3,vs2_2,vs2_1};
 
@@ -66,128 +63,128 @@ module v_sldu #(
 	           default: begin //sew=8
 	               case(rs1[6:0])
                         7'd0: result = vector;
-                        7'd1: result = {{vector[503:0]},{vector[7:0]}};
-                        7'd2: result = {{vector[495:0]},{vector[15:0]}};
-                        7'd3: result = {{vector[487:0]},{vector[23:0]}};
-                        7'd4: result = {{vector[479:0]},{vector[31:0]}};
-                        7'd5: result = {{vector[471:0]},{vector[39:0]}};
-                        7'd6: result = {{vector[463:0]},{vector[47:0]}};
-                        7'd7: result = {{vector[455:0]},{vector[55:0]}};
-                        7'd8: result = {{vector[447:0]},{vector[63:0]}};
-                        7'd9: result = {{vector[439:0]},{vector[71:0]}};
-                        7'd10: result = {{vector[431:0]},{vector[79:0]}};
-                        7'd11: result = {{vector[423:0]},{vector[87:0]}};
-                        7'd12: result = {{vector[415:0]},{vector[95:0]}};
-                        7'd13: result = {{vector[407:0]},{vector[103:0]}};
-                        7'd14: result = {{vector[399:0]},{vector[111:0]}};
-                        7'd15: result = {{vector[391:0]},{vector[119:0]}};
-                        7'd16: result = {{vector[383:0]},{vector[127:0]}};
-                        7'd17: result = {{vector[375:0]},{vector[135:0]}};
-                        7'd18: result = {{vector[367:0]},{vector[143:0]}};
-                        7'd19: result = {{vector[359:0]},{vector[151:0]}};
-                        7'd20: result = {{vector[351:0]},{vector[159:0]}};
-                        7'd21: result = {{vector[343:0]},{vector[167:0]}};
-                        7'd22: result = {{vector[335:0]},{vector[175:0]}};
-                        7'd23: result = {{vector[327:0]},{vector[183:0]}};
-                        7'd24: result = {{vector[319:0]},{vector[191:0]}};
-                        7'd25: result = {{vector[311:0]},{vector[199:0]}};
-                        7'd26: result = {{vector[303:0]},{vector[207:0]}};
-                        7'd27: result = {{vector[295:0]},{vector[215:0]}};
-                        7'd28: result = {{vector[287:0]},{vector[223:0]}};
-                        7'd29: result = {{vector[279:0]},{vector[231:0]}};
-                        7'd30: result = {{vector[271:0]},{vector[239:0]}};
-                        7'd31: result = {{vector[263:0]},{vector[247:0]}};
-                        7'd32: result = {{vector[255:0]},{vector[255:0]}};
-                        7'd33: result = {{vector[247:0]},{vector[263:0]}};
-                        7'd34: result = {{vector[239:0]},{vector[271:0]}};
-                        7'd35: result = {{vector[231:0]},{vector[279:0]}};
-                        7'd36: result = {{vector[223:0]},{vector[287:0]}};
-                        7'd37: result = {{vector[215:0]},{vector[295:0]}};
-                        7'd38: result = {{vector[207:0]},{vector[303:0]}};
-                        7'd39: result = {{vector[199:0]},{vector[311:0]}};
-                        7'd40: result = {{vector[191:0]},{vector[319:0]}};
-                        7'd41: result = {{vector[183:0]},{vector[327:0]}};
-                        7'd42: result = {{vector[175:0]},{vector[335:0]}};
-                        7'd43: result = {{vector[167:0]},{vector[343:0]}};
-                        7'd44: result = {{vector[159:0]},{vector[351:0]}};
-                        7'd45: result = {{vector[151:0]},{vector[359:0]}};
-                        7'd46: result = {{vector[143:0]},{vector[367:0]}};
-                        7'd47: result = {{vector[135:0]},{vector[375:0]}};
-                        7'd48: result = {{vector[127:0]},{vector[383:0]}};
-                        7'd49: result = {{vector[119:0]},{vector[391:0]}};
-                        7'd50: result = {{vector[111:0]},{vector[399:0]}};
-                        7'd51: result = {{vector[103:0]},{vector[407:0]}};
-                        7'd52: result = {{vector[95:0]},{vector[415:0]}};
-                        7'd53: result = {{vector[87:0]},{vector[423:0]}};
-                        7'd54: result = {{vector[79:0]},{vector[431:0]}};
-                        7'd55: result = {{vector[71:0]},{vector[439:0]}};
-                        7'd56: result = {{vector[63:0]},{vector[447:0]}};
-                        7'd57: result = {{vector[55:0]},{vector[455:0]}};
-                        7'd58: result = {{vector[47:0]},{vector[463:0]}};
-                        7'd59: result = {{vector[39:0]},{vector[471:0]}};
-                        7'd60: result = {{vector[31:0]},{vector[479:0]}};
-                        7'd61: result = {{vector[23:0]},{vector[487:0]}};
-                        7'd62: result = {{vector[15:0]},{vector[495:0]}};
-                        7'd63: result = {{vector[7:0]},{vector[503:0]}};
-                        default: result = vector;
+                        7'd1: result = {{vector[503:0]},{vd[7:0]}};
+                        7'd2: result = {{vector[495:0]},{vd[15:0]}};
+                        7'd3: result = {{vector[487:0]},{vd[23:0]}};
+                        7'd4: result = {{vector[479:0]},{vd[31:0]}};
+                        7'd5: result = {{vector[471:0]},{vd[39:0]}};
+                        7'd6: result = {{vector[463:0]},{vd[47:0]}};
+                        7'd7: result = {{vector[455:0]},{vd[55:0]}};
+                        7'd8: result = {{vector[447:0]},{vd[63:0]}};
+                        7'd9: result = {{vector[439:0]},{vd[71:0]}};
+                        7'd10: result = {{vector[431:0]},{vd[79:0]}};
+                        7'd11: result = {{vector[423:0]},{vd[87:0]}};
+                        7'd12: result = {{vector[415:0]},{vd[95:0]}};
+                        7'd13: result = {{vector[407:0]},{vd[103:0]}};
+                        7'd14: result = {{vector[399:0]},{vd[111:0]}};
+                        7'd15: result = {{vector[391:0]},{vd[119:0]}};
+                        7'd16: result = {{vector[383:0]},{vd[127:0]}};
+                        7'd17: result = {{vector[375:0]},{vd[135:0]}};
+                        7'd18: result = {{vector[367:0]},{vd[143:0]}};
+                        7'd19: result = {{vector[359:0]},{vd[151:0]}};
+                        7'd20: result = {{vector[351:0]},{vd[159:0]}};
+                        7'd21: result = {{vector[343:0]},{vd[167:0]}};
+                        7'd22: result = {{vector[335:0]},{vd[175:0]}};
+                        7'd23: result = {{vector[327:0]},{vd[183:0]}};
+                        7'd24: result = {{vector[319:0]},{vd[191:0]}};
+                        7'd25: result = {{vector[311:0]},{vd[199:0]}};
+                        7'd26: result = {{vector[303:0]},{vd[207:0]}};
+                        7'd27: result = {{vector[295:0]},{vd[215:0]}};
+                        7'd28: result = {{vector[287:0]},{vd[223:0]}};
+                        7'd29: result = {{vector[279:0]},{vd[231:0]}};
+                        7'd30: result = {{vector[271:0]},{vd[239:0]}};
+                        7'd31: result = {{vector[263:0]},{vd[247:0]}};
+                        7'd32: result = {{vector[255:0]},{vd[255:0]}};
+                        7'd33: result = {{vector[247:0]},{vd[263:0]}};
+                        7'd34: result = {{vector[239:0]},{vd[271:0]}};
+                        7'd35: result = {{vector[231:0]},{vd[279:0]}};
+                        7'd36: result = {{vector[223:0]},{vd[287:0]}};
+                        7'd37: result = {{vector[215:0]},{vd[295:0]}};
+                        7'd38: result = {{vector[207:0]},{vd[303:0]}};
+                        7'd39: result = {{vector[199:0]},{vd[311:0]}};
+                        7'd40: result = {{vector[191:0]},{vd[319:0]}};
+                        7'd41: result = {{vector[183:0]},{vd[327:0]}};
+                        7'd42: result = {{vector[175:0]},{vd[335:0]}};
+                        7'd43: result = {{vector[167:0]},{vd[343:0]}};
+                        7'd44: result = {{vector[159:0]},{vd[351:0]}};
+                        7'd45: result = {{vector[151:0]},{vd[359:0]}};
+                        7'd46: result = {{vector[143:0]},{vd[367:0]}};
+                        7'd47: result = {{vector[135:0]},{vd[375:0]}};
+                        7'd48: result = {{vector[127:0]},{vd[383:0]}};
+                        7'd49: result = {{vector[119:0]},{vd[391:0]}};
+                        7'd50: result = {{vector[111:0]},{vd[399:0]}};
+                        7'd51: result = {{vector[103:0]},{vd[407:0]}};
+                        7'd52: result = {{vector[95:0]},{vd[415:0]}};
+                        7'd53: result = {{vector[87:0]},{vd[423:0]}};
+                        7'd54: result = {{vector[79:0]},{vd[431:0]}};
+                        7'd55: result = {{vector[71:0]},{vd[439:0]}};
+                        7'd56: result = {{vector[63:0]},{vd[447:0]}};
+                        7'd57: result = {{vector[55:0]},{vd[455:0]}};
+                        7'd58: result = {{vector[47:0]},{vd[463:0]}};
+                        7'd59: result = {{vector[39:0]},{vd[471:0]}};
+                        7'd60: result = {{vector[31:0]},{vd[479:0]}};
+                        7'd61: result = {{vector[23:0]},{vd[487:0]}};
+                        7'd62: result = {{vector[15:0]},{vd[495:0]}};
+                        7'd63: result = {{vector[7:0]},{vd[503:0]}};
+                        default: result = vd;
 	                endcase
 	            end
 	           3'b001: begin  //sew=16 
 	                case(rs1[6:0])
                         7'd0: result = vector;
-                        7'd1: result = {{vector[495:0]},{vector[15:0]}};
-                        7'd2: result = {{vector[479:0]},{vector[31:0]}};
-                        7'd3: result = {{vector[463:0]},{vector[47:0]}};
-                        7'd4: result = {{vector[447:0]},{vector[63:0]}};
-                        7'd5: result = {{vector[431:0]},{vector[79:0]}};
-                        7'd6: result = {{vector[415:0]},{vector[95:0]}};
-                        7'd7: result = {{vector[399:0]},{vector[111:0]}};
-                        7'd8: result = {{vector[383:0]},{vector[127:0]}};
-                        7'd9: result = {{vector[367:0]},{vector[143:0]}};
-                        7'd10: result = {{vector[351:0]},{vector[159:0]}};
-                        7'd11: result = {{vector[335:0]},{vector[175:0]}};
-                        7'd12: result = {{vector[319:0]},{vector[191:0]}};
-                        7'd13: result = {{vector[303:0]},{vector[207:0]}};
-                        7'd14: result = {{vector[287:0]},{vector[223:0]}};
-                        7'd15: result = {{vector[271:0]},{vector[239:0]}};
-                        7'd16: result = {{vector[255:0]},{vector[255:0]}};
-                        7'd17: result = {{vector[239:0]},{vector[271:0]}};
-                        7'd18: result = {{vector[223:0]},{vector[287:0]}};
-                        7'd19: result = {{vector[207:0]},{vector[303:0]}};
-                        7'd20: result = {{vector[191:0]},{vector[319:0]}};
-                        7'd21: result = {{vector[175:0]},{vector[335:0]}};
-                        7'd22: result = {{vector[159:0]},{vector[351:0]}};
-                        7'd23: result = {{vector[143:0]},{vector[367:0]}};
-                        7'd24: result = {{vector[127:0]},{vector[383:0]}};
-                        7'd25: result = {{vector[111:0]},{vector[399:0]}};
-                        7'd26: result = {{vector[95:0]},{vector[415:0]}};
-                        7'd27: result = {{vector[79:0]},{vector[431:0]}};
-                        7'd28: result = {{vector[63:0]},{vector[447:0]}};
-                        7'd29: result = {{vector[47:0]},{vector[463:0]}};
-                        7'd30: result = {{vector[31:0]},{vector[479:0]}};
-                        7'd31: result = {{vector[15:0]},{vector[495:0]}};
-                        default: result = vector;
+                        7'd1: result = {{vector[495:0]},{vd[15:0]}};
+                        7'd2: result = {{vector[479:0]},{vd[31:0]}};
+                        7'd3: result = {{vector[463:0]},{vd[47:0]}};
+                        7'd4: result = {{vector[447:0]},{vd[63:0]}};
+                        7'd5: result = {{vector[431:0]},{vd[79:0]}};
+                        7'd6: result = {{vector[415:0]},{vd[95:0]}};
+                        7'd7: result = {{vector[399:0]},{vd[111:0]}};
+                        7'd8: result = {{vector[383:0]},{vd[127:0]}};
+                        7'd9: result = {{vector[367:0]},{vd[143:0]}};
+                        7'd10: result = {{vector[351:0]},{vd[159:0]}};
+                        7'd11: result = {{vector[335:0]},{vd[175:0]}};
+                        7'd12: result = {{vector[319:0]},{vd[191:0]}};
+                        7'd13: result = {{vector[303:0]},{vd[207:0]}};
+                        7'd14: result = {{vector[287:0]},{vd[223:0]}};
+                        7'd15: result = {{vector[271:0]},{vd[239:0]}};
+                        7'd16: result = {{vector[255:0]},{vd[255:0]}};
+                        7'd17: result = {{vector[239:0]},{vd[271:0]}};
+                        7'd18: result = {{vector[223:0]},{vd[287:0]}};
+                        7'd19: result = {{vector[207:0]},{vd[303:0]}};
+                        7'd20: result = {{vector[191:0]},{vd[319:0]}};
+                        7'd21: result = {{vector[175:0]},{vd[335:0]}};
+                        7'd22: result = {{vector[159:0]},{vd[351:0]}};
+                        7'd23: result = {{vector[143:0]},{vd[367:0]}};
+                        7'd24: result = {{vector[127:0]},{vd[383:0]}};
+                        7'd25: result = {{vector[111:0]},{vd[399:0]}};
+                        7'd26: result = {{vector[95:0]},{vd[415:0]}};
+                        7'd27: result = {{vector[79:0]},{vd[431:0]}};
+                        7'd28: result = {{vector[63:0]},{vd[447:0]}};
+                        7'd29: result = {{vector[47:0]},{vd[463:0]}};
+                        7'd30: result = {{vector[31:0]},{vd[479:0]}};
+                        7'd31: result = {{vector[15:0]},{vd[495:0]}};
+                        default: result = vd;
                     endcase
                 end
 	           3'b010: begin   //sew=32
 	               case(rs1[6:0])
                         7'd0: result = vector;
-                        7'd1: result = {{vector[479:0]},{vector[31:0]}};
-                        7'd2: result = {{vector[447:0]},{vector[63:0]}};
-                        7'd3: result = {{vector[415:0]},{vector[95:0]}};
-                        7'd4: result = {{vector[383:0]},{vector[127:0]}};
-                        7'd5: result = {{vector[351:0]},{vector[159:0]}};
-                        7'd6: result = {{vector[319:0]},{vector[191:0]}};
-                        7'd7: result = {{vector[287:0]},{vector[223:0]}};
-                        7'd8: result = {{vector[255:0]},{vector[255:0]}};
-                        7'd9: result = {{vector[223:0]},{vector[287:0]}};
-                        7'd10: result = {{vector[191:0]},{vector[319:0]}};
-                        7'd11: result = {{vector[159:0]},{vector[351:0]}};
-                        7'd12: result = {{vector[127:0]},{vector[383:0]}};
-                        7'd13: result = {{vector[95:0]},{vector[415:0]}};
-                        7'd14: result = {{vector[63:0]},{vector[447:0]}};
-                        7'd15: result = {{vector[31:0]},{vector[479:0]}};
-                        default: result = vector;
+                        7'd1: result = {{vector[479:0]},{vd[31:0]}};
+                        7'd2: result = {{vector[447:0]},{vd[63:0]}};
+                        7'd3: result = {{vector[415:0]},{vd[95:0]}};
+                        7'd4: result = {{vector[383:0]},{vd[127:0]}};
+                        7'd5: result = {{vector[351:0]},{vd[159:0]}};
+                        7'd6: result = {{vector[319:0]},{vd[191:0]}};
+                        7'd7: result = {{vector[287:0]},{vd[223:0]}};
+                        7'd8: result = {{vector[255:0]},{vd[255:0]}};
+                        7'd9: result = {{vector[223:0]},{vd[287:0]}};
+                        7'd10: result = {{vector[191:0]},{vd[319:0]}};
+                        7'd11: result = {{vector[159:0]},{vd[351:0]}};
+                        7'd12: result = {{vector[127:0]},{vd[383:0]}};
+                        7'd13: result = {{vector[95:0]},{vd[415:0]}};
+                        7'd14: result = {{vector[63:0]},{vd[447:0]}};
+                        7'd15: result = {{vector[31:0]},{vd[479:0]}};
+                        default: result = vd;
 	               endcase
 	            end
                 endcase
