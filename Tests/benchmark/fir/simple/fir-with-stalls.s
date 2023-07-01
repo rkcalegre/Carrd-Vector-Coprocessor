@@ -1,226 +1,511 @@
-ADDI x5, x0, 16         # x5 = 16
-vsetivli x20, x5, 18    # 32 bit elements 512-bit vector
-ADDI x1, x0, 16
-ADDI x2, x0, 32
-ADDI x3, x0, 48
-ADDI x4, x0, 64
-ADDI x6, x0, 80
-vle32.v v8, x2
+addi x5, x0, 16         # x5 = 16
 C.NOP
 C.NOP
 C.NOP
+vsetivli x20, x5, 10    # 16-bit elements, 512-bit vector
+addi x28, x0, 16         # store data address & load data from m[0]
+
+#relu 0
+vle32.v v4, x0          
 C.NOP
 C.NOP
-vle32.v v12, x3
 C.NOP
 C.NOP
+vmax.vv v8, v0, v4
 C.NOP
 C.NOP
+vse32.v v8, x0         
 C.NOP
-vmul.vv v12, v12, v12
 C.NOP
 C.NOP
 C.NOP
+
+#relu 1
+vle32.v v4, x28          
 C.NOP
 C.NOP
-vadd.vv v20, v12, v8
 C.NOP
 C.NOP
+vmax.vv v8, v0, v4
 C.NOP
 C.NOP
+vse32.v v8, x28         
 C.NOP
-vle32.v v16, x4
 C.NOP
 C.NOP
 C.NOP
+addi x28, x28, 16
 C.NOP
 C.NOP
-vmul.vv v16, v16, v16
+
+#relu 2
+vle32.v v4, x28          
 C.NOP
 C.NOP
 C.NOP
 C.NOP
+vmax.vv v8, v0, v4
 C.NOP
-vle32.v v0, x0
 C.NOP
+vse32.v v8, x28         
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vadd.vv v24, v16, v0
+addi x28, x28, 16
 C.NOP
 C.NOP
+
+#relu 3
+vle32.v v4, x28          
 C.NOP
 C.NOP
 C.NOP
-vle32.v v4, x1
 C.NOP
+vmax.vv v8, v0, v4
 C.NOP
 C.NOP
+vse32.v v8, x28         
 C.NOP
 C.NOP
-vadd.vv v20, v20, v4
 C.NOP
 C.NOP
+addi x28, x28, 16
 C.NOP
 C.NOP
+
+#relu 4
+vle32.v v4, x28          
 C.NOP
-vadd.vv v20, v20, v24
 C.NOP
 C.NOP
 C.NOP
+vmax.vv v8, v0, v4
 C.NOP
 C.NOP
-vse32.v v20, x0
+vse32.v v8, x28         
 C.NOP
 C.NOP
 C.NOP
 C.NOP
+addi x28, x28, 16
 C.NOP
 C.NOP
-vsetivli x20, x5, 10    # 16 bit elements 512-bit vector
-vle32.v v8, x2
-ADDI x3, x0, 48
+
+#relu 5
+vle32.v v4, x28          
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vle32.v v12, x3
+vmax.vv v8, v0, v4
 C.NOP
 C.NOP
+vse32.v v8, x28         
 C.NOP
 C.NOP
 C.NOP
-vmul.vv v12, v12, v12
 C.NOP
+addi x28, x28, 16
 C.NOP
 C.NOP
+
+#relu 6
+vle32.v v4, x28          
 C.NOP
 C.NOP
-vadd.vv v20, v12, v8
-ADDI x4, x0, 64
 C.NOP
 C.NOP
+vmax.vv v8, v0, v4
 C.NOP
 C.NOP
-vle32.v v16, x4
+vse32.v v8, x28         
 C.NOP
 C.NOP
 C.NOP
 C.NOP
+addi x28, x28, 16
 C.NOP
-vmul.vv v16, v16, v16
 C.NOP
+
+#relu 7
+vle32.v v4, x28          
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vle32.v v0, x0
+vmax.vv v8, v0, v4
 C.NOP
 C.NOP
+vse32.v v8, x28         
 C.NOP
 C.NOP
 C.NOP
-vadd.vv v24, v16, v0
 C.NOP
+addi x28, x28, 16
 C.NOP
 C.NOP
+
+#relu 8
+vle32.v v4, x28          
 C.NOP
 C.NOP
-vle32.v v4, x1
 C.NOP
 C.NOP
+vmax.vv v8, v0, v4
 C.NOP
 C.NOP
+vse32.v v8, x28         
 C.NOP
-vadd.vv v20, v20, v4
 C.NOP
 C.NOP
 C.NOP
+addi x28, x28, 16
 C.NOP
 C.NOP
-vadd.vv v20, v20, v24
+
+#relu 9
+vle32.v v4, x28          
 C.NOP
 C.NOP
 C.NOP
 C.NOP
+vmax.vv v8, v0, v4
 C.NOP
-vse32.v v20, x1
-ADDI x22, x0, 112
 C.NOP
+vse32.v v8, x28         
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vsetivli x20, x5, 2     # 8 bit elements 512-bit vector
-vle32.v v8, x22
-ADDI x23, x0, 128
+addi x28, x28, 16
 C.NOP
 C.NOP
+
+#relu 10
+vle32.v v4, x28          
 C.NOP
 C.NOP
-vle32.v v12, x23
 C.NOP
 C.NOP
+vmax.vv v8, v0, v4
 C.NOP
 C.NOP
+vse32.v v8, x28         
 C.NOP
-vmul.vv v12, v12, v12
 C.NOP
 C.NOP
 C.NOP
+addi x28, x28, 16
 C.NOP
 C.NOP
-vadd.vv v20, v12, v8
-ADDI x24, x0, 144
+
+#relu 11
+vle32.v v4, x28          
 C.NOP
 C.NOP
 C.NOP
 C.NOP
+vmax.vv v8, v0, v4
 C.NOP
-vle32.v v16, x24
 C.NOP
+vse32.v v8, x28         
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vmul.vv v16, v16, v16
-ADDI x20, x0, 80
+addi x28, x28, 16
 C.NOP
 C.NOP
+
+#relu 12
+vle32.v v4, x28          
 C.NOP
 C.NOP
-vle32.v v0, x20
 C.NOP
 C.NOP
+vmax.vv v8, v0, v4
 C.NOP
 C.NOP
+vse32.v v8, x28         
 C.NOP
-vadd.vv v24, v16, v0
-ADDI x21, x0, 96
 C.NOP
 C.NOP
 C.NOP
+addi x28, x28, 16
 C.NOP
-vle32.v v4, x21
 C.NOP
+
+#relu 13
+vle32.v v4, x28          
 C.NOP
 C.NOP
 C.NOP
 C.NOP
-vadd.vv v20, v20, v4
+vmax.vv v8, v0, v4
 C.NOP
 C.NOP
+vse32.v v8, x28         
 C.NOP
 C.NOP
 C.NOP
-vadd.vv v20, v20, v24
-ADDI x26, x0, 32
 C.NOP
+addi x28, x28, 16
 C.NOP
 C.NOP
+
+#relu 14
+vle32.v v4, x28          
 C.NOP
-vse32.v v20, x26
+C.NOP
+C.NOP
+C.NOP
+vmax.vv v8, v0, v4
+C.NOP
+C.NOP
+vse32.v v8, x28         
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+addi x28, x28, 16
+C.NOP
+C.NOP
+
+#relu 15
+vle32.v v4, x28          
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vmax.vv v8, v0, v4
+C.NOP
+C.NOP
+vse32.v v8, x28         
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+addi x28, x28, 16
+C.NOP
+C.NOP
+
+#relu 16
+vle32.v v4, x28          
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vmax.vv v8, v0, v4
+C.NOP
+C.NOP
+vse32.v v8, x28         
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+addi x28, x28, 16
+C.NOP
+C.NOP
+
+#relu 17
+vle32.v v4, x28          
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vmax.vv v8, v0, v4
+C.NOP
+C.NOP
+vse32.v v8, x28         
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+addi x28, x28, 16
+C.NOP
+C.NOP
+
+#relu 18
+vle32.v v4, x28          
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vmax.vv v8, v0, v4
+C.NOP
+C.NOP
+vse32.v v8, x28         
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+addi x28, x28, 16
+C.NOP
+C.NOP
+
+#relu 19
+vle32.v v4, x28          
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vmax.vv v8, v0, v4
+C.NOP
+C.NOP
+vse32.v v8, x28         
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+addi x28, x28, 16
+C.NOP
+C.NOP
+
+#relu 20
+vle32.v v4, x28          
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vmax.vv v8, v0, v4
+C.NOP
+C.NOP
+vse32.v v8, x28         
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+addi x28, x28, 16
+C.NOP
+C.NOP
+
+#relu 21
+vle32.v v4, x28          
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vmax.vv v8, v0, v4
+C.NOP
+C.NOP
+vse32.v v8, x28         
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+addi x28, x28, 16
+C.NOP
+C.NOP
+
+#relu 22
+vle32.v v4, x28          
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vmax.vv v8, v0, v4
+C.NOP
+C.NOP
+vse32.v v8, x28         
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+addi x28, x28, 16
+C.NOP
+C.NOP
+
+#relu 23
+vle32.v v4, x28          
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vmax.vv v8, v0, v4
+C.NOP
+C.NOP
+vse32.v v8, x28         
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+addi x28, x28, 16
+C.NOP
+C.NOP
+
+#relu 24
+vle32.v v4, x28          
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vmax.vv v8, v0, v4
+C.NOP
+C.NOP
+vse32.v v8, x28         
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+addi x28, x28, 16
+C.NOP
+C.NOP
+
+#relu 25
+vle32.v v4, x28          
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vmax.vv v8, v0, v4
+C.NOP
+C.NOP
+vse32.v v8, x28         
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+addi x28, x28, 16
+C.NOP
+C.NOP
+
+#relu 26
+vle32.v v4, x28          
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vmax.vv v8, v0, v4
+C.NOP
+C.NOP
+vse32.v v8, x28         
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+addi x28, x28, 16
+C.NOP
+C.NOP
+
+#relu 27
+vle32.v v4, x28          
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+vmax.vv v8, v0, v4
+C.NOP
+C.NOP
+vse32.v v8, x28         
+C.NOP
+C.NOP
+C.NOP
+C.NOP
+
+
+#end
+C.NOP
 C.NOP
 C.NOP
 C.NOP
