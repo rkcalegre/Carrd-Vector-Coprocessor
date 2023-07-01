@@ -1,5 +1,4 @@
 ADDI x8, x0, 0              # store data address - load data from m[0]
-ADDI x7, x0, 0              # looper
 ADDI x30, x0, 3         
 SLLI x30, x30, 4
 ADDI x30, x30, 1
