@@ -172,7 +172,7 @@ module carrd_integrated#(
     //assign data_addr2 = (is_vltype)? l_data_addr2 : s_data_addr2;
     //assign data_addr3 = (is_vltype)? l_data_addr3 : s_data_addr3;
 
-    logic [4:0] src_A, src_B, src_C, dest_wb;
+	logic [4:0] src_A, src_B, src_C, src_D, dest_wb;
     logic [1:0] vsew_reg, lmul_reg;
     //assign which fi
     //assign which fj
