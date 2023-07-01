@@ -10,17 +10,17 @@ jal, x0, parametric_relu
 
 
 parametric_relu:                # f(x) = max(ax, 0)
-    beq x8, x30, end
-    lw x18, 0(x8)
-    mul x19, x18, x28
-    sw x19, 0(x8)
-    addi x8, x8, 1          # data_address++ 
+    BEQ x8, x30, end
+    LW x18, 0(x8)
+    MUL x19, x18, x28
+    BLT x19, x18, less_than
+    SW x19, 0(x8)
+    ADDI x8, x8, 1          # data_address++ 
     jal, x0, parametric_relu
 
 less_than:
-    add x20, x19, x8
-    sw x18, 0(x8)
-    addi x8, x8, 1          # data_address++ 
+    SW x18, 0(x8)
+    ADDI x8, x8, 1          # data_address++ 
     jal, x0, parametric_relu
 
 end:
