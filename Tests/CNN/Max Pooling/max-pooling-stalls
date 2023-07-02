@@ -47,7 +47,7 @@ load_input:
     vslidedown.vi v12, v12, 4   # drop first 4 elements of row4
     addi x10, x10, 1            # loop1 counter++
     vsetivli x20, x5, 9         # 16-bit elements, 256-bit vector 
-    vredmax.vs v20, v20, v20    # write answer to v28
+    vredmax.vs v20, v20, v20    # write answer to v20
     vslideup.vx v28, v20, x31   # shift contents of answer vector
     addi x31, x31, 1            # increment shift answer
     vsetivli x20, x5, 10        # 16-bit elements, 512-bit vector 
