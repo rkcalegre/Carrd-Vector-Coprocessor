@@ -10,11 +10,14 @@ addi x9, x0, 14                 # max loop counter
 addi x10, x0, 0                 # looper1 for load_input
 addi x11, x0, 0                 # looper2 for kernel_load
 addi x12, x0, 0                 # looper3 for convolution
+addi x25, x0, 0                 # address of v0 every row iteration
 jal, x0, load_input
 
 load_input:                     # loads 4 rows of 128b data into v0-v3, v4-v7, v8-v11, and v12-v15
     addi x0, x0, 0
     beq x10, x9, end
+    add x21, x0, x25           # adjusting v0 load address 
+    addi x25, x25, 32           #implemented since stride = 2
     addi x11, x0, 0             # reset loop2 counter
     vsetivli x20, x5, 10        # 16-bit elements, 512-bit vector
     vle32.v v0, x21             # Loads a single 32-element row
@@ -133,6 +136,7 @@ store_ans:
     jal, x0, convolution
 
 end:
+    vse32.v x28, x30            # account for the remaining answers not stored above
     C.NOP
     C.NOP
     C.NOP
