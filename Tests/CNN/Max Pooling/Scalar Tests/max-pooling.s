@@ -23,7 +23,7 @@ loop_row:                       # next row of input array with stride = 2
 
 loop_kernel:
     addi x8, x31, 0            # reset load address
-    addi x23, x0, 0           # set temp operand1
+    addi x23, x0, 0            # x23 = max number holder
     bne x31, x15, loop_kernel_elem
     addi x0, x0, 0
     addi x31, x31, 192
@@ -43,7 +43,7 @@ loop_kernel_elem:
     lw x20, 8(x8)              # load element 2    
     lw x21, 12(x8)             # load element 3
     addi x8, x8, 128
-    add x24, x0, x18           # set temp operand2
+    add x24, x0, x18           # temp shifted element holder
     jal x0, max
 
 max:
