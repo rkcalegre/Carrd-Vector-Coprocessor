@@ -47,7 +47,7 @@ module v_sequencer #(
     output logic v_reg_wr_en, x_reg_wr_en, el_wr_en,
     output logic [127:0]  reg_wr_data, reg_wr_data_2, reg_wr_data_3, reg_wr_data_4,
     //output logic busy_alu, busy_mul, busy_lsu, busy_sldu, busy_red,
-    output logic [5:0] el_wr_addr
+    output logic [4:0] el_wr_addr
 );
 
 
@@ -118,6 +118,7 @@ module v_sequencer #(
     logic [IST_ENTRY_BITS-1:0] instr_7;
     logic [IST_ENTRY_BITS-1:0] instr_8; // IST  
     logic [IST_ENTRY_BITS-1:0] instr_read = 0; 
+    logic [IST_ENTRY_BITS-1:0] alu_read, mul_read, lsu_read, sldu_read, red_read;
     logic [IST_ENTRY_BITS-1:0] alu_exec = 0; 
     logic [IST_ENTRY_BITS-1:0] mul_exec = 0; 
     logic [IST_ENTRY_BITS-1:0] lsu_exec = 0; 
@@ -125,6 +126,11 @@ module v_sequencer #(
     logic [IST_ENTRY_BITS-1:0] red_exec = 0; 
     logic [IST_ENTRY_BITS-1:0] wb_instr = 0;
     logic [2:0] instr_read_index = 0; 
+    logic [2:0] alu_read_index; 
+    logic [2:0] mul_read_index; 
+    logic [2:0] lsu_read_index;
+    logic [2:0] sldu_read_index; 
+    logic [2:0] red_read_index; 
     logic [2:0] alu_exec_index = 0; 
     logic [2:0] mul_exec_index = 0; 
     logic [2:0] lsu_exec_index = 0; 
@@ -142,7 +148,33 @@ module v_sequencer #(
     logic wr_sldu = 0; 
     logic wr_red = 0;
     logic lsu_raw;
+    logic [5:0] dest_1, dest_2, dest_3, dest_4, dest_5, dest_6, dest_7, dest_8;
+    logic opA_1 = 0;
+    logic opA_2 = 0; 
+    logic opA_3 = 0;
+    logic opA_4 = 0;
+    logic opA_5 = 0;
+    logic opA_6 = 0; 
+    logic opA_7 = 0;
+    logic opA_8 = 0;
+    logic opB_1 = 0;
+    logic opB_2 = 0; 
+    logic opB_3 = 0;
+    logic opB_4 = 0;
+    logic opB_5 = 0;
+    logic opB_6 = 0; 
+    logic opB_7 = 0;
+    logic opB_8 = 0;
+    logic opC_1 = 0;
+    logic opC_2 = 0; 
+    logic opC_3 = 0;
+    logic opC_4 = 0;
+    logic opC_5 = 0;
+    logic opC_6 = 0; 
+    logic opC_7 = 0;
+    logic opC_8 = 0;
 
+// input
     assign fifo_full = (fifo_count == NO_OF_SLOTS);
     assign instr_1 = instr_status_table[0];
     assign instr_2 = instr_status_table[1];
@@ -152,17 +184,28 @@ module v_sequencer #(
     assign instr_6 = instr_status_table[5];
     assign instr_7 = instr_status_table[6];
     assign instr_8 = instr_status_table[7];
-    assign is_vstype = (op_lsu inside {[7:12]});
-    assign is_vltype = (op_lsu inside {[1:6]});
     assign op = (v_alu_op != 0) ? 3'b001: (is_mul != 0) ? 3'b010: v_lsu_op != 0 ? 3'b011: (v_sldu_op != 0) ? 3'b100: (v_red_op != 0) ? 3'b101:3'b000;
     assign op_instr = op == 3'b001 ? v_alu_op: op == 3'b010 ? is_mul: op == 3'b011 ? v_lsu_op: op == 3'b100 ? v_sldu_op: 3'b101 ? v_red_op: 0;
+    assign dest_1 = (instr_1[29:27] != 3'b011 && (instr_1[26:23] inside {[7:12]} != 0)) ? {1'b1, instr_1[12:8]}: {1'b0, instr_1[12:8]};
+    assign dest_2 = (instr_2[29:27] != 3'b011 && (instr_2[26:23] inside {[7:12]} != 0)) ? {1'b1, instr_2[12:8]}: {1'b0, instr_2[12:8]};
+    assign dest_3 = (instr_3[29:27] != 3'b011 && (instr_3[26:23] inside {[7:12]} != 0)) ? {1'b1, instr_3[12:8]}: {1'b0, instr_3[12:8]};
+    assign dest_4 = (instr_4[29:27] != 3'b011 && (instr_4[26:23] inside {[7:12]} != 0)) ? {1'b1, instr_4[12:8]}: {1'b0, instr_4[12:8]};
+    assign dest_5 = (instr_5[29:27] != 3'b011 && (instr_5[26:23] inside {[7:12]} != 0)) ? {1'b1, instr_5[12:8]}: {1'b0, instr_5[12:8]};
+    assign dest_6 = (instr_6[29:27] != 3'b011 && (instr_6[26:23] inside {[7:12]} != 0)) ? {1'b1, instr_6[12:8]}: {1'b0, instr_6[12:8]};
+    assign dest_7 = (instr_7[29:27] != 3'b011 && (instr_7[26:23] inside {[7:12]} != 0)) ? {1'b1, instr_7[12:8]}: {1'b0, instr_7[12:8]};
+    assign dest_8 = (instr_8[29:27] != 3'b011 && (instr_8[26:23] inside {[7:12]} != 0)) ? {1'b1, instr_8[12:8]}: {1'b0, instr_8[12:8]};
+//
+
+// execute
+    assign is_vstype = (op_lsu inside {[7:12]});
+    assign is_vltype = (op_lsu inside {[1:6]});
     assign lsu_raw = is_vltype == 1 ? 1: is_vstype == 1 ? 0: lsu_raw;
 
     always @(clk) begin      
         // Write to Instruction Status Table
         if (nrst) begin
             if (fifo_full == 0 && base_instr != 0 && is_vector == 1 && is_vconfig ==  0 && clk == 0) begin
-                instr_status_table[fifo_count] = {sel_dest, vsew, lmul, sel_op_A, sel_op_B, op, op_instr, src_A, src_B, dest, imm, 3'b010};
+                instr_status_table[fifo_count] = {sel_dest, vsew, lmul, sel_op_A, sel_op_B, op, op_instr, src_A, src_B, dest, imm, 3'b000};
                 fifo_count = fifo_count + 1;
             end
 
@@ -212,36 +255,66 @@ module v_sequencer #(
             v_reg_wr_en = 0; x_reg_wr_en = 0; el_wr_en = 0;
             reg_wr_data = 0; reg_wr_data_2 = 0; reg_wr_data_3 = 0; reg_wr_data_4 = 0;
             busy_alu = 0; busy_mul = 0; busy_lsu = 0; busy_sldu = 0; busy_red = 0;
+            opA_1 = 0; opA_2 = 0;  opA_3 = 0; opA_4 = 0; opA_5 = 0; opA_6 = 0;  opA_7 = 0; opA_8 = 0;
+            opB_1 = 0; opB_2 = 0;  opB_3 = 0; opB_4 = 0; opB_5 = 0; opB_6 = 0;  opB_7 = 0; opB_8 = 0;
+            opC_1 = 0; opC_2 = 0;  opC_3 = 0; opC_4 = 0; opC_5 = 0; opC_6 = 0;  opC_7 = 0; opC_8 = 0;
         
         end else begin
 
         #1  
     // ******************ISSUE******************
-/*         if (instr_1[29:27] != 0 && instr_1[2:0] == 3'b001) begin
-            instr_status_table[0][2:0] = 3'b010;
+        if (instr_1 != 0 && instr_1[2:0] == 3'b000) begin
+            instr_status_table[0][2:0] = 3'b001;
         end
-        else if (instr_2[29:27] != 0 && instr_2[2:0] == 3'b001) begin 
-            instr_status_table[1][2:0] = 3'b010;
+        if (instr_2 != 0 && instr_2[2:0] == 3'b000) begin 
+            opA_2 = (instr_2[33:32] != 3'b001) ? 1:  (dest_1 == {1'b0, instr_2[22:18]} && instr_1[2:0] != 3'b100) ? 0: 1;
+            opB_2 = (instr_2[31:30] != 3'b001) ? 1:  (dest_1 == {1'b0, instr_2[17:13]} && instr_1[2:0] != 3'b100) ? 0: 1;
+            opC_2 = ((instr_2[29:27] != 3'b100) || (instr_2[29:27] != 3'b011 && (instr_2[26:23] inside {[7:12]} != 0))) ? 1: (dest_1 == {1'b0, instr_2[18:12]} && instr_1[2:0] != 3'b100) ? 0: 1;
+            if (opA_2 == 1 && opB_2 == 1 && opC_2 == 1)
+                instr_status_table[1][2:0] = 3'b001;
         end
-        else if (instr_3[29:27] != 0 && instr_3[2:0] == 3'b001) begin
-            instr_status_table[2][2:0] = 3'b010;
+        if (instr_3 != 0 && instr_3[2:0] == 3'b000) begin
+            opA_3 = (instr_3[33:32] != 3'b001) ? 1:  ((dest_1 == {1'b0, instr_3[22:18]} && instr_3[2:0] != 3'b100) || (dest_2 == {1'b0, instr_3[22:18]} && instr_2[2:0] != 3'b100)) ? 0: 1;
+            opB_3 = (instr_3[31:30] != 3'b001) ? 1:  ((dest_1 == {1'b0, instr_3[17:13]} && instr_3[2:0] != 3'b100) || (dest_2 == {1'b0, instr_3[17:13]} && instr_2[2:0] != 3'b100)) ? 0: 1;
+            opC_3 = ((instr_3[29:27] != 3'b100) || (instr_3[29:27] != 3'b011 && (instr_3[26:23] inside {[7:12]} != 0))) ? 1: ((dest_1 == {1'b0, instr_3[12:8]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_3[12:8]} && instr_2[2:0] != 3'b100)) ? 0: 1;
+            if (opA_3 == 1 && opB_3 == 1 && opC_3 == 1)
+                instr_status_table[2][2:0] = 3'b001;
         end
-        else if (instr_4[29:27] != 0 && instr_4[2:0] == 3'b001) begin
-            instr_status_table[3][2:0] = 3'b010;
+        if (instr_4 != 0 && instr_4[2:0] == 3'b000) begin
+            opA_4 = (instr_4[33:32] != 3'b001) ? 1:  ((dest_1 == {1'b0, instr_4[22:18]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_4[22:18]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_4[22:18]} && instr_3[2:0] != 3'b100)) ? 0: 1;
+            opB_4 = (instr_4[31:30] != 3'b001) ? 1:  ((dest_1 == {1'b0, instr_4[17:13]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_4[17:13]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_4[17:13]} && instr_3[2:0] != 3'b100)) ? 0: 1;
+            opC_4 = ((instr_4[29:27] != 3'b100) || (instr_4[29:27] != 3'b011 && (instr_4[26:23] inside {[7:12]} != 0))) ? 1: ((dest_1 == {1'b0, instr_4[12:8]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_4[12:8]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_4[12:8]} && instr_3[2:0] != 3'b100)) ? 0: 1;
+            if (opA_4 == 1 && opB_4 == 1 && opC_4 == 1)
+                instr_status_table[3][2:0] = 3'b001;
         end
-        else if (instr_5[29:27] != 0 && instr_5[2:0] == 3'b001) begin
-            instr_status_table[4][2:0] = 3'b010;
+        if (instr_5 != 0 && instr_5[2:0] == 3'b000) begin
+            opA_5 = (instr_5[33:32] != 3'b001) ? 1:  ((dest_1 == {1'b0, instr_5[22:18]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_5[22:18]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_5[22:18]} && instr_3[2:0] != 3'b100) || (dest_4 == {1'b0, instr_5[22:18]} && instr_4[2:0] != 3'b100)) ? 0: 1;
+            opB_5 = (instr_5[31:30] != 3'b001) ? 1:  ((dest_1 == {1'b0, instr_5[17:13]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_5[17:13]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_5[17:13]} && instr_3[2:0] != 3'b100) || (dest_4 == {1'b0, instr_5[17:13]} && instr_4[2:0] != 3'b100)) ? 0: 1;
+            opC_5 = ((instr_5[29:27] != 3'b100) || (instr_5[29:27] != 3'b011 && (instr_5[26:23] inside {[7:12]} != 0))) ? 1: ((dest_1 == {1'b0, instr_5[12:8]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_5[12:8]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_5[12:8]} && instr_4[2:0] != 3'b100) || (dest_4 == {1'b0, instr_5[12:8]} && instr_4[2:0] != 3'b100)) ? 0: 1;
+            if (opA_5 == 1 && opB_5 == 1 && opC_5 == 1)
+                instr_status_table[4][2:0] = 3'b001;
         end
-        else if (instr_6[29:27] != 0 && instr_6[2:0] == 3'b001) begin
-            instr_status_table[5][2:0] = 3'b010;
+        if (instr_6 != 0 && instr_6[2:0] == 3'b000) begin
+            opA_6 = (instr_6[33:32] != 3'b001) ? 1:  ((dest_1 == {1'b0, instr_6[22:18]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_6[22:18]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_6[22:18]} && instr_3[2:0] != 3'b100) || (dest_4 == {1'b0, instr_6[22:18]} && instr_4[2:0] != 3'b100) || (dest_5 == {1'b0, instr_6[22:18]} && instr_5[2:0] != 3'b100)) ? 0: 1;
+            opB_6 = (instr_6[31:30] != 3'b001) ? 1:  ((dest_1 == {1'b0, instr_6[17:13]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_6[17:13]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_6[17:13]} && instr_3[2:0] != 3'b100) || (dest_4 == {1'b0, instr_6[17:13]} && instr_4[2:0] != 3'b100) || (dest_5 == {1'b0, instr_6[17:13]} && instr_5[2:0] != 3'b100)) ? 0: 1;
+            opC_6 = ((instr_6[29:27] != 3'b100) || (instr_6[29:27] != 3'b011 && (instr_6[26:23] inside {[7:12]} != 0))) ? 1: ((dest_1 == {1'b0, instr_6[12:8]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_6[12:8]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_6[12:8]} && instr_4[2:0] != 3'b100) || (dest_4 == {1'b0, instr_5[12:8]} && instr_4[2:0] != 3'b100) || (dest_5 == {1'b0, instr_6[12:8]} && instr_5[2:0] != 3'b100)) ? 0: 1;
+            if (opA_6 == 1 && opB_6 == 1 && opC_6 == 1)
+                instr_status_table[5][2:0] = 3'b001;
         end
-        else if (instr_7[29:27] != 0 && instr_7[2:0] == 3'b001) begin
-            instr_status_table[6][2:0] = 3'b010;
+        if (instr_7 != 0 && instr_7[2:0] == 3'b000) begin
+            opA_7 = (instr_7[33:32] != 3'b001) ? 1:  ((dest_1 == {1'b0, instr_7[22:18]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_7[22:18]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_7[22:18]} && instr_3[2:0] != 3'b100) || (dest_4 == {1'b0, instr_7[22:18]} && instr_4[2:0] != 3'b100) || (dest_5 == {1'b0, instr_7[22:18]} && instr_5[2:0] != 3'b100) || (dest_6 == {1'b0, instr_7[22:18]} && instr_6[2:0] != 3'b100)) ? 0: 1;
+            opB_7 = (instr_7[31:30] != 3'b001) ? 1:  ((dest_1 == {1'b0, instr_7[17:13]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_7[17:13]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_7[17:13]} && instr_3[2:0] != 3'b100) || (dest_4 == {1'b0, instr_7[17:13]} && instr_4[2:0] != 3'b100) || (dest_5 == {1'b0, instr_7[17:13]} && instr_5[2:0] != 3'b100) || (dest_6 == {1'b0, instr_7[22:18]} && instr_6[2:0] != 3'b100)) ? 0: 1;
+            opC_7 = ((instr_7[29:27] != 3'b100) || (instr_7[29:27] != 3'b011 && (instr_7[26:23] inside {[7:12]} != 0))) ? 1: ((dest_1 == {1'b0, instr_7[12:8]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_7[12:8]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_7[12:8]} && instr_4[2:0] != 3'b100) || (dest_4 == {1'b0, instr_5[12:8]} && instr_4[2:0] != 3'b100) || (dest_5 == {1'b0, instr_7[12:8]} && instr_5[2:0] != 3'b100) || (dest_6 == {1'b0, instr_7[12:8]} && instr_6[2:0] != 3'b100)) ? 0: 1;
+            if (opA_7 == 1 && opB_7 == 1 && opC_7 == 1)
+                instr_status_table[6][2:0] = 3'b001;
         end
-        else if (instr_8[29:27] != 0 && instr_8[2:0] == 3'b001) begin
-            instr_status_table[7][2:0] = 3'b010;
-        end */
-
+        if (instr_8 != 0 && instr_8[2:0] == 3'b000) begin
+            opA_8 = (instr_8[33:32] != 3'b001) ? 1:  ((dest_1 == {1'b0, instr_8[22:18]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_8[22:18]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_8[22:18]} && instr_3[2:0] != 3'b100) || (dest_4 == {1'b0, instr_8[22:18]} && instr_4[2:0] != 3'b100) || (dest_5 == {1'b0, instr_8[22:18]} && instr_5[2:0] != 3'b100) || (dest_6 == {1'b0, instr_8[22:18]} && instr_6[2:0] != 3'b100) || (dest_7 == {1'b0, instr_8[22:18]} && instr_7[2:0] != 3'b100)) ? 0: 1;
+            opB_8 = (instr_8[31:30] != 3'b001) ? 1:  ((dest_1 == {1'b0, instr_8[17:13]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_8[17:13]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_8[17:13]} && instr_3[2:0] != 3'b100) || (dest_4 == {1'b0, instr_8[17:13]} && instr_4[2:0] != 3'b100) || (dest_5 == {1'b0, instr_8[17:13]} && instr_5[2:0] != 3'b100) || (dest_6 == {1'b0, instr_8[22:18]} && instr_6[2:0] != 3'b100) || (dest_7 == {1'b0, instr_8[22:18]} && instr_7[2:0] != 3'b100)) ? 0: 1;
+            opC_8 = ((instr_8[29:27] != 3'b100) || (instr_8[29:27] != 3'b011 && (instr_8[26:23] inside {[7:12]} != 0))) ? 1: ((dest_1 == {1'b0, instr_8[12:8]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_8[12:8]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_8[12:8]} && instr_4[2:0] != 3'b100) || (dest_4 == {1'b0, instr_5[12:8]} && instr_4[2:0] != 3'b100) || (dest_5 == {1'b0, instr_8[12:8]} && instr_5[2:0] != 3'b100) || (dest_6 == {1'b0, instr_8[12:8]} && instr_6[2:0] != 3'b100) || (dest_7 == {1'b0, instr_8[12:8]} && instr_7[2:0] != 3'b100)) ? 0: 1;
+            if (opA_8 == 1 && opB_8 == 1 && opC_8 == 1)
+                instr_status_table[7][2:0] = 3'b001;
+        end 
     // ******************EXECUTE******************
         //alu
         alu_exec = ((instr_1[29:27] == 3'b001 && instr_1[2:0] == 3'b011) ? instr_1: (instr_2[29:27] == 3'b001 && instr_2[2:0] == 3'b011) ? instr_2: (instr_3[29:27] == 3'b001 && instr_3[2:0] == 3'b011) ? instr_3: (instr_4[29:27] == 3'b001 && instr_4[2:0] == 3'b011) ? instr_4: (instr_5[29:27] == 3'b001 && instr_5[2:0] == 3'b011) ? instr_5: (instr_6[29:27] == 3'b001 && instr_6[2:0] == 3'b011) ? instr_6: (instr_7[29:27] == 3'b001 && instr_7[2:0] == 3'b011) ? instr_7: (instr_8[29:27] == 3'b001 && instr_8[2:0] == 3'b011) ? instr_8: 0);
@@ -310,141 +383,155 @@ module v_sequencer #(
  
     // ******************READ******************
         //alu
-        instr_read = ((instr_1[2:0] == 3'b010) ? instr_1: (instr_2[2:0] == 3'b010) ? instr_2: (instr_3[2:0] == 3'b010) ? instr_3: (instr_4[2:0] == 3'b010) ? instr_4: (instr_5[2:0] == 3'b010) ? instr_5: (instr_6[2:0] == 3'b010) ? instr_6: (instr_7[2:0] == 3'b010) ? instr_7: (instr_8[2:0] == 3'b010) ? instr_8: 0);        
-        instr_read_index = ((instr_1[2:0] == 3'b010) ? 0: (instr_2[2:0] == 3'b010) ? 1: (instr_3[2:0] == 3'b010) ? 2: (instr_4[2:0] == 3'b010) ? 3: (instr_5[2:0] == 3'b010) ? 4: (instr_6[2:0] == 3'b010) ? 5: (instr_7[2:0] == 3'b010) ? 6: (instr_8[2:0] == 3'b010) ? 7: 0);
-    
-        if (instr_read != 0 && instr_read[29:27] == 3'b001) begin
-            if(busy_alu == 0 && alu_exec == 0) begin
-                sel_dest_alu = instr_read[39:38];
-                Fj_alu =  instr_read[22:18];
-                Fk_alu = instr_read[17:13];
-                Imm_alu = instr_read[7:3];
-                Qj_alu = ((instr_read[33:32] == 2'b10) ? 3'b110: (instr_read[33:32] == 2'b11) ? 3'b111: (Fj_alu == Fi_alu && wr_alu == 1) ? 3'b001: (Fj_alu == Fi_mul && wr_mul == 1) ? 3'b010: (Fj_alu == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fj_alu == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fj_alu == Fi_red && wr_red == 1) ? 3'b101: 3'b000);
-                Qk_alu = ((instr_read[31:30] == 2'b10) ? 3'b110: (instr_read[31:30] == 2'b11) ? 3'b111: (Fk_alu == Fi_alu && wr_alu == 1) ? 3'b001: (Fk_alu == Fi_mul && wr_mul == 1) ? 3'b010: (Fk_alu == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fk_alu == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fk_alu == Fi_red && wr_red == 1) ? 3'b101: 3'b000);                
+    alu_read = ((instr_1[29:27] == 3'b001 && instr_1[2:0] == 3'b001) ? instr_1: (instr_2[29:27] == 3'b001 && instr_2[2:0] == 3'b001) ? instr_2: (instr_3[29:27] == 3'b001 && instr_3[2:0] == 3'b001) ? instr_3: (instr_4[29:27] == 3'b001 && instr_4[2:0] == 3'b001) ? instr_4: (instr_5[29:27] == 3'b001 && instr_5[2:0] == 3'b001) ? instr_5: (instr_6[29:27] == 3'b001 && instr_6[2:0] == 3'b001) ? instr_6: (instr_7[29:27] == 3'b001 && instr_7[2:0] == 3'b001) ? instr_7: (instr_8[29:27] == 3'b001 && instr_8[2:0] == 3'b001) ? instr_8: 0);
+    alu_read_index = ((instr_1[29:27] == 3'b001 && instr_1[2:0] == 3'b001) ? 0: (instr_2[29:27] == 3'b001 && instr_2[2:0] == 3'b001) ? 1: (instr_3[29:27] == 3'b001 && instr_3[2:0] == 3'b001) ? 2: (instr_4[29:27] == 3'b001 && instr_4[2:0] == 3'b001) ? 3: (instr_5[29:27] == 3'b001 && instr_5[2:0] == 3'b001) ? 4: (instr_6[29:27] == 3'b001 && instr_6[2:0] == 3'b001) ? 5: (instr_7[29:27] == 3'b001 && instr_7[2:0] == 3'b001) ? 6: (instr_8[29:27] == 3'b001 && instr_8[2:0] == 3'b001) ? 7: 0);
+    mul_read = ((instr_1[29:27] == 3'b010 && instr_1[2:0] == 3'b001) ? instr_1: (instr_2[29:27] == 3'b010 && instr_2[2:0] == 3'b001) ? instr_2: (instr_3[29:27] == 3'b010 && instr_3[2:0] == 3'b001) ? instr_3: (instr_4[29:27] == 3'b010 && instr_4[2:0] == 3'b001) ? instr_4: (instr_5[29:27] == 3'b010 && instr_5[2:0] == 3'b001) ? instr_5: (instr_6[29:27] == 3'b010 && instr_6[2:0] == 3'b001) ? instr_6: (instr_7[29:27] == 3'b010 && instr_7[2:0] == 3'b001) ? instr_7: (instr_8[29:27] == 3'b010 && instr_8[2:0] == 3'b001) ? instr_8: 0);
+    mul_read_index = ((instr_1[29:27] == 3'b010 && instr_1[2:0] == 3'b001) ? 0: (instr_2[29:27] == 3'b010 && instr_2[2:0] == 3'b001) ? 1: (instr_3[29:27] == 3'b010 && instr_3[2:0] == 3'b001) ? 2: (instr_4[29:27] == 3'b010 && instr_4[2:0] == 3'b001) ? 3: (instr_5[29:27] == 3'b010 && instr_5[2:0] == 3'b001) ? 4: (instr_6[29:27] == 3'b010 && instr_6[2:0] == 3'b001) ? 5: (instr_7[29:27] == 3'b010 && instr_7[2:0] == 3'b001) ? 6: (instr_8[29:27] == 3'b010 && instr_8[2:0] == 3'b001) ? 7: 0);
+    lsu_read = ((instr_1[29:27] == 3'b011 && instr_1[2:0] == 3'b001) ? instr_1: (instr_2[29:27] == 3'b011 && instr_2[2:0] == 3'b001) ? instr_2: (instr_3[29:27] == 3'b011 && instr_3[2:0] == 3'b001) ? instr_3: (instr_4[29:27] == 3'b011 && instr_4[2:0] == 3'b001) ? instr_4: (instr_5[29:27] == 3'b011 && instr_5[2:0] == 3'b001) ? instr_5: (instr_6[29:27] == 3'b011 && instr_6[2:0] == 3'b001) ? instr_6: (instr_7[29:27] == 3'b011 && instr_7[2:0] == 3'b001) ? instr_7: (instr_8[29:27] == 3'b011 && instr_8[2:0] == 3'b001) ? instr_8: 0);
+    lsu_read_index = ((instr_1[29:27] == 3'b011 && instr_1[2:0] == 3'b001) ? 0: (instr_2[29:27] == 3'b011 && instr_2[2:0] == 3'b001) ? 1: (instr_3[29:27] == 3'b011 && instr_3[2:0] == 3'b001) ? 2: (instr_4[29:27] == 3'b011 && instr_4[2:0] == 3'b001) ? 3: (instr_5[29:27] == 3'b011 && instr_5[2:0] == 3'b001) ? 4: (instr_6[29:27] == 3'b011 && instr_6[2:0] == 3'b001) ? 5: (instr_7[29:27] == 3'b011 && instr_7[2:0] == 3'b001) ? 6: (instr_8[29:27] == 3'b011 && instr_8[2:0] == 3'b001) ? 7: 0);
+    sldu_read = ((instr_1[29:27] == 3'b100 && instr_1[2:0] == 3'b001) ? instr_1: (instr_2[29:27] == 3'b100 && instr_2[2:0] == 3'b001) ? instr_2: (instr_3[29:27] == 3'b100 && instr_3[2:0] == 3'b001) ? instr_3: (instr_4[29:27] == 3'b100 && instr_4[2:0] == 3'b001) ? instr_4: (instr_5[29:27] == 3'b100 && instr_5[2:0] == 3'b001) ? instr_5: (instr_6[29:27] == 3'b100 && instr_6[2:0] == 3'b001) ? instr_6: (instr_7[29:27] == 3'b100 && instr_7[2:0] == 3'b001) ? instr_7: (instr_8[29:27] == 3'b100 && instr_8[2:0] == 3'b001) ? instr_8: 0);
+    sldu_read_index = ((instr_1[29:27] == 3'b100 && instr_1[2:0] == 3'b001) ? 0: (instr_2[29:27] == 3'b100 && instr_2[2:0] == 3'b001) ? 1: (instr_3[29:27] == 3'b100 && instr_3[2:0] == 3'b001) ? 2: (instr_4[29:27] == 3'b100 && instr_4[2:0] == 3'b001) ? 3: (instr_5[29:27] == 3'b100 && instr_5[2:0] == 3'b001) ? 4: (instr_6[29:27] == 3'b100 && instr_6[2:0] == 3'b001) ? 5: (instr_7[29:27] == 3'b100 && instr_7[2:0] == 3'b001) ? 6: (instr_8[29:27] == 3'b100 && instr_8[2:0] == 3'b001) ? 7: 0);
+    red_read = ((instr_1[29:27] == 3'b101 && instr_1[2:0] == 3'b001) ? instr_1: (instr_2[29:27] == 3'b101 && instr_2[2:0] == 3'b001) ? instr_2: (instr_3[29:27] == 3'b101 && instr_3[2:0] == 3'b001) ? instr_3: (instr_4[29:27] == 3'b101 && instr_4[2:0] == 3'b001) ? instr_4: (instr_5[29:27] == 3'b101 && instr_5[2:0] == 3'b001) ? instr_5: (instr_6[29:27] == 3'b101 && instr_6[2:0] == 3'b001) ? instr_6: (instr_7[29:27] == 3'b101 && instr_7[2:0] == 3'b001) ? instr_7: (instr_8[29:27] == 3'b101 && instr_8[2:0] == 3'b001) ? instr_8: 0);
+    red_read_index = ((instr_1[29:27] == 3'b101 && instr_1[2:0] == 3'b001) ? 0: (instr_2[29:27] == 3'b101 && instr_2[2:0] == 3'b001) ? 1: (instr_3[29:27] == 3'b101 && instr_3[2:0] == 3'b001) ? 2: (instr_4[29:27] == 3'b101 && instr_4[2:0] == 3'b001) ? 3: (instr_5[29:27] == 3'b101 && instr_5[2:0] == 3'b001) ? 4: (instr_6[29:27] == 3'b101 && instr_6[2:0] == 3'b001) ? 5: (instr_7[29:27] == 3'b101 && instr_7[2:0] == 3'b001) ? 6: (instr_8[29:27] == 3'b101 && instr_8[2:0] == 3'b001) ? 7: 0);
+
+
+        if (alu_read != 0 && alu_read[29:27] == 3'b001) begin
+            if(busy_alu == 0) begin
+                sel_dest_alu = alu_read[39:38];
+                Fj_alu =  alu_read[22:18];
+                Fk_alu = alu_read[17:13];
+                Imm_alu = alu_read[7:3];
+                Qj_alu = ((alu_read[33:32] == 2'b10) ? 3'b110: (alu_read[33:32] == 2'b11) ? 3'b111: (Fj_alu == Fi_alu && wr_alu == 1) ? 3'b001: (Fj_alu == Fi_mul && wr_mul == 1) ? 3'b010: (Fj_alu == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fj_alu == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fj_alu == Fi_red && wr_red == 1) ? 3'b101: 3'b000);
+                Qk_alu = ((alu_read[31:30] == 2'b10) ? 3'b110: (alu_read[31:30] == 2'b11) ? 3'b111: (Fk_alu == Fi_alu && wr_alu == 1) ? 3'b001: (Fk_alu == Fi_mul && wr_mul == 1) ? 3'b010: (Fk_alu == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fk_alu == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fk_alu == Fi_red && wr_red == 1) ? 3'b101: 3'b000);                
                 Rj_alu = ((Qj_alu == 3'b000 || Qj_alu == 3'b110 || Qj_alu == 3'b111) ? 1: ((done_alu == 1 || busy_alu == 0) && Qj_alu == 3'b001) ? 1: ((done_mul == 1 || busy_mul == 0) && Qj_alu == 3'b010) ? 1: ((done_lsu == 1 || busy_lsu == 0) && Qj_alu == 3'b011) ? 1: ((done_sldu == 1 || busy_sldu == 0) && Qj_alu == 3'b100) ? 1: ((done_red == 1 || busy_red == 0) && Qj_alu == 3'b101) ? 1: 0);
                 Rk_alu = ((Qk_alu == 3'b000 || Qk_alu == 3'b110 || Qk_alu == 3'b111) ? 1: ((done_alu == 1 || busy_alu == 0) && Qk_alu == 3'b001) ? 1: ((done_mul == 1 || busy_mul == 0) && Qk_alu == 3'b010) ? 1: ((done_lsu == 1 || busy_lsu == 0) && Qk_alu == 3'b011) ? 1: ((done_sldu == 1 || busy_sldu == 0) && Qk_alu == 3'b100) ? 1: ((done_red == 1 || busy_red == 0) && Qk_alu == 3'b101) ? 1: 0);
                 busy_alu = ((Rj_alu == 1 && Rk_alu == 1) ? 1: 0); 
                 if (busy_alu == 1) begin
-                    Fi_alu = instr_read[12:8];   
-                    optype_read = instr_read[29:27];       
-                    op_alu = instr_read[26:23];
-                    vsew_alu = instr_read[37:36];
-                    lmul_alu = instr_read[35:34];
-                    instr_read [2:0] =  3'b011;        
-                    instr_status_table[instr_read_index] = instr_read;
+                    Fi_alu = alu_read[12:8];       
+                    op_alu = alu_read[26:23];
+                    vsew_alu = alu_read[37:36];
+                    lmul_alu = alu_read[35:34];
+                    alu_read[2:0] =  3'b010;        
+                    instr_status_table[alu_read_index] = alu_read;
                     wr_alu = 1;
                 end
             end
         end
 
         //mul
-        if (instr_read != 0 && instr_read[29:27] == 3'b010) begin
+        if (mul_read != 0) begin
             if(busy_mul == 0 && mul_exec == 0) begin
-                sel_dest_mul = instr_read[39:38];
-                Fj_mul =  instr_read[22:18];
-                Fk_mul = instr_read[17:13];
-                Imm_mul = instr_read[7:3];
-                Qj_mul = ((instr_read[33:32] == 2'b10) ? 3'b110: (instr_read[33:32] == 2'b11) ? 3'b111: (Fj_mul == Fi_alu && wr_alu == 1) ? 3'b001: (Fj_mul == Fi_mul && wr_mul == 1) ? 3'b010: (Fj_mul == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fj_mul == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fj_mul == Fi_red && wr_red == 1) ? 3'b101: 3'b000);
-                Qk_mul = ((instr_read[31:30] == 2'b10) ? 3'b110: (instr_read[31:30] == 2'b11) ? 3'b111: (Fk_mul == Fi_alu && wr_alu == 1) ? 3'b001: (Fk_mul == Fi_mul && wr_mul == 1) ? 3'b010: (Fk_mul == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fk_mul == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fk_mul == Fi_red && wr_red == 1) ? 3'b101: 3'b000);                
+                sel_dest_mul = mul_read[39:38];
+                Fj_mul =  mul_read[22:18];
+                Fk_mul = mul_read[17:13];
+                Imm_mul = mul_read[7:3];
+                Qj_mul = ((mul_read[33:32] == 2'b10) ? 3'b110: (mul_read[33:32] == 2'b11) ? 3'b111: (Fj_mul == Fi_alu && wr_alu == 1) ? 3'b001: (Fj_mul == Fi_mul && wr_mul == 1) ? 3'b010: (Fj_mul == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fj_mul == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fj_mul == Fi_red && wr_red == 1) ? 3'b101: 3'b000);
+                Qk_mul = ((mul_read[31:30] == 2'b10) ? 3'b110: (mul_read[31:30] == 2'b11) ? 3'b111: (Fk_mul == Fi_alu && wr_alu == 1) ? 3'b001: (Fk_mul == Fi_mul && wr_mul == 1) ? 3'b010: (Fk_mul == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fk_mul == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fk_mul == Fi_red && wr_red == 1) ? 3'b101: 3'b000);                
                 Rj_mul = ((Qj_mul == 3'b000 || Qj_mul == 3'b110 || Qj_mul == 3'b111) ? 1: ((done_alu == 1 || busy_alu == 0) && Qj_mul == 3'b001) ? 1: ((done_mul == 1 || busy_mul == 0) && Qj_mul == 3'b010) ? 1: ((done_lsu == 1 || busy_lsu == 0) && Qj_mul == 3'b011) ? 1: ((done_sldu == 1 || busy_sldu == 0) && Qj_mul == 3'b100) ? 1: ((done_red == 1 || busy_red == 0) && Qj_mul == 3'b101) ? 1: 0);
                 Rk_mul = ((Qk_mul == 3'b000 || Qk_mul == 3'b110 || Qk_mul == 3'b111) ? 1: ((done_alu == 1 || busy_alu == 0) && Qk_mul == 3'b001) ? 1: ((done_mul == 1 || busy_mul == 0) && Qk_mul == 3'b010) ? 1: ((done_lsu == 1 || busy_lsu == 0) && Qk_mul == 3'b011) ? 1: ((done_sldu == 1 || busy_sldu == 0) && Qk_mul == 3'b100) ? 1: ((done_red == 1 || busy_red == 0) && Qk_mul == 3'b101) ? 1: 0);
                 busy_mul = ((Rj_mul == 1 && Rk_mul == 1) ? 1: 0); 
                 if (busy_mul == 1) begin
-                    Fi_mul = instr_read[12:8];   
-                    optype_read = instr_read[29:27];       
-                    op_mul = instr_read[26:23];
-                    vsew_mul = instr_read[37:36];
-                    lmul_mul = instr_read[35:34];
-                    instr_read [2:0] =  3'b011;        
-                    instr_status_table[instr_read_index] = instr_read;
+                    Fi_mul = mul_read[12:8];      
+                    op_mul = mul_read[26:23];
+                    vsew_mul = mul_read[37:36];
+                    lmul_mul = mul_read[35:34];
+                    mul_read [2:0] =  3'b010;        
+                    instr_status_table[mul_read_index] = mul_read;
                     wr_mul = 1;
                 end
             end
         end
 
         //lsu
-        if (instr_read != 0 && instr_read[29:27] == 3'b011) begin
+        if (lsu_read != 0) begin
             if(busy_lsu == 0 && lsu_exec == 0) begin
-                sel_dest_lsu = instr_read[39:38];
-                Fj_lsu =  instr_read[22:18];
-                Fk_lsu = instr_read[17:13];
-                Imm_lsu = instr_read[7:3];
-                Qi_lsu = (instr_read[26:23] inside {[7:12]}) ? ((instr_read[12:8] == Fi_alu && wr_alu == 1) ? 3'b001: (instr_read[12:8] == Fi_mul && wr_mul == 1) ? 3'b010: (instr_read[12:8] == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (instr_read[12:8] == Fi_sldu && wr_sldu == 1) ? 3'b100: (instr_read[12:8] == Fi_red && wr_red == 1) ? 3'b101: 3'b000): 3'b000;
-                Qj_lsu = ((instr_read[33:32] == 2'b10) ? 3'b110: (instr_read[33:32] == 2'b11) ? 3'b111: (Fj_lsu == Fi_alu && wr_alu == 1) ? 3'b001: (Fj_lsu == Fi_mul && wr_mul == 1) ? 3'b010: (Fj_lsu == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fj_lsu == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fj_lsu == Fi_red && wr_red == 1) ? 3'b101: 3'b000);
-                Qk_lsu = ((instr_read[31:30] == 2'b10) ? 3'b110: (instr_read[31:30] == 2'b11) ? 3'b111: (Fk_lsu == Fi_alu && wr_alu == 1) ? 3'b001: (Fk_lsu == Fi_mul && wr_mul == 1) ? 3'b010: (Fk_lsu == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fk_lsu == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fk_lsu == Fi_red && wr_red == 1) ? 3'b101: 3'b000);                
+                sel_dest_lsu = lsu_read[39:38];
+                Fj_lsu =  lsu_read[22:18];
+                Fk_lsu = lsu_read[17:13];
+                Imm_lsu = lsu_read[7:3];
+                Qi_lsu = (lsu_read[26:23] inside {[7:12]}) ? ((lsu_read[12:8] == Fi_alu && wr_alu == 1) ? 3'b001: (lsu_read[12:8] == Fi_mul && wr_mul == 1) ? 3'b010: (lsu_read[12:8] == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (lsu_read[12:8] == Fi_sldu && wr_sldu == 1) ? 3'b100: (lsu_read[12:8] == Fi_red && wr_red == 1) ? 3'b101: 3'b000): 3'b000;
+                Qj_lsu = ((lsu_read[33:32] == 2'b10) ? 3'b110: (lsu_read[33:32] == 2'b11) ? 3'b111: (Fj_lsu == Fi_alu && wr_alu == 1) ? 3'b001: (Fj_lsu == Fi_mul && wr_mul == 1) ? 3'b010: (Fj_lsu == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fj_lsu == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fj_lsu == Fi_red && wr_red == 1) ? 3'b101: 3'b000);
+                Qk_lsu = ((lsu_read[31:30] == 2'b10) ? 3'b110: (lsu_read[31:30] == 2'b11) ? 3'b111: (Fk_lsu == Fi_alu && wr_alu == 1) ? 3'b001: (Fk_lsu == Fi_mul && wr_mul == 1) ? 3'b010: (Fk_lsu == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fk_lsu == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fk_lsu == Fi_red && wr_red == 1) ? 3'b101: 3'b000);                
                 Rj_lsu = ((Qj_lsu == 3'b000 || Qj_lsu == 3'b110 || Qj_lsu == 3'b111) ? 1: ((done_alu == 1 || busy_alu == 0) && Qj_lsu == 3'b001) ? 1: ((done_mul == 1 || busy_mul == 0) && Qj_lsu == 3'b010) ? 1: ((done_lsu == 1 || busy_lsu == 0) && Qj_lsu == 3'b011) ? 1: ((done_sldu == 1 || busy_sldu == 0) && Qj_lsu == 3'b100) ? 1: ((done_red == 1 || busy_red == 0) && Qj_lsu == 3'b101) ? 1: 0);
                 Rk_lsu = ((Qk_lsu == 3'b000 || Qk_lsu == 3'b110 || Qk_lsu == 3'b111) ? 1: ((done_alu == 1 || busy_alu == 0) && Qk_lsu == 3'b001) ? 1: ((done_mul == 1 || busy_mul == 0) && Qk_lsu == 3'b010) ? 1: ((done_lsu == 1 || busy_lsu == 0) && Qk_lsu == 3'b011) ? 1: ((done_sldu == 1 || busy_sldu == 0) && Qk_lsu == 3'b100) ? 1: ((done_red == 1 || busy_red == 0) && Qk_lsu == 3'b101) ? 1: 0);
                 Ri_lsu = ((Qi_lsu == 3'b000) ? 1: ((done_alu == 1 || busy_alu == 0) && Qi_lsu == 3'b001) ? 1: ((done_mul == 1 || busy_mul == 0) && Qi_lsu == 3'b010) ? 1: ((done_lsu == 1 || busy_lsu == 0) && Qi_lsu == 3'b011) ? 1: ((done_sldu == 1 || busy_sldu == 0) && Qi_lsu == 3'b100) ? 1: ((done_red == 1 || busy_red == 0) == 0 && Qi_lsu == 3'b101) ? 1: (busy_red == 0 && Qi_lsu == 3'b101) ? 1: 0);                
                 busy_lsu = ((Rj_lsu == 1 && Rk_lsu == 1 && Ri_lsu) ? 1: 0); 
                 if (busy_lsu == 1) begin
-                    Fi_lsu = instr_read[12:8];   
-                    optype_read = instr_read[29:27];       
-                    op_lsu = instr_read[26:23];
-                    vsew_lsu = instr_read[37:36];
-                    lmul_lsu = instr_read[35:34];
-                    instr_read [2:0] =  3'b011;        
-                    instr_status_table[instr_read_index] = instr_read;
+                    Fi_lsu = lsu_read[12:8];   
+                    //optype_read = lsu_read[29:27];       
+                    op_lsu = lsu_read[26:23];
+                    vsew_lsu = lsu_read[37:36];
+                    lmul_lsu = lsu_read[35:34];
+                    lsu_read [2:0] =  3'b010;        
+                    instr_status_table[lsu_read_index] = lsu_read;
                     wr_lsu = 1;
                 end
             end
         end
 
         //sldu
-        if (instr_read != 0 && instr_read[29:27] == 3'b100) begin
+        if (sldu_read != 0) begin
             if(busy_sldu == 0 && sldu_exec == 0) begin
-                sel_dest_sldu = instr_read[39:38];
-                Fj_sldu =  instr_read[22:18];
-                Fk_sldu = instr_read[17:13];
-                Imm_sldu = instr_read[7:3];
-                Qi_sldu = ((instr_read[12:8] == Fi_alu && wr_alu == 1) ? 3'b001: (instr_read[12:8] == Fi_mul && wr_mul == 1) ? 3'b010: (instr_read[12:8] == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (instr_read[12:8] == Fi_sldu && wr_sldu == 1) ? 3'b100: (instr_read[12:8] == Fi_red && wr_red == 1) ? 3'b101: 3'b000);
-                Qj_sldu = ((instr_read[33:32] == 2'b10) ? 3'b110: (instr_read[33:32] == 2'b11) ? 3'b111: (Fj_sldu == Fi_alu && wr_alu == 1) ? 3'b001: (Fj_sldu == Fi_mul && wr_mul == 1) ? 3'b010: (Fj_sldu == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fj_sldu == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fj_sldu == Fi_red && wr_red == 1) ? 3'b101: 3'b000);
-                Qk_sldu = ((instr_read[31:30] == 2'b10) ? 3'b110: (instr_read[31:30] == 2'b11) ? 3'b111: (Fk_sldu == Fi_alu && wr_alu == 1) ? 3'b001: (Fk_sldu == Fi_mul && wr_mul == 1) ? 3'b010: (Fk_sldu == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fk_sldu == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fk_sldu == Fi_red && wr_red == 1) ? 3'b101: 3'b000);                
+                sel_dest_sldu = sldu_read[39:38];
+                Fj_sldu =  sldu_read[22:18];
+                Fk_sldu = sldu_read[17:13];
+                Imm_sldu = sldu_read[7:3];
+                Qi_sldu = ((sldu_read[12:8] == Fi_alu && wr_alu == 1) ? 3'b001: (sldu_read[12:8] == Fi_mul && wr_mul == 1) ? 3'b010: (sldu_read[12:8] == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (sldu_read[12:8] == Fi_sldu && wr_sldu == 1) ? 3'b100: (sldu_read[12:8] == Fi_red && wr_red == 1) ? 3'b101: 3'b000);
+                Qj_sldu = ((sldu_read[33:32] == 2'b10) ? 3'b110: (sldu_read[33:32] == 2'b11) ? 3'b111: (Fj_sldu == Fi_alu && wr_alu == 1) ? 3'b001: (Fj_sldu == Fi_mul && wr_mul == 1) ? 3'b010: (Fj_sldu == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fj_sldu == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fj_sldu == Fi_red && wr_red == 1) ? 3'b101: 3'b000);
+                Qk_sldu = ((sldu_read[31:30] == 2'b10) ? 3'b110: (sldu_read[31:30] == 2'b11) ? 3'b111: (Fk_sldu == Fi_alu && wr_alu == 1) ? 3'b001: (Fk_sldu == Fi_mul && wr_mul == 1) ? 3'b010: (Fk_sldu == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fk_sldu == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fk_sldu == Fi_red && wr_red == 1) ? 3'b101: 3'b000);                
                 Rj_sldu = ((Qj_sldu == 3'b000 || Qj_sldu == 3'b110 || Qj_sldu == 3'b111) ? 1: ((done_alu == 1 || busy_alu == 0) && Qj_sldu == 3'b001) ? 1: ((done_mul == 1 || busy_mul == 0) && Qj_sldu == 3'b010) ? 1: ((done_lsu == 1 || busy_lsu == 0) && Qj_sldu == 3'b011) ? 1: ((done_sldu == 1 || busy_sldu == 0) && Qj_sldu == 3'b100) ? 1: ((done_red == 1 || busy_red == 0) && Qj_sldu == 3'b101) ? 1: 0);
                 Rk_sldu = ((Qk_sldu == 3'b000 || Qk_sldu == 3'b110 || Qk_sldu == 3'b111) ? 1: ((done_alu == 1 || busy_alu == 0) && Qk_sldu == 3'b001) ? 1: ((done_mul == 1 || busy_mul == 0) && Qk_sldu == 3'b010) ? 1: ((done_lsu == 1 || busy_lsu == 0) && Qk_sldu == 3'b011) ? 1: ((done_sldu == 1 || busy_sldu == 0) && Qk_sldu == 3'b100) ? 1: ((done_red == 1 || busy_red == 0) && Qk_sldu == 3'b101) ? 1: 0);
                 busy_sldu = ((Rj_sldu == 1 && Rk_sldu == 1) ? 1: 0); 
                 if (busy_sldu == 1) begin
-                    Fi_sldu = instr_read[12:8];   
-                    optype_read = instr_read[29:27];       
-                    op_sldu = instr_read[26:23];
-                    vsew_sldu = instr_read[37:36];
-                    lmul_sldu = instr_read[35:34];
-                    instr_read [2:0] =  3'b011;        
-                    instr_status_table[instr_read_index] = instr_read;
+                    Fi_sldu = sldu_read[12:8];   
+                    //optype_read = sldu_read[29:27];       
+                    op_sldu = sldu_read[26:23];
+                    vsew_sldu = sldu_read[37:36];
+                    lmul_sldu = sldu_read[35:34];
+                    sldu_read [2:0] =  3'b010;        
+                    instr_status_table[sldu_read_index] = sldu_read;
                     wr_sldu = 1;
                 end
             end
         end
 
         //red
-        if (instr_read != 0 && instr_read[29:27] == 3'b101) begin
+        if (red_read != 0) begin
             if(busy_red == 0 && red_exec == 0) begin
-                optype_read = instr_read[29:27];
-                sel_dest_red = instr_read[39:38];
-                Fj_red =  instr_read[22:18];
-                Fk_red = instr_read[17:13];
-                Imm_red = instr_read[7:3];
-                Qj_red = ((instr_read[33:32] == 2'b10) ? 3'b110: (instr_read[33:32] == 2'b11) ? 3'b111: (Fj_red == Fi_alu && wr_alu == 1) ? 3'b001: (Fj_red == Fi_mul && wr_mul == 1) ? 3'b010: (Fj_red == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fj_red == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fj_red == Fi_red && wr_red == 1) ? 3'b101: 3'b000);
-                Qk_red = ((instr_read[31:30] == 2'b10) ? 3'b110: (instr_read[31:30] == 2'b11) ? 3'b111: (Fk_red == Fi_alu && wr_alu == 1) ? 3'b001: (Fk_red == Fi_mul && wr_mul == 1) ? 3'b010: (Fk_red == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fk_red == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fk_red == Fi_red && wr_red == 1) ? 3'b101: 3'b000);                
+                optype_read = red_read[29:27];
+                sel_dest_red = red_read[39:38];
+                Fj_red =  red_read[22:18];
+                Fk_red = red_read[17:13];
+                Imm_red = red_read[7:3];
+                Qj_red = ((red_read[33:32] == 2'b10) ? 3'b110: (red_read[33:32] == 2'b11) ? 3'b111: (Fj_red == Fi_alu && wr_alu == 1) ? 3'b001: (Fj_red == Fi_mul && wr_mul == 1) ? 3'b010: (Fj_red == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fj_red == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fj_red == Fi_red && wr_red == 1) ? 3'b101: 3'b000);
+                Qk_red = ((red_read[31:30] == 2'b10) ? 3'b110: (red_read[31:30] == 2'b11) ? 3'b111: (Fk_red == Fi_alu && wr_alu == 1) ? 3'b001: (Fk_red == Fi_mul && wr_mul == 1) ? 3'b010: (Fk_red == Fi_lsu && wr_lsu == 1 && lsu_raw == 1) ? 3'b011: (Fk_red == Fi_sldu && wr_sldu == 1) ? 3'b100: (Fk_red == Fi_red && wr_red == 1) ? 3'b101: 3'b000);                
                 Rj_red = ((Qj_red == 3'b000 || Qj_red == 3'b110 || Qj_red == 3'b111) ? 1: ((done_alu == 1 || busy_alu == 0) && Qj_red == 3'b001) ? 1: ((done_mul == 1 || busy_mul == 0) && Qj_red == 3'b010) ? 1: ((done_lsu == 1 || busy_lsu == 0) && Qj_red == 3'b011) ? 1: ((done_sldu == 1 || busy_sldu == 0) && Qj_red == 3'b100) ? 1: ((done_red == 1 || busy_red == 0) && Qj_red == 3'b101) ? 1: 0);
                 Rk_red = ((Qk_red == 3'b000 || Qk_red == 3'b110 || Qk_red == 3'b111) ? 1: ((done_alu == 1 || busy_alu == 0) && Qk_red == 3'b001) ? 1: ((done_mul == 1 || busy_mul == 0) && Qk_red == 3'b010) ? 1: ((done_lsu == 1 || busy_lsu == 0) && Qk_red == 3'b011) ? 1: ((done_sldu == 1 || busy_sldu == 0) && Qk_red == 3'b100) ? 1: ((done_red == 1 || busy_red == 0) && Qk_red == 3'b101) ? 1: 0);
                 busy_red = ((Rj_red == 1 && Rk_red == 1) ? 1: 0); 
                 if (busy_red == 1) begin
-                    Fi_red = instr_read[12:8];   
-                    optype_read = instr_read[29:27];       
-                    op_red = instr_read[26:23];
-                    vsew_red = instr_read[37:36];
-                    lmul_red = instr_read[35:34];
-                    instr_read [2:0] =  3'b011;        
-                    instr_status_table[instr_read_index] = instr_read;
+                    Fi_red = red_read[12:8];   
+                    //optype_read = red_read[29:27];       
+                    op_red = red_read[26:23];
+                    vsew_red = red_read[37:36];
+                    lmul_red = red_read[35:34];
+                    red_read [2:0] =  3'b010;        
+                    instr_status_table[red_read_index] = red_read;
                     wr_red = 1;
                 end
             end
         end
-
-
+        
+        instr_read = ((instr_1[2:0] == 3'b010) ? instr_1: (instr_2[2:0] == 3'b010) ? instr_2: (instr_3[2:0] == 3'b010) ? instr_3: (instr_4[2:0] == 3'b010) ? instr_4: (instr_5[2:0] == 3'b010) ? instr_5: (instr_6[2:0] == 3'b010) ? instr_6: (instr_7[2:0] == 3'b010) ? instr_7: (instr_8[2:0] == 3'b010) ? instr_8: 0);        
+        instr_read_index = ((instr_1[2:0] == 3'b010) ? 0: (instr_2[2:0] == 3'b010) ? 1: (instr_3[2:0] == 3'b010) ? 2: (instr_4[2:0] == 3'b010) ? 3: (instr_5[2:0] == 3'b010) ? 4: (instr_6[2:0] == 3'b010) ? 5: (instr_7[2:0] == 3'b010) ? 6: (instr_8[2:0] == 3'b010) ? 7: 0);
+            if (instr_read != 0) begin
+                optype_read = instr_read[29:27];
+                instr_read[2:0] =  3'b011;        
+                instr_status_table[instr_read_index] = instr_read;
+            end
     // ******************WRITEBACK******************
-        wb_instr = ((instr_1[2:0] == 3'b100) ? instr_1: (instr_2[2:0] == 3'b100) ? instr_2: (instr_3[2:0] == 3'b100) ? instr_3: (instr_4[2:0] == 3'b100) ? instr_4: (instr_5[2:0] == 3'b100) ? instr_5: (instr_6[2:0] == 3'b100) ? instr_6: (instr_7[2:0] == 3'b100) ? instr_7: (instr_8[2:0] == 3'b100) ? instr_8: 0);
-        wb_instr_index = ((instr_1[2:0] == 3'b100) ? 0: (instr_2[2:0] == 3'b100) ? 1: (instr_3[2:0] == 3'b100) ? 2: (instr_4[2:0] == 3'b100) ? 3: (instr_5[2:0] == 3'b100) ? 4: (instr_6[2:0] == 3'b100) ? 5: (instr_7[2:0] == 3'b100) ? 6: (instr_8[2:0] == 3'b100) ? 7: 0);
+        //wb_instr = ((instr_1[2:0] == 3'b100) ? instr_1: (instr_2[2:0] == 3'b100) ? instr_2: (instr_3[2:0] == 3'b100) ? instr_3: (instr_4[2:0] == 3'b100) ? instr_4: (instr_5[2:0] == 3'b100) ? instr_5: (instr_6[2:0] == 3'b100) ? instr_6: (instr_7[2:0] == 3'b100) ? instr_7: (instr_8[2:0] == 3'b100) ? instr_8: 0);
+        //wb_instr_index = ((instr_1[2:0] == 3'b100) ? 0: (instr_2[2:0] == 3'b100) ? 1: (instr_3[2:0] == 3'b100) ? 2: (instr_4[2:0] == 3'b100) ? 3: (instr_5[2:0] == 3'b100) ? 4: (instr_6[2:0] == 3'b100) ? 5: (instr_7[2:0] == 3'b100) ? 6: (instr_8[2:0] == 3'b100) ? 7: 0);
+        wb_instr = (instr_1[2:0] == 3'b100) ? instr_1: 0;
         dest_wb = (wb_instr != 0) ? wb_instr[12:8] : dest_wb;   
         vsew_wb = (wb_instr != 0) ? wb_instr [37:36] : vsew_wb;
         lmul_wb = (wb_instr != 0) ? wb_instr [35:34] : lmul_wb;
