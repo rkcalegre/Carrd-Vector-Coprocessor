@@ -96,7 +96,7 @@ module v_lanes(
                 .clk(~valu_clk),
                 .nrst(nrst),
                 .op_instr(op_instr_alu),
-                .vsew(vsew),
+                .vsew(vsew[1:0]),
                 .op_A((step_alu == 3'd0)? alu_op_A_1[(i*32)+32-1:i*32] : (step_alu == 3'd1)? alu_op_A_2[(i*32)+32-1:i*32] : (step_alu == 3'd2)? alu_op_A_3[(i*32)+32-1:i*32] : (step_alu == 3'd3)? alu_op_A_4[(i*32)+32-1:i*32] : alu_op_A_1[(i*32)+32-1:i*32]),
                 .op_B((step_alu == 3'd0)? alu_op_B_1[(i*32)+32-1:i*32] : (step_alu == 3'd1)? alu_op_B_2[(i*32)+32-1:i*32] : (step_alu == 3'd2)? alu_op_B_3[(i*32)+32-1:i*32] : (step_alu == 3'd3)? alu_op_B_4[(i*32)+32-1:i*32] : alu_op_B_1[(i*32)+32-1:i*32]),
                 .result(result_valu_32b_1[(i*32)+32-1:i*32])
@@ -250,15 +250,20 @@ module v_lanes(
             end
         end
 
+        logic valu_clk1, vmul_clk1;
+        assign valu_clk1 = (lanes == 0 )? 0 : ~valu_clk;
+        assign vmul_clk1 = (lanes == 0 )? 0 : ~vmul_clk;
+
         for (i = 4; i < 8; i++) begin
 
             //ALU
 
             v_alu valu(
-                .clk((lanes == 0 )? 0 : ~valu_clk),
+                //.clk((lanes == 0 )? 0 : ~valu_clk),
+                .clk(valu_clk1),
                 .nrst(nrst),
                 .op_instr(op_instr_alu),
-                .vsew(vsew),
+                .vsew(vsew[1:0]),
                 .op_A((step_alu == 3'd2)? alu_op_A_4[((i-4)*32)+32-1:(i-4)*32] : alu_op_A_2[((i-4)*32)+32-1:(i-4)*32]),
                 .op_B((step_alu == 3'd2)? alu_op_B_4[((i-4)*32)+32-1:(i-4)*32] : alu_op_B_2[((i-4)*32)+32-1:(i-4)*32]),
                 .result(result_valu_32b_2[((i-4)*32)+32-1:(i-4)*32])
@@ -268,7 +273,8 @@ module v_lanes(
             //MUL
 
             v_mul vmul(
-                .clk((lanes == 0 )? 0 : ~vmul_clk),
+                //.clk((lanes == 0 )? 0 : ~vmul_clk),
+                .clk(vmul_clk1),
                 .nrst(nrst),
                 .is_mul(is_mul),
                 .sew(vsew),
@@ -314,7 +320,9 @@ module v_lanes(
 
     endgenerate
 
-
+    logic valu_clk2, vmul_clk2;
+    assign valu_clk2 = (lanes == 0 )? 0 :(lanes == 1 )? 0 : ~valu_clk;
+    assign vmul_clk2 = (lanes == 0 )? 0 :(lanes == 1 )? 0 : ~vmul_clk; 
 
     //genvar i;
     generate
@@ -323,10 +331,11 @@ module v_lanes(
             //ALU
 
             v_alu valu(
-                .clk((lanes == 0 )? 0 :(lanes == 1 )? 0 : ~valu_clk),
+                //.clk((lanes == 0 )? 0 :(lanes == 1 )? 0 : ~valu_clk),
+                .clk(valu_clk2),
                 .nrst(nrst),
                 .op_instr(op_instr_alu),
-                .vsew(vsew),
+                .vsew(vsew[1:0]),
                 .op_A(alu_op_A_3[((i-8)*32)+32-1:(i-8)*32]),
                 .op_B(alu_op_B_3[((i-8)*32)+32-1:(i-8)*32]),
                 .result(result_valu_32b_3[((i-8)*32)+32-1:(i-8)*32])
@@ -336,7 +345,8 @@ module v_lanes(
             //MUL
 
             v_mul vmul(
-                .clk((lanes == 0 )? 0 :(lanes == 1 )? 0 : ~vmul_clk),
+                //.clk((lanes == 0 )? 0 :(lanes == 1 )? 0 : ~vmul_clk),
+                .clk(vmul_clk2),
                 .nrst(nrst),
                 .is_mul(is_mul),
                 .sew(vsew),
@@ -358,16 +368,18 @@ module v_lanes(
         end
 
         end
+ 
 
         for (i = 12; i < 16; i++) begin
 
             //ALU
 
             v_alu valu(
-                .clk((lanes == 0 )? 0 :(lanes == 1 )? 0 : ~valu_clk),
+                //.clk((lanes == 0 )? 0 :(lanes == 1 )? 0 : ~valu_clk),
+                .clk(valu_clk2),
                 .nrst(nrst),
                 .op_instr(op_instr_alu),
-                .vsew(vsew),
+                .vsew(vsew[1:0]),
                 .op_A(alu_op_A_4[((i-12)*32)+32-1:(i-12)*32]),
                 .op_B(alu_op_B_4[((i-12)*32)+32-1:(i-12)*32]),
                 .result(result_valu_32b_4[((i-12)*32)+32-1:(i-12)*32])
@@ -377,7 +389,8 @@ module v_lanes(
             //MUL
 
             v_mul vmul(
-                .clk((lanes == 0 )? 0 :(lanes == 1 )? 0 : ~vmul_clk),
+                //.clk((lanes == 0 )? 0 :(lanes == 1 )? 0 : ~vmul_clk),
+                .clk(vmul_clk2),
                 .nrst(nrst),
                 .is_mul(is_mul),
                 .sew(vsew),
