@@ -54,7 +54,7 @@ module v_lsu #(
 
     logic [511:0] storedata;
     logic [4:0] elem_per_vreg;
-    logic [4:0] elem_per_vreg_strided;      //based on instruction vsew
+    logic [2:0] instr_vsew;                 //based on instruction vsew
     logic [2:0] num_reg;                    // # of registers to be stored
     logic [4:0] iter;                       // ensures all of the elements in each register are stored
     logic [4:0] exe_cc;                     // # of clock cycles per operation
@@ -62,6 +62,7 @@ module v_lsu #(
     logic [`DATAMEM_BITS-1:0] temp_addr, temp_addr_load;
     logic [6:0] strided_cc;
     logic nrst_ctr;
+
 
     assign elem_per_vreg = (vsew == 3'b000) ? 5'd16 : (vsew == 3'b001) ? 5'd8 : (vsew == 3'b010) ? 5'd4 : 5'd4; 
     assign num_reg = (lmul == 3'b000) ? 3'd1 : (lmul == 3'b001) ? 3'd2 : (lmul == 3'b010) ? 3'd4 : 3'd1;                                                                                // refers to clock cycles
@@ -75,12 +76,10 @@ module v_lsu #(
     logic [511:0] loaddata;
     logic [6:0] max_cc; 	
 	logic [6:0] l_cc;
-	//logic [511:0] temp;
 	logic [511:0] hold;
-    //logic [5:0] l_stride_cc = 0;
     logic is_vltype;
-    assign elem_per_vreg_strided = (v_lsu_op == 4'd5) ? 5'd16 : (v_lsu_op == 4'd4) ? 5'd8 : (v_lsu_op == 4'd6) ? 5'd4 : 5'd4; 
-    assign max_cc = (v_lsu_op inside {[1:3]}) ? num_reg : (v_lsu_op inside {[4:6]}) ? (((stride == 6'b0) || (stride == 6'b1)) ? num_reg :(stride[1:0] == 2'd0) ? elem_per_vreg_strided*num_reg : (stride[1:0] == 2'd1) ? num_reg*num_reg : (stride[1:0] == 2'd2) ? num_reg*num_reg*2 : num_reg*num_reg):  0;
+    assign instr_vsew = (v_lsu_op == 4'd4)? 3'd4 : (v_lsu_op == 3'd5)? 3'd2: 3'd1;
+    assign max_cc = (v_lsu_op inside {[1:3]}) ? num_reg : (v_lsu_op inside {[4:6]}) ? (((stride == 6'b0) || (stride == 6'b1)) ? num_reg :(stride[1:0] == 2'd0) ? instr_vsew*num_reg*4 : (stride[1:0] == 2'd1) ? instr_vsew*num_reg : (stride[1:0] == 2'd2) ? instr_vsew*num_reg*2 : instr_vsew*num_reg):  0;
     assign l_done = (l_cc == max_cc + 1)? 1: 0;
     //assign temp_data = (l_cc == max_cc + 1)? loaddata : 0;
     assign is_vltype = (v_lsu_op inside {[1:6]});
@@ -92,14 +91,14 @@ module v_lsu #(
     assign s_done = (out_ctr == exe_cc + 1) ? 1 : 0;
 
     // instantiate counters
-    counter c4 (
+    counter_lsu ctr_store (
         .clk(~clk),
         .nrst(nrst_ctr),
         .out(out_ctr)
     );
 
     // instantiate clock cycle counter for load
-    counter_load ctr_load (
+    counter_lsu ctr_load (
         .clk(clk && is_vltype),
         .nrst(nrst && is_vltype),
         .out(l_cc)
@@ -129,7 +128,7 @@ module v_lsu #(
         if (!nrst) begin
             temp_addr <= 0;
         end else begin
-            if (s_cc == 1) begin                                    // starting value
+            if (s_cc == 0) begin                                    // starting value
                 temp_addr <= address;
                 temp_data <= s_data;
             end else begin
@@ -570,27 +569,8 @@ module v_lsu #(
     
 endmodule
 
-
 // 7-bit Counter
-module counter (
-    input clk, 
-    input nrst,
-    output reg [6:0] out
-);
-    initial begin
-        out <= 0;
-    end
-    always @(posedge clk) begin
-        if (!nrst)
-            out <= 0;
-        else    
-            out <= out + 1;
-    end
-    
-endmodule
-
-// 7-bit Counter
-module counter_load (
+module counter_lsu (
     input clk, 
     input nrst,
     output reg [6:0] out
