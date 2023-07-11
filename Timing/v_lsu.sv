@@ -73,6 +73,7 @@ module v_lsu #(
 
     // load signals
     logic [127:0] temp_data;
+    logic [127:0] temp_data_load;
     logic [511:0] loaddata;
     logic [6:0] max_cc; 	
 	logic [6:0] l_cc;
@@ -442,31 +443,31 @@ module v_lsu #(
                     case (stride[1:0])
                         //4,8,12,16
                         2'd0: begin
-                            temp_data = {{120{1'b0}}, {l_data_in0[7:0]}};
-                            loaddata = (l_cc==0) ? {{temp_data[7:0]},{504'd0}}: {temp_data[7:0], hold[503:0]};
+                            temp_data_load = {{120{1'b0}}, {l_data_in0[7:0]}};
+                            loaddata = (l_cc==0) ? {{temp_data_load[7:0]},{504'd0}}: {temp_data_load[7:0], hold[503:0]};
                             hold = (l_cc <= max_cc)? loaddata >> 8 : loaddata;
                         end
                         //5,9,13
                         2'd1: begin
-                            temp_data = {{96{1'b0}},l_data_in3[7:0],l_data_in2[7:0],l_data_in1[7:0],l_data_in0[7:0]};
-                            loaddata = (l_cc==0) ? {{temp_data[31:0]},{480'd0}}: {temp_data[31:0], hold[479:0]};
+                            temp_data_load = {{96{1'b0}},l_data_in3[7:0],l_data_in2[7:0],l_data_in1[7:0],l_data_in0[7:0]};
+                            loaddata = (l_cc==0) ? {{temp_data_load[31:0]},{480'd0}}: {temp_data_load[31:0], hold[479:0]};
                            hold = (l_cc <= max_cc)? loaddata >> 32 : loaddata;
                         end
                         //2,6,10,14
                         2'd2: begin
-                            temp_data = {{112{1'b0}},l_data_in2[7:0],l_data_in0[7:0]};
-                            loaddata = (l_cc==0) ? {{temp_data[15:0]},{496'd0}}: {temp_data[15:0], hold[495:0]};
+                            temp_data_load = {{112{1'b0}},l_data_in2[7:0],l_data_in0[7:0]};
+                            loaddata = (l_cc==0) ? {{temp_data_load[15:0]},{496'd0}}: {temp_data_load[15:0], hold[495:0]};
                             hold = (l_cc <= max_cc)? loaddata >> 16 : loaddata;
                         end
                         //3,7,11,15
                         2'd3: begin
-                            temp_data = {{96{1'b0}},l_data_in1[7:0],l_data_in2[7:0],l_data_in3[7:0],l_data_in0[7:0]};
-                            loaddata = (l_cc==0) ? {{temp_data[31:0]},{496'd0}}: {temp_data[31:0], hold[479:0]};
+                            temp_data_load = {{96{1'b0}},l_data_in1[7:0],l_data_in2[7:0],l_data_in3[7:0],l_data_in0[7:0]};
+                            loaddata = (l_cc==0) ? {{temp_data_load[31:0]},{496'd0}}: {temp_data_load[31:0], hold[479:0]};
                             hold = (l_cc <= max_cc)? loaddata >> 32 : loaddata;
                         end            
                         default: begin
-                            temp_data = {{120{1'b0}}, {l_data_in0[7:0]}};
-                            loaddata = (l_cc==0) ? {{temp_data[7:0]},{504'd0}}: {temp_data[7:0], hold[503:0]};
+                            temp_data_load = {{120{1'b0}}, {l_data_in0[7:0]}};
+                            loaddata = (l_cc==0) ? {{temp_data_load[7:0]},{504'd0}}: {temp_data_load[7:0], hold[503:0]};
                             hold = (l_cc <= max_cc)? loaddata >> 8 : loaddata;
                         end
                     endcase                    
@@ -485,31 +486,31 @@ module v_lsu #(
                     case (stride[1:0])
                         //4,8,12,16
                         2'd0: begin
-                            temp_data = {{112{1'b0}},l_data_in0[15:0]};
-                            loaddata = (l_cc==0) ? {{temp_data[16:0]},{496'd0}}: {temp_data[15:0], hold[495:0]};
+                            temp_data_load = {{112{1'b0}},l_data_in0[15:0]};
+                            loaddata = (l_cc==0) ? {{temp_data_load[16:0]},{496'd0}}: {temp_data_load[15:0], hold[495:0]};
                             hold = (l_cc <= max_cc)? loaddata >> 16 : loaddata;
                         end
                         //5,9,13
                         2'd1: begin
-                            temp_data = {{64{1'b0}},l_data_in3[15:0],l_data_in2[15:0],l_data_in1[15:0],l_data_in0[15:0]};
-                            loaddata = (l_cc==0) ? {{temp_data[63:0]},{448'd0}}: {temp_data[63:0], hold[447:0]};
+                            temp_data_load = {{64{1'b0}},l_data_in3[15:0],l_data_in2[15:0],l_data_in1[15:0],l_data_in0[15:0]};
+                            loaddata = (l_cc==0) ? {{temp_data_load[63:0]},{448'd0}}: {temp_data_load[63:0], hold[447:0]};
                             hold = (l_cc <= max_cc)? loaddata >> 64 : loaddata;
                         end
                         //2,6,10,14
                         2'd2: begin
-                            temp_data = {{96{1'b0}},l_data_in2[15:0],l_data_in0[15:0]};
-                            loaddata = (l_cc==0) ? {{temp_data[32:0]},{480'd0}}: {temp_data[31:0], hold[479:0]};
+                            temp_data_load = {{96{1'b0}},l_data_in2[15:0],l_data_in0[15:0]};
+                            loaddata = (l_cc==0) ? {{temp_data_load[32:0]},{480'd0}}: {temp_data_load[31:0], hold[479:0]};
                             hold = (l_cc <= max_cc)? loaddata >> 32 : loaddata;
                         end
                         //3,7,11,15
                         2'd3: begin
-                            temp_data = {{64{1'b0}},l_data_in1[15:0],l_data_in2[15:0],l_data_in3[15:0],l_data_in0[15:0]};
-                            loaddata = (l_cc==0) ? {{temp_data[64:0]},{448'd0}}: {temp_data[63:0], hold[447:0]};
+                            temp_data_load = {{64{1'b0}},l_data_in1[15:0],l_data_in2[15:0],l_data_in3[15:0],l_data_in0[15:0]};
+                            loaddata = (l_cc==0) ? {{temp_data_load[64:0]},{448'd0}}: {temp_data_load[63:0], hold[447:0]};
                             hold = (l_cc <= max_cc)? loaddata >> 64 : loaddata;
                         end            
                         default: begin
-                            temp_data = {{112{1'b0}},l_data_in0[15:0]};
-                            loaddata = (l_cc==0) ? {{temp_data[16:0]},{496'd0}}: {temp_data[15:0], hold[495:0]};
+                            temp_data_load = {{112{1'b0}},l_data_in0[15:0]};
+                            loaddata = (l_cc==0) ? {{temp_data_load[16:0]},{496'd0}}: {temp_data_load[15:0], hold[495:0]};
                             hold = (l_cc <= max_cc)? loaddata >> 16 : loaddata;
                         end
                     endcase                    
@@ -528,40 +529,40 @@ module v_lsu #(
                     case (stride[1:0])
                         //4,8,12,16
                         2'd0: begin
-                            temp_data = {{96{1'b0}},l_data_in0};
-//                            temp_data = (l_cc[0] == 0)? {{96{1'b0}},32'd6}: {{96{1'b0}},32'd7};
-                            loaddata = (l_cc==0) ? {{temp_data[31:0]},{480'd0}}: {temp_data[31:0], hold[479:0]};
+                            temp_data_load = {{96{1'b0}},l_data_in0};
+//                            temp_data_load = (l_cc[0] == 0)? {{96{1'b0}},32'd6}: {{96{1'b0}},32'd7};
+                            loaddata = (l_cc==0) ? {{temp_data_load[31:0]},{480'd0}}: {temp_data_load[31:0], hold[479:0]};
                             hold = (l_cc <= max_cc)? loaddata >> 32 : loaddata;
 //                            hold = loaddata;
                         end
                         //5,9,13
                         2'd1: begin
-                            temp_data = {l_data_in3,l_data_in2,l_data_in1,l_data_in0};
-                            loaddata = (l_cc==0) ? {{temp_data[127:0]},{384'd0}}: {temp_data, hold[383:0]};
+                            temp_data_load = {l_data_in3,l_data_in2,l_data_in1,l_data_in0};
+                            loaddata = (l_cc==0) ? {{temp_data_load[127:0]},{384'd0}}: {temp_data_load, hold[383:0]};
                             hold = (l_cc <= max_cc)? loaddata >> 128 : loaddata;
                         end
                         //2,6,10,14
                         2'd2: begin
-                            temp_data = {{64{1'b0}},l_data_in2,l_data_in0};
-                            loaddata = (l_cc==0) ? {{temp_data[64:0]},{448'd0}}: {temp_data[63:0], hold[447:0]};
+                            temp_data_load = {{64{1'b0}},l_data_in2,l_data_in0};
+                            loaddata = (l_cc==0) ? {{temp_data_load[64:0]},{448'd0}}: {temp_data_load[63:0], hold[447:0]};
                             hold = (l_cc <= max_cc)? loaddata >> 64 : loaddata;
                         end
                         //3,7,11,15
                         2'd3: begin
-                            temp_data = {l_data_in1,l_data_in2,l_data_in3,l_data_in0};
-                            loaddata = (l_cc==0) ? {{temp_data[127:0]},{384'd0}}: {temp_data, hold[383:0]};
+                            temp_data_load = {l_data_in1,l_data_in2,l_data_in3,l_data_in0};
+                            loaddata = (l_cc==0) ? {{temp_data_load[127:0]},{384'd0}}: {temp_data_load, hold[383:0]};
                             hold = (l_cc <= max_cc)? loaddata >> 128 : loaddata;
                         end            
                         default: begin
-                            temp_data = {{96{1'b0}},l_data_in0};
-                            loaddata = (l_cc==0) ? {{temp_data[32:0]},{480'd0}}: {temp_data[31:0], hold[479:0]};
+                            temp_data_load = {{96{1'b0}},l_data_in0};
+                            loaddata = (l_cc==0) ? {{temp_data_load[32:0]},{480'd0}}: {temp_data_load[31:0], hold[479:0]};
                             hold = (l_cc <= max_cc)? loaddata >> 32 : loaddata;
                         end
                     endcase                    
                 end
             end             
             default: begin
-                temp_data = 0;
+                temp_data_load = 0;
                 hold = 0;
             end
         endcase
