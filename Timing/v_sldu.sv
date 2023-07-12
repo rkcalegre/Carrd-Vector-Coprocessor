@@ -45,7 +45,7 @@ module v_sldu #(
         done_vsldu <= 0;
     end */
     
-    assign done_vsldu = (temp_done && clk && (op_instr inside {[1:5]}))? 1:0;
+    assign done_vsldu = (temp_done && (op_instr inside {[1:5]}))? 1:0;
 
     logic temp_done;
     initial begin
