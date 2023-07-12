@@ -13,8 +13,10 @@ addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 VSLIDEUP.VX v8, v4, x4
 ADDI x1, x0, 0          # x1 = 0
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 vse32.v v8, x1         # m[x1 = 0] = v8
@@ -29,6 +31,7 @@ VSLIDEUP.VI v8, v4, 2
 ADDI x1, x1, 16          # x1 = x1 + 4 = 0 + 4 = 4
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v8, x1         # m[x1 = 4] = v8
 addi x0, x0, 0
 addi x0, x0, 0
@@ -39,6 +42,7 @@ addi x0, x0, 0
 addi x0, x0, 0
 VSLIDE1UP.VX v12, v4, x4
 ADDI x1, x1, 16          # x1 = x1 + 4 = 4 + 4 = 8
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 vse32.v v12, x1         # m[x1 = 8] = v12
@@ -53,6 +57,7 @@ VSLIDEDOWN.VX v16, v4, x4
 ADDI x1, x1, 16          # x1 = x1 + 4 = 8 + 4 = 12
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v16, x1         # m[x1 = 12] = v16
 addi x0, x0, 0
 addi x0, x0, 0
@@ -63,6 +68,7 @@ addi x0, x0, 0
 addi x0, x0, 0
 VSLIDEDOWN.VI v16, v4, 2
 ADDI x1, x1, 16          # x1 = x1 + 4 = 12 + 4 = 16
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 vse32.v v16, x1         # m[x1 = 16] = v16
@@ -77,6 +83,7 @@ VSLIDE1DOWN.VX v20, v4, 2
 ADDI x1, x1, 16          # x1 = x1 + 4 = 16 + 4 = 20
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v20, x1         # m[x1 = 20] = v20
 addi x0, x0, 0
 addi x0, x0, 0
@@ -87,6 +94,7 @@ addi x0, x0, 0
 addi x0, x0, 0
 VMV.S.X v24, x5
 ADDI x1, x1, 16          # x1 = x1 + 4 = 20 + 4 = 24
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 vse32.v v24, x1         # m[x1 = 24] = v20
@@ -102,6 +110,7 @@ VSLIDEUP.VX v8, v4, x4
 ADDI x1, x1, 16          # x1 = x1 + 4 = 24 + 4 = 28
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v8, x1         # m[x1 = 28] = v8
 addi x0, x0, 0
 addi x0, x0, 0
@@ -112,6 +121,7 @@ addi x0, x0, 0
 addi x0, x0, 0
 VSLIDEUP.VI v8, v4, 2
 ADDI x1, x1, 16          # x1 = x1 + 4 = 28 + 4 = 32
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 vse32.v v8, x1         # m[x1 = 32] = v8
@@ -126,6 +136,7 @@ VSLIDE1UP.VX v12, v4, x4
 ADDI x1, x1, 16          # x1 = x1 + 4 = 32 + 4 = 36
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v12, x1         # m[x1 = 36] = v12
 addi x0, x0, 0
 addi x0, x0, 0
@@ -136,6 +147,7 @@ addi x0, x0, 0
 addi x0, x0, 0
 VSLIDEDOWN.VX v16, v4, x4
 ADDI x1, x1, 16          # x1 = x1 + 4 = 36 + 4 = 40
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 vse32.v v16, x1         # m[x1 = 40] = v16
@@ -150,6 +162,7 @@ VSLIDEDOWN.VI v16, v4, 2
 ADDI x1, x1, 16          # x1 = x1 + 4 = 40 + 4 = 44
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v16, x1         # m[x1 = 44] = v16
 addi x0, x0, 0
 addi x0, x0, 0
@@ -162,6 +175,7 @@ VSLIDE1DOWN.VX v20, v4, 2
 ADDI x1, x1, 16          # x1 = x1 + 4 = 44 + 4 = 48
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v20, x1         # m[x1 = 48] = v20
 addi x0, x0, 0
 addi x0, x0, 0
@@ -172,6 +186,7 @@ addi x0, x0, 0
 addi x0, x0, 0
 VMV.S.X v24, x5
 ADDI x1, x1, 16          # x1 = x1 + 4 = 48 + 4 = 52
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 vse32.v v24, x1         # m[x1 = 52] = v24
@@ -187,6 +202,7 @@ VSLIDEUP.VX v8, v4, x4
 ADDI x1, x1, 16          # x1 = x1 + 4 = 52 + 4 = 56
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v8, x1         # m[x1 = 56] = v8
 addi x0, x0, 0
 addi x0, x0, 0
@@ -197,6 +213,7 @@ addi x0, x0, 0
 addi x0, x0, 0
 VSLIDEUP.VI v8, v4, 2
 ADDI x1, x1, 16          # x1 = x1 + 4 = 56 + 4 = 60
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 vse32.v v8, x1         # m[x1 = 60] = v8
@@ -211,6 +228,7 @@ VSLIDE1UP.VX v12, v4, x4
 ADDI x1, x1, 16          # x1 = x1 + 4 = 60 + 4 = 64
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v12, x1         # m[x1 = 64] = v12
 addi x0, x0, 0
 addi x0, x0, 0
@@ -221,6 +239,7 @@ addi x0, x0, 0
 addi x0, x0, 0
 VSLIDEDOWN.VX v16, v4, x4
 ADDI x1, x1, 16          # x1 = x1 + 4 = 64 + 4 = 68
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 vse32.v v16, x1         # m[x1 = 68] = v16
@@ -235,6 +254,7 @@ VSLIDEDOWN.VI v16, v4, 2
 ADDI x1, x1, 16          # x1 = x1 + 4 = 68 + 4 = 72
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v16, x1         # m[x1 = 72] = v16
 addi x0, x0, 0
 addi x0, x0, 0
@@ -245,6 +265,7 @@ addi x0, x0, 0
 addi x0, x0, 0
 VSLIDE1DOWN.VX v20, v4, 2
 ADDI x1, x1, 16          # x1 = x1 + 4 = 72 + 4 = 76
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 vse32.v v20, x1         # m[x1 = 76] = v20
@@ -259,23 +280,24 @@ VMV.S.X v24, x5
 ADDI x1, x1, 16          # x1 = x1 + 4 = 76 + 4 = 80
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v24, x1         # m[x1 = 80] = v24
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-C.NOP
-C.NOP
+addi x0, x0, 0
+addi x0, x0, 0
+addi x0, x0, 0
+addi x0, x0, 0
+addi x0, x0, 0
+addi x0, x0, 0
+addi x0, x0, 0
+addi x0, x0, 0
+addi x0, x0, 0
+addi x0, x0, 0
+addi x0, x0, 0
+addi x0, x0, 0
+addi x0, x0, 0
+addi x0, x0, 0
+addi x0, x0, 0
+addi x0, x0, 0
 
 
 # Input vector
