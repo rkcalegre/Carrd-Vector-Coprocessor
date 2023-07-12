@@ -58,7 +58,7 @@ module v_lsu #(
     logic [2:0] num_reg;                    // # of registers to be stored
     logic [4:0] iter;                       // ensures all of the elements in each register are stored
     logic [4:0] exe_cc;                     // # of clock cycles per operation
-    wire [1:0] s_cc;
+    wire [6:0] s_cc;
     logic [`DATAMEM_BITS-1:0] temp_addr, temp_addr_load;
     logic [6:0] strided_cc;
     logic [6:0] out_ctr;
@@ -70,7 +70,7 @@ module v_lsu #(
     assign iter = (elem_per_vreg == 5'd16) ? 5'd4 : (elem_per_vreg == 5'd8) ? 5'd2 : (elem_per_vreg == 5'd4) ? 5'd1 : 5'd1;
     assign strided_cc = (v_lsu_op == 4'd10) ? 7'd4 : (v_lsu_op == 4'd11) ? 7'd2 : (v_lsu_op == 4'd12) ? 7'd1 : 7'd4; 
     assign exe_cc = (v_lsu_op inside {[7:9]}) ? num_reg : (v_lsu_op inside {[10:12]}) ? ((stride inside {2,6,10,14}) ? num_reg*2*strided_cc : (stride inside {3,5,7,9,11,13,15}) ? num_reg*1*strided_cc : (stride inside {4,8,12,16}) ? num_reg*4*strided_cc : 0) : 1;
-    assign dm_v_write = (v_lsu_op inside {[7:12]}) ? 1 : 0;
+    assign dm_v_write = (v_lsu_op inside {[7:12]} && !s_done && s_cc != 0) ? 1 : 0;
 
     // load signals
     logic [511:0] temp_data;
