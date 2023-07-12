@@ -28,7 +28,7 @@ module carrd_integrated#(
 	0 - 4 lanes
 	1 - 8 lanes
 	2 - 16 lanes **/
-    parameter int LANES = 2                     // To be set before synthesizing the project. 
+    parameter int LANES = 0                     // To be set before synthesizing the project. 
 )(
 	input clk,
 	input nrst,
@@ -177,10 +177,10 @@ module carrd_integrated#(
     assign vlsu_clk_en = (op_lsu != 0)? 1: 0;
     //VRF - From Base Processor
     assign instr = op_instr_base; 
-    assign x_reg_data1 = xreg_out1;
-    assign x_reg_data2 = xreg_out2;
-    assign v_rd_xreg_addr1 = src_A;
-    assign v_rd_xreg_addr2 = src_B;
+    //assign x_reg_data1 = xreg_out1;
+    //assign x_reg_data2 = xreg_out2;
+    assign v_rd_xreg_addr1 = vs1;
+    assign v_rd_xreg_addr2 = vs2;
     //VRF
     assign src_A = optype == 3'b001 ? Fj_alu: optype == 3'b010 ? Fj_mul: optype == 3'b011 ? Fj_lsu: optype == 3'b100 ? Fj_sldu: optype == 3'b101 ? Fj_red: 0;
     assign src_B = optype == 3'b001 ? Fk_alu: optype == 3'b010 ? Fk_mul: optype == 3'b011 ? Fk_lsu: optype == 3'b100 ? Fk_sldu: optype == 3'b101 ? Fk_red: 0;
@@ -316,6 +316,8 @@ module carrd_integrated#(
         .clk(~clk),
         .nrst(nrst),
         .base_instr(op_instr_base),
+        .x_reg_data_1(xreg_out1),
+        .x_reg_data_2(xreg_out2),
         .sel_op_A(v_op_sel_A[1:0]),
         .sel_op_B(v_op_sel_B[1:0]),
         .sel_dest(v_sel_dest[1:0]),
@@ -405,12 +407,14 @@ module carrd_integrated#(
         .optype_read(optype),
         .dest_wb(dest_wb),
         .vsew_wb(vsew_reg),
-        .lmul_wb(lmul_reg)
+        .lmul_wb(lmul_reg),
+        .xdata_1(x_reg_data1),
+        .xdata_2(x_reg_data2)
     );
 
 
     //assign source_a for each fu
-        assign op_A_alu = (optype == 3'b001 && op_alu != 0)?((Qj_alu == 0) ? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,reg_data_out_v1_a}:  //vs1 data
+        assign op_A_alu = (optype == 3'b001/*  && op_alu != 0 */)?((Qj_alu == 0) ? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,reg_data_out_v1_a}:  //vs1 data
                   (Qj_alu == 1) ? {result_valu_4, result_valu_3, result_valu_2, result_valu_1}:
                   (Qj_alu == 2) ? {result_vmul_4, result_vmul_3, result_vmul_2, result_vmul_1}:
                   (Qj_alu == 3) ? result_vloadu:
@@ -420,7 +424,7 @@ module carrd_integrated#(
                                     (vsew_alu == 3'b010) ? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,{reg_data_out_v1_a [127:32],result_vred}}: op_A_alu):
                   (Qj_alu == 6)? ((vsew_alu == 3'b000) ? { 64{x_reg_data1[7:0]} } : (vsew_alu == 3'b001) ? { 32{x_reg_data1[15:0]} } : (vsew_alu == 3'b010) ? { 16{x_reg_data1} } : 0):  //rs1_data data
                   (Qj_alu == 7)? ((vsew_alu == 3'b000) ? { 64{{3{1'b0}} , Imm_alu} } : (vsew_alu == 3'b001) ? { 32{{11{1'b0}} , Imm_alu} } : (vsew_alu == 3'b010) ? { 16{{27{1'b0}} , Imm_alu} } : op_A_alu) : op_A_alu): op_A_alu;  //immediate data
-        assign op_A_mul = (optype == 3'b010 && op_mul != 0)?((Qj_mul == 0)? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,reg_data_out_v1_a}:  //vs1 data
+        assign op_A_mul = (optype == 3'b010/*  && op_mul != 0 */)?((Qj_mul == 0)? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,reg_data_out_v1_a}:  //vs1 data
                   (Qj_mul == 1) ? {result_valu_4, result_valu_3, result_valu_2, result_valu_1}:
                   (Qj_mul == 2) ? {result_vmul_4, result_vmul_3, result_vmul_2, result_vmul_1}:
                   (Qj_mul == 3) ? result_vloadu:
@@ -430,7 +434,7 @@ module carrd_integrated#(
                                     (vsew_mul == 3'b010) ? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,{reg_data_out_v1_a [127:32],result_vred}}: op_A_alu):
                   (Qj_mul == 6)? ((vsew_mul == 3'b000) ? { 64{x_reg_data1[7:0]} } : (vsew_mul == 3'b001) ? { 32{x_reg_data1[15:0]} } : (vsew_mul == 3'b010) ? { 16{x_reg_data1} } : 0):  //rs1_data data
                   (Qj_mul == 7)? ((vsew_mul == 3'b000) ? { 64{{3{1'b0}} , Imm_mul} } : (vsew_mul == 3'b001) ? { 32{{11{1'b0}} , Imm_mul} } : (vsew_mul == 3'b010) ? { 16{{27{1'b0}} , Imm_mul} } : op_A_mul) : op_A_mul): op_A_mul;  //immediate data
-        assign op_A_lsu = (optype == 3'b011 && op_lsu != 0)?((Qj_lsu == 0)? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,reg_data_out_v1_a}:  //vs1 data
+        assign op_A_lsu = (optype == 3'b011/*  && op_lsu != 0 */)?((Qj_lsu == 0)? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,reg_data_out_v1_a}:  //vs1 data
                   (Qj_lsu == 1) ? {result_valu_4, result_valu_3, result_valu_2, result_valu_1}:
                   (Qj_lsu == 2) ? {result_vmul_4, result_vmul_3, result_vmul_2, result_vmul_1}:
                   (Qj_lsu == 3) ? result_vloadu:
@@ -440,7 +444,7 @@ module carrd_integrated#(
                                     (vsew_lsu == 3'b010) ? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,{reg_data_out_v1_a [127:32],result_vred}}: op_A_alu):
                   (Qj_lsu == 6)? {{480{1'b0}}, x_reg_data1}:  //rs1 data
                   (Qj_lsu == 7)? ((vsew_lsu == 3'b000) ? { 64{{3{1'b0}} , Imm_lsu} } : (vsew_lsu == 3'b001) ? { 32{{11{1'b0}} , Imm_lsu} } : (vsew_lsu == 3'b010) ? { 16{{27{1'b0}} , Imm_lsu} } : op_A_lsu) :op_A_lsu): op_A_lsu;  //immediate data
-        assign op_A_sldu = (optype == 3'b100 && op_sldu != 0)?((Qj_sldu == 0)? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,reg_data_out_v1_a}:  //vs1 data
+        assign op_A_sldu = (optype == 3'b100/*  && op_sldu != 0 */)?((Qj_sldu == 0)? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,reg_data_out_v1_a}:  //vs1 data
                   (Qj_sldu == 1) ? {result_valu_4, result_valu_3, result_valu_2, result_valu_1}:
                   (Qj_sldu == 2) ? {result_vmul_4, result_vmul_3, result_vmul_2, result_vmul_1}:
                   (Qj_sldu == 3) ? result_vloadu:
@@ -450,7 +454,7 @@ module carrd_integrated#(
                                     (vsew_sldu == 3'b010) ? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,{reg_data_out_v1_a [127:32],result_vred}}: op_A_alu):
                   (Qj_sldu == 6)? {{480{1'b0}}, x_reg_data1}:  //rs1 data
                   (Qj_sldu == 7)? ((vsew_sldu == 3'b000) ? { 64{{3{1'b0}} , Imm_sldu} } : (vsew_sldu == 3'b001) ? { 32{{11{1'b0}} , Imm_sldu} } : (vsew_sldu == 3'b010) ? { 16{{27{1'b0}} , Imm_sldu} } : op_A_sldu) :op_A_sldu): op_A_sldu;  //immediate data
-        assign op_A_red = (optype == 3'b101 && op_red != 0)?((Qj_red == 0)? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,reg_data_out_v1_a}:  //vs1 data
+        assign op_A_red = (optype == 3'b101/*  && op_red != 0 */)?((Qj_red == 0)? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,reg_data_out_v1_a}:  //vs1 data
                   (Qj_red == 1) ? {result_valu_4, result_valu_3, result_valu_2, result_valu_1}:
                   (Qj_red == 2) ? {result_vmul_4, result_vmul_3, result_vmul_2, result_vmul_1}:
                   (Qj_red == 3) ? result_vloadu:
@@ -462,7 +466,7 @@ module carrd_integrated#(
                   (Qj_red == 7)? ((vsew_red == 3'b000) ? { 64{{3{1'b0}} , Imm_red} } : (vsew_red == 3'b001) ? { 32{{11{1'b0}} , Imm_red} } : (vsew_red == 3'b010) ? { 16{{27{1'b0}} , Imm_red} } : op_A_red) :op_A_red): op_A_red;  //immediate data
 
         //assign source_b for each fu
-        assign op_B_alu = (optype == 3'b001 && op_alu != 0)?((Qk_alu == 0) ? {reg_data_out_v2_d,reg_data_out_v2_c,reg_data_out_v2_b,reg_data_out_v2_a}:  //vs1 data
+        assign op_B_alu = (optype == 3'b001/*  && op_alu != 0 */)?((Qk_alu == 0) ? {reg_data_out_v2_d,reg_data_out_v2_c,reg_data_out_v2_b,reg_data_out_v2_a}:  //vs1 data
                   (Qk_alu == 1) ? {result_valu_4, result_valu_3, result_valu_2, result_valu_1}:
                   (Qk_alu == 2) ? {result_vmul_4, result_vmul_3, result_vmul_2, result_vmul_1}:
                   (Qk_alu == 3) ? result_vloadu:
@@ -472,7 +476,7 @@ module carrd_integrated#(
                                     (vsew_alu == 3'b010) ? {reg_data_out_v2_d,reg_data_out_v2_c,reg_data_out_v2_b,{reg_data_out_v2_a [127:32],result_vred}}: op_A_alu):
                   (Qk_alu == 6)? {{480{1'b0}}, x_reg_data1}:  //rs1 data
                   (Qk_alu == 7)? ((vsew_alu == 3'b000) ? { 64{{3{1'b0}} , Imm_alu} } : (vsew_alu == 3'b001) ? { 32{{11{1'b0}} , Imm_alu} } : (vsew_alu == 3'b010) ? { 16{{27{1'b0}} , Imm_alu} } : op_B_alu) : op_B_alu): op_B_alu;  //immediate data
-        assign op_B_mul = (optype == 3'b010 && op_mul != 0)?((Qk_mul == 0)? {reg_data_out_v2_d,reg_data_out_v2_c,reg_data_out_v2_b,reg_data_out_v2_a}:  //vs1 data
+        assign op_B_mul = (optype == 3'b010/*  && op_mul != 0 */)?((Qk_mul == 0)? {reg_data_out_v2_d,reg_data_out_v2_c,reg_data_out_v2_b,reg_data_out_v2_a}:  //vs1 data
                   (Qk_mul == 1) ? {result_valu_4, result_valu_3, result_valu_2, result_valu_1}:
                   (Qk_mul == 2) ? {result_vmul_4, result_vmul_3, result_vmul_2, result_vmul_1}:
                   (Qk_mul == 3) ? result_vloadu:
@@ -482,7 +486,7 @@ module carrd_integrated#(
                                     (vsew_mul == 3'b010) ? {reg_data_out_v2_d,reg_data_out_v2_c,reg_data_out_v2_b,{reg_data_out_v2_a [127:32],result_vred}}: op_A_alu):
                   (Qk_mul == 6)? {{480{1'b0}}, x_reg_data1}:  //rs1 data
                   (Qk_mul == 7)? ((vsew_mul == 3'b000) ? { 64{{3{1'b0}} , Imm_mul} } : (vsew_mul == 3'b001) ? { 32{{11{1'b0}} , Imm_mul} } : (vsew_mul == 3'b010) ? { 16{{27{1'b0}} , Imm_mul} } : op_B_mul) : op_B_mul): op_B_mul;  //immediate data
-        assign op_B_lsu = (optype == 3'b011 && op_lsu != 0)?((Qk_lsu == 0)? {reg_data_out_v2_d,reg_data_out_v2_c,reg_data_out_v2_b,reg_data_out_v2_a}:  //vs1 data
+        assign op_B_lsu = (optype == 3'b011/*  && op_lsu != 0 */)?((Qk_lsu == 0)? {reg_data_out_v2_d,reg_data_out_v2_c,reg_data_out_v2_b,reg_data_out_v2_a}:  //vs1 data
                   (Qk_lsu == 1) ? {result_valu_4, result_valu_3, result_valu_2, result_valu_1}:
                   (Qk_lsu == 2) ? {result_vmul_4, result_vmul_3, result_vmul_2, result_vmul_1}:
                   (Qk_lsu == 3) ? result_vloadu:
@@ -492,7 +496,7 @@ module carrd_integrated#(
                                     (vsew_lsu == 3'b010) ? {reg_data_out_v2_d,reg_data_out_v2_c,reg_data_out_v2_b,{reg_data_out_v2_a [127:32],result_vred}}: op_A_alu):
                   (Qk_lsu == 6)? {{480{1'b0}}, x_reg_data2}:  //rs2 data
                   (Qk_lsu == 7)? ((vsew_lsu == 3'b000) ? { 64{{3{1'b0}} , Imm_lsu} } : (vsew_lsu == 3'b001) ? { 32{{11{1'b0}} , Imm_lsu} } : (vsew_lsu == 3'b010) ? { 16{{27{1'b0}} , Imm_lsu} } : op_B_lsu) :op_B_lsu): op_B_lsu;  //immediate data
-        assign op_B_sldu = (optype == 3'b100 && op_sldu != 0)?((Qk_sldu == 0)? {reg_data_out_v2_d,reg_data_out_v2_c,reg_data_out_v2_b,reg_data_out_v2_a}:  //vs1 data
+        assign op_B_sldu = (optype == 3'b100/*  && op_sldu != 0 */)?((Qk_sldu == 0)? {reg_data_out_v2_d,reg_data_out_v2_c,reg_data_out_v2_b,reg_data_out_v2_a}:  //vs1 data
                   (Qk_sldu == 1) ? {result_valu_4, result_valu_3, result_valu_2, result_valu_1}:
                   (Qk_sldu == 2) ? {result_vmul_4, result_vmul_3, result_vmul_2, result_vmul_1}:
                   (Qk_sldu == 3) ? result_vloadu:
@@ -502,7 +506,7 @@ module carrd_integrated#(
                                     (vsew_sldu == 3'b010) ? {reg_data_out_v2_d,reg_data_out_v2_c,reg_data_out_v2_b,{reg_data_out_v2_a [127:32],result_vred}}: op_A_alu):
                   (Qk_sldu == 6)? {{480{1'b0}}, x_reg_data1}:  //rs1 data
                   (Qk_sldu == 7)? ((vsew_sldu == 3'b000) ? { 64{{3{1'b0}} , Imm_sldu} } : (vsew_sldu == 3'b001) ? { 32{{11{1'b0}} , Imm_sldu} } : (vsew_sldu == 3'b010) ? { 16{{27{1'b0}} , Imm_sldu} } : op_B_sldu) :op_B_sldu): op_B_sldu;  //immediate data
-        assign op_B_red = (optype == 3'b101 && op_red != 0)?((Qk_red == 0)? {reg_data_out_v2_d,reg_data_out_v2_c,reg_data_out_v2_b,reg_data_out_v2_a}:  //vs1 data
+        assign op_B_red = (optype == 3'b101/*  && op_red != 0 */)?((Qk_red == 0)? {reg_data_out_v2_d,reg_data_out_v2_c,reg_data_out_v2_b,reg_data_out_v2_a}:  //vs1 data
                   (Qk_red == 1) ? {result_valu_4, result_valu_3, result_valu_2, result_valu_1}:
                   (Qk_red == 2) ? {result_vmul_4, result_vmul_3, result_vmul_2, result_vmul_1}:
                   (Qk_red == 3) ? result_vloadu:
@@ -515,7 +519,7 @@ module carrd_integrated#(
 
 
 
-         assign op_C_lsu = (optype == 3'b011 && is_vstype == 1) ? ((Qi_lsu == 0)? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,reg_data_out_v1_a}:  //vs1 data
+         assign op_C_lsu = (optype == 3'b011/*  && is_vstype == 1 */) ? ((Qi_lsu == 0)? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,reg_data_out_v1_a}:  //vs1 data
                   (Qi_lsu == 1) ? {result_valu_4, result_valu_3, result_valu_2, result_valu_1}:
                   (Qi_lsu == 2) ? {result_vmul_4, result_vmul_3, result_vmul_2, result_vmul_1}:
                   (Qi_lsu == 3) ? result_vloadu:
@@ -524,7 +528,7 @@ module carrd_integrated#(
                                     (vsew_lsu == 3'b001) ? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,{reg_data_out_v1_a[127:16],result_vred[15:0]}}: 
                                     (vsew_lsu == 3'b010) ? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,{reg_data_out_v1_a[127:32],result_vred}}: op_C_lsu): op_C_lsu): op_C_lsu;
         
-         assign op_C_sldu = (optype == 3'b100) ? ((Qi_lsu == 0)? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,reg_data_out_v1_a}:  //vs1 data
+         assign op_C_sldu = (optype == 3'b100) ? ((Qi_sldu == 0)? {reg_data_out_v1_d,reg_data_out_v1_c,reg_data_out_v1_b,reg_data_out_v1_a}:  //vs1 data
                   (Qi_sldu == 1) ? {result_valu_4, result_valu_3, result_valu_2, result_valu_1}:
                   (Qi_sldu == 2) ? {result_vmul_4, result_vmul_3, result_vmul_2, result_vmul_1}:
                   (Qi_sldu == 3) ? result_vloadu:
