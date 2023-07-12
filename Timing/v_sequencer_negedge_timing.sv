@@ -229,7 +229,7 @@ module v_sequencer #(
 
 
 //read
-    assign instr_read = ((instr_1[2:0] == 3'b010 && ((instr_1[29:27] == 3'b001 && busy_alu == 0) || (instr_1[29:27] == 3'b010 && busy_mul == 0) || (instr_1[29:27] == 3'b011 && busy_lsu == 0) || (instr_1[29:27] == 3'b100 && busy_sldu == 0) || (instr_1[29:27] == 3'b101 && busy_red == 0))) ? instr_1: 
+/*     assign instr_read = ((instr_1[2:0] == 3'b010 && ((instr_1[29:27] == 3'b001 && busy_alu == 0) || (instr_1[29:27] == 3'b010 && busy_mul == 0) || (instr_1[29:27] == 3'b011 && busy_lsu == 0) || (instr_1[29:27] == 3'b100 && busy_sldu == 0) || (instr_1[29:27] == 3'b101 && busy_red == 0))) ? instr_1: 
                     (instr_2[2:0] == 3'b010 && ((instr_2[29:27] == 3'b001 && busy_alu == 0) || (instr_2[29:27] == 3'b010 && busy_mul == 0) || (instr_2[29:27] == 3'b011 && busy_lsu == 0) || (instr_2[29:27] == 3'b100 && busy_sldu == 0) || (instr_2[29:27] == 3'b101 && busy_red == 0))) ? instr_2: 
                     (instr_3[2:0] == 3'b010 && ((instr_3[29:27] == 3'b001 && busy_alu == 0) || (instr_3[29:27] == 3'b010 && busy_mul == 0) || (instr_3[29:27] == 3'b011 && busy_lsu == 0) || (instr_3[29:27] == 3'b100 && busy_sldu == 0) || (instr_3[29:27] == 3'b101 && busy_red == 0))) ? instr_3: 
                     (instr_4[2:0] == 3'b010 && ((instr_4[29:27] == 3'b001 && busy_alu == 0) || (instr_4[29:27] == 3'b010 && busy_mul == 0) || (instr_4[29:27] == 3'b011 && busy_lsu == 0) || (instr_4[29:27] == 3'b100 && busy_sldu == 0) || (instr_4[29:27] == 3'b101 && busy_red == 0))) ? instr_4: 
@@ -237,8 +237,24 @@ module v_sequencer #(
                     (instr_6[2:0] == 3'b010 && ((instr_6[29:27] == 3'b001 && busy_alu == 0) || (instr_6[29:27] == 3'b010 && busy_mul == 0) || (instr_6[29:27] == 3'b011 && busy_lsu == 0) || (instr_6[29:27] == 3'b100 && busy_sldu == 0) || (instr_6[29:27] == 3'b101 && busy_red == 0))) ? instr_6: 
                     (instr_7[2:0] == 3'b010 && ((instr_7[29:27] == 3'b001 && busy_alu == 0) || (instr_7[29:27] == 3'b010 && busy_mul == 0) || (instr_7[29:27] == 3'b011 && busy_lsu == 0) || (instr_7[29:27] == 3'b100 && busy_sldu == 0) || (instr_7[29:27] == 3'b101 && busy_red == 0))) ? instr_7: 
                     (instr_8[2:0] == 3'b010 && ((instr_8[29:27] == 3'b001 && busy_alu == 0) || (instr_8[29:27] == 3'b010 && busy_mul == 0) || (instr_8[29:27] == 3'b011 && busy_lsu == 0) || (instr_8[29:27] == 3'b100 && busy_sldu == 0) || (instr_8[29:27] == 3'b101 && busy_red == 0))) ? instr_8: 0);        
-    assign instr_read_index = ((instr_1 == instr_read && instr_read != 0) ? 0: (instr_2 == instr_read && instr_read != 0) ? 1: (instr_3 == instr_read && instr_read != 0) ? 2: (instr_4 == instr_read && instr_read != 0) ? 3: (instr_5 == instr_read && instr_read != 0) ? 4: (instr_6 == instr_read && instr_read != 0) ? 5: (instr_7 == instr_read && instr_read != 0) ? 6: (instr_8 == instr_read && instr_read != 0) ? 7: 0);
-
+ */  
+     assign instr_read = ((instr_1[2:0] == 3'b010 && ((instr_1[29:27] == 3'b001 && busy_alu == 0) || (instr_1[29:27] == 3'b010 && busy_mul == 0) || (instr_1[29:27] == 3'b011 && busy_lsu == 0) || (instr_1[29:27] == 3'b100 && busy_sldu == 0) || (instr_1[29:27] == 3'b101 && busy_red == 0))) ? instr_1: 
+                    ((instr_2[2:0] == 3'b010 && opA_2 == 1 && opB_2 == 1 && opC_2 == 1) && ((instr_2[29:27] == 3'b001 && busy_alu == 0) || (instr_2[29:27] == 3'b010 && busy_mul == 0) || (instr_2[29:27] == 3'b011 && busy_lsu == 0) || (instr_2[29:27] == 3'b100 && busy_sldu == 0) || (instr_2[29:27] == 3'b101 && busy_red == 0))) ? instr_2: 
+                    ((instr_3[2:0] == 3'b010 && opA_3 == 1 && opB_3 == 1 && opC_3 == 1) && ((instr_3[29:27] == 3'b001 && busy_alu == 0) || (instr_3[29:27] == 3'b010 && busy_mul == 0) || (instr_3[29:27] == 3'b011 && busy_lsu == 0) || (instr_3[29:27] == 3'b100 && busy_sldu == 0) || (instr_3[29:27] == 3'b101 && busy_red == 0))) ? instr_3: 
+                    ((instr_4[2:0] == 3'b010 && opA_4 == 1 && opB_4 == 1 && opC_4 == 1) && ((instr_4[29:27] == 3'b001 && busy_alu == 0) || (instr_4[29:27] == 3'b010 && busy_mul == 0) || (instr_4[29:27] == 3'b011 && busy_lsu == 0) || (instr_4[29:27] == 3'b100 && busy_sldu == 0) || (instr_4[29:27] == 3'b101 && busy_red == 0))) ? instr_4: 
+                    ((instr_5[2:0] == 3'b010 && opA_5 == 1 && opB_5 == 1 && opC_5 == 1) && ((instr_5[29:27] == 3'b001 && busy_alu == 0) || (instr_5[29:27] == 3'b010 && busy_mul == 0) || (instr_5[29:27] == 3'b011 && busy_lsu == 0) || (instr_5[29:27] == 3'b100 && busy_sldu == 0) || (instr_5[29:27] == 3'b101 && busy_red == 0))) ? instr_5: 
+                    ((instr_6[2:0] == 3'b010 && opA_6 == 1 && opB_6 == 1 && opC_6 == 1) && ((instr_6[29:27] == 3'b001 && busy_alu == 0) || (instr_6[29:27] == 3'b010 && busy_mul == 0) || (instr_6[29:27] == 3'b011 && busy_lsu == 0) || (instr_6[29:27] == 3'b100 && busy_sldu == 0) || (instr_6[29:27] == 3'b101 && busy_red == 0))) ? instr_6: 
+                    ((instr_7[2:0] == 3'b010 && opA_7 == 1 && opB_7 == 1 && opC_7 == 1) && ((instr_7[29:27] == 3'b001 && busy_alu == 0) || (instr_7[29:27] == 3'b010 && busy_mul == 0) || (instr_7[29:27] == 3'b011 && busy_lsu == 0) || (instr_7[29:27] == 3'b100 && busy_sldu == 0) || (instr_7[29:27] == 3'b101 && busy_red == 0))) ? instr_7: 
+                    ((instr_8[2:0] == 3'b010 && opA_8 == 1 && opB_8 == 1 && opC_8 == 1) && ((instr_8[29:27] == 3'b001 && busy_alu == 0) || (instr_8[29:27] == 3'b010 && busy_mul == 0) || (instr_8[29:27] == 3'b011 && busy_lsu == 0) || (instr_8[29:27] == 3'b100 && busy_sldu == 0) || (instr_8[29:27] == 3'b101 && busy_red == 0))) ? instr_8: 0);        
+    //assign instr_read_index = ((instr_1 == instr_read && instr_read != 0) ? 0: (instr_2 == instr_read && instr_read != 0) ? 1: (instr_3 == instr_read && instr_read != 0) ? 2: (instr_4 == instr_read && instr_read != 0) ? 3: (instr_5 == instr_read && instr_read != 0) ? 4: (instr_6 == instr_read && instr_read != 0) ? 5: (instr_7 == instr_read && instr_read != 0) ? 6: (instr_8 == instr_read && instr_read != 0) ? 7: 0);
+    assign instr_read_index = ((instr_1[2:0] == 3'b010 && ((instr_1[29:27] == 3'b001 && busy_alu == 0) || (instr_1[29:27] == 3'b010 && busy_mul == 0) || (instr_1[29:27] == 3'b011 && busy_lsu == 0) || (instr_1[29:27] == 3'b100 && busy_sldu == 0) || (instr_1[29:27] == 3'b101 && busy_red == 0))) ? 0: 
+                    ((instr_2[2:0] == 3'b010 && opA_2 == 1 && opB_2 == 1 && opC_2 == 1) && ((instr_2[29:27] == 3'b001 && busy_alu == 0) || (instr_2[29:27] == 3'b010 && busy_mul == 0) || (instr_2[29:27] == 3'b011 && busy_lsu == 0) || (instr_2[29:27] == 3'b100 && busy_sldu == 0) || (instr_2[29:27] == 3'b101 && busy_red == 0))) ? 1: 
+                    ((instr_3[2:0] == 3'b010 && opA_3 == 1 && opB_3 == 1 && opC_3 == 1) && ((instr_3[29:27] == 3'b001 && busy_alu == 0) || (instr_3[29:27] == 3'b010 && busy_mul == 0) || (instr_3[29:27] == 3'b011 && busy_lsu == 0) || (instr_3[29:27] == 3'b100 && busy_sldu == 0) || (instr_3[29:27] == 3'b101 && busy_red == 0))) ? 2: 
+                    ((instr_4[2:0] == 3'b010 && opA_4 == 1 && opB_4 == 1 && opC_4 == 1) && ((instr_4[29:27] == 3'b001 && busy_alu == 0) || (instr_4[29:27] == 3'b010 && busy_mul == 0) || (instr_4[29:27] == 3'b011 && busy_lsu == 0) || (instr_4[29:27] == 3'b100 && busy_sldu == 0) || (instr_4[29:27] == 3'b101 && busy_red == 0))) ? 3: 
+                    ((instr_5[2:0] == 3'b010 && opA_5 == 1 && opB_5 == 1 && opC_5 == 1) && ((instr_5[29:27] == 3'b001 && busy_alu == 0) || (instr_5[29:27] == 3'b010 && busy_mul == 0) || (instr_5[29:27] == 3'b011 && busy_lsu == 0) || (instr_5[29:27] == 3'b100 && busy_sldu == 0) || (instr_5[29:27] == 3'b101 && busy_red == 0))) ? 4: 
+                    ((instr_6[2:0] == 3'b010 && opA_6 == 1 && opB_6 == 1 && opC_6 == 1) && ((instr_6[29:27] == 3'b001 && busy_alu == 0) || (instr_6[29:27] == 3'b010 && busy_mul == 0) || (instr_6[29:27] == 3'b011 && busy_lsu == 0) || (instr_6[29:27] == 3'b100 && busy_sldu == 0) || (instr_6[29:27] == 3'b101 && busy_red == 0))) ? 5: 
+                    ((instr_7[2:0] == 3'b010 && opA_7 == 1 && opB_7 == 1 && opC_7 == 1) && ((instr_7[29:27] == 3'b001 && busy_alu == 0) || (instr_7[29:27] == 3'b010 && busy_mul == 0) || (instr_7[29:27] == 3'b011 && busy_lsu == 0) || (instr_7[29:27] == 3'b100 && busy_sldu == 0) || (instr_7[29:27] == 3'b101 && busy_red == 0))) ? 6: 
+                    ((instr_8[2:0] == 3'b010 && opA_8 == 1 && opB_8 == 1 && opC_8 == 1) && ((instr_8[29:27] == 3'b001 && busy_alu == 0) || (instr_8[29:27] == 3'b010 && busy_mul == 0) || (instr_8[29:27] == 3'b011 && busy_lsu == 0) || (instr_8[29:27] == 3'b100 && busy_sldu == 0) || (instr_8[29:27] == 3'b101 && busy_red == 0))) ? 7: 0);
 //execute
     assign is_vstype = (op_lsu inside {[7:12]});
     assign is_vltype = (op_lsu inside {[1:6]});
@@ -289,46 +305,18 @@ module v_sequencer #(
             end
         end
         else begin
-        //write
+        //write/issue
             if (fifo_full == 0 && base_instr != 0 && is_vector == 1 && is_vconfig ==  0) begin
-                instr_status_table[fifo_count] = {sel_dest, vsew, lmul, sel_op_A, sel_op_B, op, op_instr, src_A, src_B, dest, imm, 3'b001};
-            end
-        //issue
-            if (instr_1 != 0 && instr_1[2:0] == 3'b001) begin
-                instr_status_table[0][2:0] <= 3'b010;
-            end
-            if (instr_2 != 0 && instr_2[2:0] == 3'b001) begin 
-                if (opA_2 == 1 && opB_2 == 1 && opC_2 == 1)
-                    instr_status_table[1][2:0] <= 3'b010;
-            end
-            if (instr_3 != 0 && instr_3[2:0] == 3'b001) begin
-                if (opA_3 == 1 && opB_3 == 1 && opC_3 == 1)
-                    instr_status_table[2][2:0] <= 3'b010;
-            end
-            if (instr_4 != 0 && instr_4[2:0] == 3'b001) begin
-                if (opA_4 == 1 && opB_4 == 1 && opC_4 == 1)
-                    instr_status_table[3][2:0] <= 3'b010;
-            end
-            if (instr_5 != 0 && instr_5[2:0] == 3'b001) begin
-                if (opA_5 == 1 && opB_5 == 1 && opC_5 == 1)
-                    instr_status_table[4][2:0] <= 3'b010;
-            end
-            if (instr_6 != 0 && instr_6[2:0] == 3'b001) begin
-                if (opA_6 == 1 && opB_6 == 1 && opC_6 == 1)
-                    instr_status_table[5][2:0] <= 3'b010;
-            end
-            if (instr_7 != 0 && instr_7[2:0] == 3'b001) begin
-                if (opA_7 == 1 && opB_7 == 1 && opC_7 == 1)
-                    instr_status_table[6][2:0] <= 3'b010;
-            end
-            if (instr_8 != 0 && instr_8[2:0] == 3'b001) begin
-                if (opA_8 == 1 && opB_8 == 1 && opC_8 == 1)
-                    instr_status_table[7][2:0] <= 3'b010;
+                instr_status_table[fifo_count] = {sel_dest, vsew, lmul, sel_op_A, sel_op_B, op, op_instr, src_A, src_B, dest, imm, 3'b010};
             end
         //read 
             if (instr_read != 0) begin
+                /* if (wb_instr_index == 0 && wb_instr != 0 && !(fifo_full == 0 && base_instr != 0 && is_vector == 1 && is_vconfig ==  0))
+                    instr_status_table[instr_read_index - 1][2:0] <=  3'b011;
+                else if (!(wb_instr_index == 0 && wb_instr != 0) && fifo_full == 0 && base_instr != 0 && is_vector == 1 && is_vconfig ==  0)
+                    instr_status_table[instr_read_index + 1][2:0] <=  3'b011;
+                else */
                 instr_status_table[instr_read_index][2:0] <=  3'b011;
-
                 case(instr_read[29:27]) 
                 default: begin
                     busy_alu <= 0;
@@ -338,7 +326,7 @@ module v_sequencer #(
                     busy_red <= 0;
                 end
                 3'b001: begin
-                    busy_alu <= 1;
+                    busy_alu <= 1; 
                     op_alu <= instr_read[26:23];
                 end 
                 3'b010: begin
@@ -375,7 +363,7 @@ module v_sequencer #(
                 instr_status_table[lsu_exec_index][2:0] <= 3'b100;
                 op_lsu = 0;
             end
-            if (done_sldu == 1 && sldu_exec != 0) begin
+            if (done_sldu == 1  && sldu_exec != 0) begin
             //if (op_sldu == 0 && sldu_exec != 0) begin
                 instr_status_table[sldu_exec_index][2:0] <= 3'b100;
                 op_sldu = 0;
@@ -410,14 +398,49 @@ module v_sequencer #(
                 3'b101:begin
                     busy_red <= 0;
                 end 
-                endcase 
-                instr_status_table[0] <= instr_status_table[1];
-                instr_status_table[1] <= instr_status_table[2];
-                instr_status_table[2] <= instr_status_table[3];
-                instr_status_table[3] <= instr_status_table[4];
-                instr_status_table[4] <= instr_status_table[5];
-                instr_status_table[5] <= instr_status_table[6];
-                instr_status_table[6] <= instr_status_table[7];
+                endcase
+                if (instr_read_index == 1)
+                    instr_status_table[0] <= {{instr_status_table[1][39:3]}, 3'b011};
+                else if ((done_alu == 1 && alu_exec_index == 1) || (done_mul == 1 && mul_exec_index == 1) || (done_lsu == 1 && lsu_exec_index == 1) || (done_sldu == 1 && sldu_exec_index == 1) || (done_red == 1 && red_exec_index == 1))
+                    instr_status_table[0] <= {{instr_status_table[1][39:3]}, 3'b100};
+                else instr_status_table[0] <= instr_status_table[1];
+
+                if (instr_read_index == 2) 
+                    instr_status_table[1] <= {{instr_status_table[2][39:3]}, 3'b011 };
+                else if ((done_alu == 1 && alu_exec_index == 2) || (done_mul == 1 && mul_exec_index == 2) || (done_lsu == 1 && lsu_exec_index == 2) || (done_sldu == 1 && sldu_exec_index == 2) || (done_red == 1 && red_exec_index == 2))
+                    instr_status_table[1] <= {{instr_status_table[2][39:3]}, 3'b100};
+                else instr_status_table[1] <= instr_status_table[2];
+
+                if (instr_read_index == 3) 
+                    instr_status_table[2] <= {{instr_status_table[3][39:3]}, 3'b011 };
+                else if ((done_alu == 1 && alu_exec_index == 3) || (done_mul == 1 && mul_exec_index == 3) || (done_lsu == 1 && lsu_exec_index == 3) || (done_sldu == 1 && sldu_exec_index == 3) || (done_red == 1 && red_exec_index == 3))
+                    instr_status_table[2] <= {{instr_status_table[3][39:3]}, 3'b100};
+                else instr_status_table[2] <= instr_status_table[3];
+
+                if (instr_read_index == 4) 
+                    instr_status_table[3] <= {{instr_status_table[4][39:3]}, 3'b011 };
+                else if ((done_alu == 1 && alu_exec_index == 4) || (done_mul == 1 && mul_exec_index == 4) || (done_lsu == 1 && lsu_exec_index == 4) || (done_sldu == 1 && sldu_exec_index == 4) || (done_red == 1 && red_exec_index == 4))
+                    instr_status_table[3] <= {{instr_status_table[4][39:3]}, 3'b100};
+                else instr_status_table[3] <= instr_status_table[4];
+
+                if (instr_read_index == 5) 
+                    instr_status_table[4] <= {{instr_status_table[5][39:3]}, 3'b011 };
+                else if ((done_alu == 1 && alu_exec_index == 5) || (done_mul == 1 && mul_exec_index == 5) || (done_lsu == 1 && lsu_exec_index == 5) || (done_sldu == 1 && sldu_exec_index == 5) || (done_red == 1 && red_exec_index == 5))
+                    instr_status_table[4] <= {{instr_status_table[5][39:3]}, 3'b100};
+                else instr_status_table[4] <= instr_status_table[5];
+
+                if (instr_read_index == 6) 
+                    instr_status_table[5] <= {{instr_status_table[6][39:3]}, 3'b011 };
+                else if ((done_alu == 1 && alu_exec_index == 6) || (done_mul == 1 && mul_exec_index == 6) || (done_lsu == 1 && lsu_exec_index == 6) || (done_sldu == 1 && sldu_exec_index == 6) || (done_red == 1 && red_exec_index == 6))
+                    instr_status_table[5] <= {{instr_status_table[6][39:3]}, 3'b100};
+                else instr_status_table[5] <= instr_status_table[6];
+
+                if (instr_read_index == 7) 
+                    instr_status_table[6] <= {{instr_status_table[7][39:3]}, 3'b011 };
+                else if ((done_alu == 1 && alu_exec_index == 7) || (done_mul == 1 && mul_exec_index == 7) || (done_lsu == 1 && lsu_exec_index == 7) || (done_sldu == 1 && sldu_exec_index == 7) || (done_red == 1 && red_exec_index == 7))
+                    instr_status_table[6] <= {{instr_status_table[7][39:3]}, 3'b100};
+                else instr_status_table[6] <= instr_status_table[7];
+
                 instr_status_table[7] <= {IST_ENTRY_BITS{1'b0}};
             end 
         end
