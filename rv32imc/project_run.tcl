@@ -1,17 +1,18 @@
 # Set Current Directory to point to Github Repo directory (where project_run.tcl should be located)
-set SRCDIR "C:/Users/63915/Desktop/UP/4th_year/2nd_Sem/ECE199/Carrd-Vector-Coprocessor/rv32imc/"
+set SRCDIR "D:/Coding Projects/Carrd-Post-Synthesis/Carrd-Vector-Coprocessor/rv32imc/"
 
 cd $SRCDIR
 
 #Add Verilog Files to Project
 add_files -scan_for_includes ./processor
+add_files -scan_for_includes ../timing/
 
 #Add data memory files
 add_files ./memory/instmem.mem
 add_files ./memory/isr_mem.mem
 
 #Add constraints
-add_files -fileset constrs_1 ./constraints/arty7_a35t.xdc
+#add_files -fileset constrs_1 ./constraints/arty7_a35t.xdc
 
 #Add testbench and answer key
 add_files -fileset sim_1 ./sim/tb_top.sv
@@ -28,7 +29,7 @@ set_property top top [current_fileset]
 #Import IP Modules
 add_files	{./vivado-ip-src/blk_mem_gen_protocol/blk_mem_gen_protocol.xci	\
 			./vivado-ip-src/clk_wiz_0/clk_wiz_0.xci 						\
-			./vivado-ip-src/div_gen_unsigned.xcix 			\
+			./vivado-ip-src/div_gen_unsigned/div_gen_unsigned.xcix 			\
 			./vivado-ip-src/div_gen_signed/div_gen_signed.xci 				\
 			./vivado-ip-src/mult_gen_hsu/mult_gen_hsu.xci  					\
 			./vivado-ip-src/mult_gen_signed/mult_gen_signed.xci 			\
