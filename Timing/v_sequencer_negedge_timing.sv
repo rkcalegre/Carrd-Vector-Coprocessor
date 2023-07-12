@@ -17,12 +17,14 @@
 `timescale 1ns / 1ps
 
 module v_sequencer #(
-    parameter int IST_ENTRY_BITS = 40,       // For Instruction Status Table: 6 bits (maybe for opcode?) + 3 bits (instr_status)
+    parameter int IST_ENTRY_BITS = 104,       // For Instruction Status Table: 6 bits (maybe for opcode?) + 3 bits (instr_status)
     parameter int NO_OF_SLOTS = 8
 )(
     input logic clk,
     input logic nrst,
     input logic [31:0] base_instr, 
+    input logic [31:0] x_reg_data_1, //new
+    input logic [31:0] x_reg_data_2, //new
     input logic [1:0] sel_op_A, sel_op_B, sel_dest, vsew, lmul,
     input logic [4:0] src_A, src_B, dest, imm,
     input logic [3:0] v_alu_op, v_lsu_op,
@@ -32,6 +34,7 @@ module v_sequencer #(
     input logic [127:0] result_valu_1, result_valu_2, result_valu_3, result_valu_4, result_vmul_1, result_vmul_2, result_vmul_3, result_vmul_4, 
     input logic [31:0] result_vred,
     input logic [511:0] result_vsldu, result_vlsu,
+    output logic [31:0] xdata_1, xdata_2, //new
     output logic is_vstype, is_vltype,
     output logic [2:0] optype_read,
     output logic [4:0] dest_wb,
@@ -62,6 +65,8 @@ module v_sequencer #(
     // 111 = default off
 
     //Instructions
+    // 32 bit scalar input A [103:72]
+    // 32 bit scalar input B [71:40]
     // 2 bit sel_dest [39:38]
     // 2 bit vsew [37:36]
     // 2 bit lmul [35:34]
@@ -95,17 +100,17 @@ module v_sequencer #(
     logic busy_lsu/*  = 0 */;
     logic busy_sldu/*  = 0 */;
     logic busy_red/*  = 0 */; 
-    logic Rj_alu = 0;            // indicates if Fj is available (1),
-    logic Rj_mul = 0;
-    logic Rj_lsu = 0;
-    logic Rj_sldu = 0;
-    logic Rj_red = 0;
-    logic Rk_alu = 0;             // indicates if Fk is available (1)
-    logic Rk_mul = 0; 
-    logic Rk_lsu = 0; 
-    logic Rk_sldu = 0; 
-    logic Rk_red = 0; 
-    logic Ri_lsu = 0;
+    //logic Rj_alu = 0;            // indicates if Fj is available (1),
+    //logic Rj_mul = 0;
+    //logic Rj_lsu = 0;
+    //logic Rj_sldu = 0;
+    //logic Rj_red = 0;
+    //logic Rk_alu = 0;             // indicates if Fk is available (1)
+    //logic Rk_mul = 0; 
+    //logic Rk_lsu = 0; 
+    //logic Rk_sldu = 0; 
+    //logic Rk_red = 0; 
+    //logic Ri_lsu = 0;
     logic [5:0] Fi_alu = 0;
     logic [5:0] Fi_mul = 0;
     logic [5:0] Fi_red = 0;
@@ -118,7 +123,7 @@ module v_sequencer #(
     logic [IST_ENTRY_BITS-1:0] instr_7;
     logic [IST_ENTRY_BITS-1:0] instr_8; // IST  
     logic [IST_ENTRY_BITS-1:0] instr_read; 
-    logic [IST_ENTRY_BITS-1:0] alu_read, mul_read, lsu_read, sldu_read, red_read;
+    //logic [IST_ENTRY_BITS-1:0] alu_read, mul_read, lsu_read, sldu_read, red_read;
     logic [IST_ENTRY_BITS-1:0] alu_exec; 
     logic [IST_ENTRY_BITS-1:0] mul_exec; 
     logic [IST_ENTRY_BITS-1:0] lsu_exec; 
@@ -190,14 +195,14 @@ module v_sequencer #(
 //issue
     assign op = (v_alu_op != 0) ? 3'b001: (is_mul != 0) ? 3'b010: v_lsu_op != 0 ? 3'b011: (v_sldu_op != 0) ? 3'b100: (v_red_op != 0) ? 3'b101:3'b000;
     assign op_instr = op == 3'b001 ? v_alu_op: op == 3'b010 ? is_mul: op == 3'b011 ? v_lsu_op: op == 3'b100 ? v_sldu_op: 3'b101 ? v_red_op: 0;
-    assign dest_1 = (instr_1[29:27] != 3'b011 && (instr_1[26:23] inside {[7:12]} != 0)) ? {1'b1, instr_1[12:8]}: {1'b0, instr_1[12:8]};
-    assign dest_2 = (instr_2[29:27] != 3'b011 && (instr_2[26:23] inside {[7:12]} != 0)) ? {1'b1, instr_2[12:8]}: {1'b0, instr_2[12:8]};
-    assign dest_3 = (instr_3[29:27] != 3'b011 && (instr_3[26:23] inside {[7:12]} != 0)) ? {1'b1, instr_3[12:8]}: {1'b0, instr_3[12:8]};
-    assign dest_4 = (instr_4[29:27] != 3'b011 && (instr_4[26:23] inside {[7:12]} != 0)) ? {1'b1, instr_4[12:8]}: {1'b0, instr_4[12:8]};
-    assign dest_5 = (instr_5[29:27] != 3'b011 && (instr_5[26:23] inside {[7:12]} != 0)) ? {1'b1, instr_5[12:8]}: {1'b0, instr_5[12:8]};
-    assign dest_6 = (instr_6[29:27] != 3'b011 && (instr_6[26:23] inside {[7:12]} != 0)) ? {1'b1, instr_6[12:8]}: {1'b0, instr_6[12:8]};
-    assign dest_7 = (instr_7[29:27] != 3'b011 && (instr_7[26:23] inside {[7:12]} != 0)) ? {1'b1, instr_7[12:8]}: {1'b0, instr_7[12:8]};
-    assign dest_8 = (instr_8[29:27] != 3'b011 && (instr_8[26:23] inside {[7:12]} != 0)) ? {1'b1, instr_8[12:8]}: {1'b0, instr_8[12:8]};
+    assign dest_1 = (instr_1[29:27] == 3'b011 && (instr_1[26:23] inside {[7:12]})) ? {1'b1, instr_1[12:8]}: {1'b0, instr_1[12:8]};
+    assign dest_2 = (instr_2[29:27] == 3'b011 && (instr_2[26:23] inside {[7:12]})) ? {1'b1, instr_2[12:8]}: {1'b0, instr_2[12:8]};
+    assign dest_3 = (instr_3[29:27] == 3'b011 && (instr_3[26:23] inside {[7:12]})) ? {1'b1, instr_3[12:8]}: {1'b0, instr_3[12:8]};
+    assign dest_4 = (instr_4[29:27] == 3'b011 && (instr_4[26:23] inside {[7:12]})) ? {1'b1, instr_4[12:8]}: {1'b0, instr_4[12:8]};
+    assign dest_5 = (instr_5[29:27] == 3'b011 && (instr_5[26:23] inside {[7:12]})) ? {1'b1, instr_5[12:8]}: {1'b0, instr_5[12:8]};
+    assign dest_6 = (instr_6[29:27] == 3'b011 && (instr_6[26:23] inside {[7:12]})) ? {1'b1, instr_6[12:8]}: {1'b0, instr_6[12:8]};
+    assign dest_7 = (instr_7[29:27] == 3'b011 && (instr_7[26:23] inside {[7:12]})) ? {1'b1, instr_7[12:8]}: {1'b0, instr_7[12:8]};
+    assign dest_8 = (instr_8[29:27] == 3'b011 && (instr_8[26:23] inside {[7:12]})) ? {1'b1, instr_8[12:8]}: {1'b0, instr_8[12:8]};
     assign alu_read_index = ((instr_1[29:27] == 3'b001 && instr_1[2:0] == 3'b001) ? 0: (instr_2[29:27] == 3'b001 && instr_2[2:0] == 3'b001) ? 1: (instr_3[29:27] == 3'b001 && instr_3[2:0] == 3'b001) ? 2: (instr_4[29:27] == 3'b001 && instr_4[2:0] == 3'b001) ? 3: (instr_5[29:27] == 3'b001 && instr_5[2:0] == 3'b001) ? 4: (instr_6[29:27] == 3'b001 && instr_6[2:0] == 3'b001) ? 5: (instr_7[29:27] == 3'b001 && instr_7[2:0] == 3'b001) ? 6: (instr_8[29:27] == 3'b001 && instr_8[2:0] == 3'b001) ? 7: 0);
     assign mul_read_index = ((instr_1[29:27] == 3'b010 && instr_1[2:0] == 3'b001) ? 0: (instr_2[29:27] == 3'b010 && instr_2[2:0] == 3'b001) ? 1: (instr_3[29:27] == 3'b010 && instr_3[2:0] == 3'b001) ? 2: (instr_4[29:27] == 3'b010 && instr_4[2:0] == 3'b001) ? 3: (instr_5[29:27] == 3'b010 && instr_5[2:0] == 3'b001) ? 4: (instr_6[29:27] == 3'b010 && instr_6[2:0] == 3'b001) ? 5: (instr_7[29:27] == 3'b010 && instr_7[2:0] == 3'b001) ? 6: (instr_8[29:27] == 3'b010 && instr_8[2:0] == 3'b001) ? 7: 0);
     assign lsu_read_index = ((instr_1[29:27] == 3'b011 && instr_1[2:0] == 3'b001) ? 0: (instr_2[29:27] == 3'b011 && instr_2[2:0] == 3'b001) ? 1: (instr_3[29:27] == 3'b011 && instr_3[2:0] == 3'b001) ? 2: (instr_4[29:27] == 3'b011 && instr_4[2:0] == 3'b001) ? 3: (instr_5[29:27] == 3'b011 && instr_5[2:0] == 3'b001) ? 4: (instr_6[29:27] == 3'b011 && instr_6[2:0] == 3'b001) ? 5: (instr_7[29:27] == 3'b011 && instr_7[2:0] == 3'b001) ? 6: (instr_8[29:27] == 3'b011 && instr_8[2:0] == 3'b001) ? 7: 0);
@@ -205,25 +210,32 @@ module v_sequencer #(
     assign red_read_index = ((instr_1[29:27] == 3'b101 && instr_1[2:0] == 3'b001) ? 0: (instr_2[29:27] == 3'b101 && instr_2[2:0] == 3'b001) ? 1: (instr_3[29:27] == 3'b101 && instr_3[2:0] == 3'b001) ? 2: (instr_4[29:27] == 3'b101 && instr_4[2:0] == 3'b001) ? 3: (instr_5[29:27] == 3'b101 && instr_5[2:0] == 3'b001) ? 4: (instr_6[29:27] == 3'b101 && instr_6[2:0] == 3'b001) ? 5: (instr_7[29:27] == 3'b101 && instr_7[2:0] == 3'b001) ? 6: (instr_8[29:27] == 3'b101 && instr_8[2:0] == 3'b001) ? 7: 0);
     assign opA_2 = (instr_2[33:32] != 3'b001) ? 1:  (dest_1 == {1'b0, instr_2[22:18]} && instr_1[2:0] != 3'b100) ? 0: 1;
     assign opB_2 = (instr_2[31:30] != 3'b001) ? 1:  (dest_1 == {1'b0, instr_2[17:13]} && instr_1[2:0] != 3'b100) ? 0: 1;
-    assign opC_2 = ((instr_2[29:27] != 3'b100) || (instr_2[29:27] != 3'b011 && (instr_2[26:23] inside {[7:12]} != 0))) ? 1: (dest_1 == {1'b0, instr_2[18:12]} && instr_1[2:0] != 3'b100) ? 0: 1;
+    assign opC_2 = (!(instr_2[29:27] == 3'b100) && !(instr_2[29:27] == 3'b011 && (instr_2[26:23] inside {[7:12]}))) ? 1: (dest_1 == {1'b0, instr_2[12:8]} && instr_1[2:0] != 3'b100) ? 0: 1;
+    //assign opC_2 = ((instr_2[29:27] != 3'b100) || (instr_2[29:27] != 3'b011 && (instr_2[26:23] inside {[7:12]} != 0))) ? 1: (dest_1 == {1'b0, instr_2[18:12]} && instr_1[2:0] != 3'b100) ? 0: 1;
     assign opA_3 = (instr_3[33:32] != 3'b001) ? 1:  ((dest_1 == {1'b0, instr_3[22:18]} && instr_3[2:0] != 3'b100) || (dest_2 == {1'b0, instr_3[22:18]} && instr_2[2:0] != 3'b100)) ? 0: 1;
     assign opB_3 = (instr_3[31:30] != 3'b001) ? 1:  ((dest_1 == {1'b0, instr_3[17:13]} && instr_3[2:0] != 3'b100) || (dest_2 == {1'b0, instr_3[17:13]} && instr_2[2:0] != 3'b100)) ? 0: 1;
-    assign opC_3 = ((instr_3[29:27] != 3'b100) || (instr_3[29:27] != 3'b011 && (instr_3[26:23] inside {[7:12]} != 0))) ? 1: ((dest_1 == {1'b0, instr_3[12:8]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_3[12:8]} && instr_2[2:0] != 3'b100)) ? 0: 1;
+    assign opC_3 = (!(instr_3[29:27] == 3'b100) && !(instr_3[29:27] == 3'b011 && (instr_3[26:23] inside {[7:12]}))) ? 1: ((dest_1 == {1'b0, instr_3[12:8]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_3[12:8]} && instr_2[2:0] != 3'b100)) ? 0: 1;
+    //assign opC_3 = ((instr_3[29:27] != 3'b100) || (instr_3[29:27] != 3'b011 && (instr_3[26:23] inside {[7:12]} != 0))) ? 1: ((dest_1 == {1'b0, instr_3[12:8]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_3[12:8]} && instr_2[2:0] != 3'b100)) ? 0: 1;
     assign opA_4 = (instr_4[33:32] != 3'b001) ? 1:  ((dest_1 == {1'b0, instr_4[22:18]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_4[22:18]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_4[22:18]} && instr_3[2:0] != 3'b100)) ? 0: 1;
     assign opB_4 = (instr_4[31:30] != 3'b001) ? 1:  ((dest_1 == {1'b0, instr_4[17:13]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_4[17:13]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_4[17:13]} && instr_3[2:0] != 3'b100)) ? 0: 1;
-    assign opC_4 = ((instr_4[29:27] != 3'b100) || (instr_4[29:27] != 3'b011 && (instr_4[26:23] inside {[7:12]} != 0))) ? 1: ((dest_1 == {1'b0, instr_4[12:8]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_4[12:8]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_4[12:8]} && instr_3[2:0] != 3'b100)) ? 0: 1;
+    assign opC_4 = (!(instr_4[29:27] == 3'b100) && !(instr_4[29:27] == 3'b011 && (instr_4[26:23] inside {[7:12]}))) ? 1: ((dest_1 == {1'b0, instr_4[12:8]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_4[12:8]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_4[12:8]} && instr_3[2:0] != 3'b100)) ? 0: 1;
+    //assign opC_4 = ((instr_4[29:27] != 3'b100) || (instr_4[29:27] != 3'b011 && (instr_4[26:23] inside {[7:12]} != 0))) ? 1: ((dest_1 == {1'b0, instr_4[12:8]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_4[12:8]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_4[12:8]} && instr_3[2:0] != 3'b100)) ? 0: 1;
     assign opA_5 = (instr_5[33:32] != 3'b001) ? 1:  ((dest_1 == {1'b0, instr_5[22:18]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_5[22:18]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_5[22:18]} && instr_3[2:0] != 3'b100) || (dest_4 == {1'b0, instr_5[22:18]} && instr_4[2:0] != 3'b100)) ? 0: 1;
     assign opB_5 = (instr_5[31:30] != 3'b001) ? 1:  ((dest_1 == {1'b0, instr_5[17:13]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_5[17:13]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_5[17:13]} && instr_3[2:0] != 3'b100) || (dest_4 == {1'b0, instr_5[17:13]} && instr_4[2:0] != 3'b100)) ? 0: 1;
-    assign opC_5 = ((instr_5[29:27] != 3'b100) || (instr_5[29:27] != 3'b011 && (instr_5[26:23] inside {[7:12]} != 0))) ? 1: ((dest_1 == {1'b0, instr_5[12:8]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_5[12:8]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_5[12:8]} && instr_4[2:0] != 3'b100) || (dest_4 == {1'b0, instr_5[12:8]} && instr_4[2:0] != 3'b100)) ? 0: 1;
+    assign opC_5 = (!(instr_5[29:27] == 3'b100) && !(instr_5[29:27] == 3'b011 && (instr_5[26:23] inside {[7:12]}))) ? 1: ((dest_1 == {1'b0, instr_5[12:8]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_5[12:8]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_5[12:8]} && instr_4[2:0] != 3'b100) || (dest_4 == {1'b0, instr_5[12:8]} && instr_4[2:0] != 3'b100)) ? 0: 1;
+    //assign opC_5 = ((instr_5[29:27] != 3'b100) || (instr_5[29:27] != 3'b011 && (instr_5[26:23] inside {[7:12]} != 0))) ? 1: ((dest_1 == {1'b0, instr_5[12:8]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_5[12:8]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_5[12:8]} && instr_4[2:0] != 3'b100) || (dest_4 == {1'b0, instr_5[12:8]} && instr_4[2:0] != 3'b100)) ? 0: 1;
     assign opA_6 = (instr_6[33:32] != 3'b001) ? 1:  ((dest_1 == {1'b0, instr_6[22:18]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_6[22:18]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_6[22:18]} && instr_3[2:0] != 3'b100) || (dest_4 == {1'b0, instr_6[22:18]} && instr_4[2:0] != 3'b100) || (dest_5 == {1'b0, instr_6[22:18]} && instr_5[2:0] != 3'b100)) ? 0: 1;
     assign opB_6 = (instr_6[31:30] != 3'b001) ? 1:  ((dest_1 == {1'b0, instr_6[17:13]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_6[17:13]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_6[17:13]} && instr_3[2:0] != 3'b100) || (dest_4 == {1'b0, instr_6[17:13]} && instr_4[2:0] != 3'b100) || (dest_5 == {1'b0, instr_6[17:13]} && instr_5[2:0] != 3'b100)) ? 0: 1;
-    assign opC_6 = ((instr_6[29:27] != 3'b100) || (instr_6[29:27] != 3'b011 && (instr_6[26:23] inside {[7:12]} != 0))) ? 1: ((dest_1 == {1'b0, instr_6[12:8]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_6[12:8]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_6[12:8]} && instr_4[2:0] != 3'b100) || (dest_4 == {1'b0, instr_5[12:8]} && instr_4[2:0] != 3'b100) || (dest_5 == {1'b0, instr_6[12:8]} && instr_5[2:0] != 3'b100)) ? 0: 1;
+    assign opC_6 = (!(instr_6[29:27] == 3'b100) && !(instr_6[29:27] == 3'b011 && (instr_6[26:23] inside {[7:12]}))) ? 1: ((dest_1 == {1'b0, instr_6[12:8]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_6[12:8]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_6[12:8]} && instr_4[2:0] != 3'b100) || (dest_4 == {1'b0, instr_5[12:8]} && instr_4[2:0] != 3'b100) || (dest_5 == {1'b0, instr_6[12:8]} && instr_5[2:0] != 3'b100)) ? 0: 1;
+    //assign opC_6 = ((instr_6[29:27] != 3'b100) || (instr_6[29:27] != 3'b011 && (instr_6[26:23] inside {[7:12]} != 0))) ? 1: ((dest_1 == {1'b0, instr_6[12:8]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_6[12:8]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_6[12:8]} && instr_4[2:0] != 3'b100) || (dest_4 == {1'b0, instr_5[12:8]} && instr_4[2:0] != 3'b100) || (dest_5 == {1'b0, instr_6[12:8]} && instr_5[2:0] != 3'b100)) ? 0: 1;
     assign opA_7 = (instr_7[33:32] != 3'b001) ? 1:  ((dest_1 == {1'b0, instr_7[22:18]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_7[22:18]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_7[22:18]} && instr_3[2:0] != 3'b100) || (dest_4 == {1'b0, instr_7[22:18]} && instr_4[2:0] != 3'b100) || (dest_5 == {1'b0, instr_7[22:18]} && instr_5[2:0] != 3'b100) || (dest_6 == {1'b0, instr_7[22:18]} && instr_6[2:0] != 3'b100)) ? 0: 1;
     assign opB_7 = (instr_7[31:30] != 3'b001) ? 1:  ((dest_1 == {1'b0, instr_7[17:13]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_7[17:13]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_7[17:13]} && instr_3[2:0] != 3'b100) || (dest_4 == {1'b0, instr_7[17:13]} && instr_4[2:0] != 3'b100) || (dest_5 == {1'b0, instr_7[17:13]} && instr_5[2:0] != 3'b100) || (dest_6 == {1'b0, instr_7[22:18]} && instr_6[2:0] != 3'b100)) ? 0: 1;
     assign opC_7 = ((instr_7[29:27] != 3'b100) || (instr_7[29:27] != 3'b011 && (instr_7[26:23] inside {[7:12]} != 0))) ? 1: ((dest_1 == {1'b0, instr_7[12:8]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_7[12:8]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_7[12:8]} && instr_4[2:0] != 3'b100) || (dest_4 == {1'b0, instr_5[12:8]} && instr_4[2:0] != 3'b100) || (dest_5 == {1'b0, instr_7[12:8]} && instr_5[2:0] != 3'b100) || (dest_6 == {1'b0, instr_7[12:8]} && instr_6[2:0] != 3'b100)) ? 0: 1;
+    //assign opC_7 = ((instr_7[29:27] != 3'b100) || (instr_7[29:27] != 3'b011 && (instr_7[26:23] inside {[7:12]} != 0))) ? 1: ((dest_1 == {1'b0, instr_7[12:8]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_7[12:8]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_7[12:8]} && instr_4[2:0] != 3'b100) || (dest_4 == {1'b0, instr_5[12:8]} && instr_4[2:0] != 3'b100) || (dest_5 == {1'b0, instr_7[12:8]} && instr_5[2:0] != 3'b100) || (dest_6 == {1'b0, instr_7[12:8]} && instr_6[2:0] != 3'b100)) ? 0: 1;
     assign opA_8 = (instr_8[33:32] != 3'b001) ? 1:  ((dest_1 == {1'b0, instr_8[22:18]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_8[22:18]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_8[22:18]} && instr_3[2:0] != 3'b100) || (dest_4 == {1'b0, instr_8[22:18]} && instr_4[2:0] != 3'b100) || (dest_5 == {1'b0, instr_8[22:18]} && instr_5[2:0] != 3'b100) || (dest_6 == {1'b0, instr_8[22:18]} && instr_6[2:0] != 3'b100) || (dest_7 == {1'b0, instr_8[22:18]} && instr_7[2:0] != 3'b100)) ? 0: 1;
     assign opB_8 = (instr_8[31:30] != 3'b001) ? 1:  ((dest_1 == {1'b0, instr_8[17:13]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_8[17:13]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_8[17:13]} && instr_3[2:0] != 3'b100) || (dest_4 == {1'b0, instr_8[17:13]} && instr_4[2:0] != 3'b100) || (dest_5 == {1'b0, instr_8[17:13]} && instr_5[2:0] != 3'b100) || (dest_6 == {1'b0, instr_8[22:18]} && instr_6[2:0] != 3'b100) || (dest_7 == {1'b0, instr_8[22:18]} && instr_7[2:0] != 3'b100)) ? 0: 1;
-    assign opC_8 = ((instr_8[29:27] != 3'b100) || (instr_8[29:27] != 3'b011 && (instr_8[26:23] inside {[7:12]} != 0))) ? 1: ((dest_1 == {1'b0, instr_8[12:8]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_8[12:8]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_8[12:8]} && instr_4[2:0] != 3'b100) || (dest_4 == {1'b0, instr_5[12:8]} && instr_4[2:0] != 3'b100) || (dest_5 == {1'b0, instr_8[12:8]} && instr_5[2:0] != 3'b100) || (dest_6 == {1'b0, instr_8[12:8]} && instr_6[2:0] != 3'b100) || (dest_7 == {1'b0, instr_8[12:8]} && instr_7[2:0] != 3'b100)) ? 0: 1;
+    assign opC_8 = (!(instr_8[29:27] == 3'b100) && !(instr_8[29:27] == 3'b011 && (instr_8[26:23] inside {[7:12]}))) ? 1: ((dest_1 == {1'b0, instr_8[12:8]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_8[12:8]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_8[12:8]} && instr_4[2:0] != 3'b100) || (dest_4 == {1'b0, instr_5[12:8]} && instr_4[2:0] != 3'b100) || (dest_5 == {1'b0, instr_8[12:8]} && instr_5[2:0] != 3'b100) || (dest_6 == {1'b0, instr_8[12:8]} && instr_6[2:0] != 3'b100) || (dest_7 == {1'b0, instr_8[12:8]} && instr_7[2:0] != 3'b100)) ? 0: 1;
+    //assign opC_8 = ((instr_8[29:27] != 3'b100) || (instr_8[29:27] != 3'b011 && (instr_8[26:23] inside {[7:12]} != 0))) ? 1: ((dest_1 == {1'b0, instr_8[12:8]} && instr_1[2:0] != 3'b100) || (dest_2 == {1'b0, instr_8[12:8]} && instr_2[2:0] != 3'b100) || (dest_3 == {1'b0, instr_8[12:8]} && instr_4[2:0] != 3'b100) || (dest_4 == {1'b0, instr_5[12:8]} && instr_4[2:0] != 3'b100) || (dest_5 == {1'b0, instr_8[12:8]} && instr_5[2:0] != 3'b100) || (dest_6 == {1'b0, instr_8[12:8]} && instr_6[2:0] != 3'b100) || (dest_7 == {1'b0, instr_8[12:8]} && instr_7[2:0] != 3'b100)) ? 0: 1;
 
 
 
@@ -256,8 +268,8 @@ module v_sequencer #(
                     ((instr_7[2:0] == 3'b010 && opA_7 == 1 && opB_7 == 1 && opC_7 == 1) && ((instr_7[29:27] == 3'b001 && busy_alu == 0) || (instr_7[29:27] == 3'b010 && busy_mul == 0) || (instr_7[29:27] == 3'b011 && busy_lsu == 0) || (instr_7[29:27] == 3'b100 && busy_sldu == 0) || (instr_7[29:27] == 3'b101 && busy_red == 0))) ? 6: 
                     ((instr_8[2:0] == 3'b010 && opA_8 == 1 && opB_8 == 1 && opC_8 == 1) && ((instr_8[29:27] == 3'b001 && busy_alu == 0) || (instr_8[29:27] == 3'b010 && busy_mul == 0) || (instr_8[29:27] == 3'b011 && busy_lsu == 0) || (instr_8[29:27] == 3'b100 && busy_sldu == 0) || (instr_8[29:27] == 3'b101 && busy_red == 0))) ? 7: 0);
 //execute
-    assign is_vstype = (op_lsu inside {[7:12]});
-    assign is_vltype = (op_lsu inside {[1:6]});
+    assign is_vstype = (instr_read[29:27] == 3'b011 && (instr_read[26:23] inside {[7:12]})) || (op_lsu inside {[7:12]});
+    assign is_vltype = (instr_read[29:27] == 3'b011 && (instr_read[26:23] inside {[1:6]})) || (op_lsu inside {[1:6]});
     assign lsu_raw = is_vltype == 1 ? 1: is_vstype == 1 ? 0: 0;
     //alu
     assign alu_exec = ((instr_1[29:27] == 3'b001 && instr_1[2:0] == 3'b011) ? instr_1: (instr_2[29:27] == 3'b001 && instr_2[2:0] == 3'b011) ? instr_2: (instr_3[29:27] == 3'b001 && instr_3[2:0] == 3'b011) ? instr_3: (instr_4[29:27] == 3'b001 && instr_4[2:0] == 3'b011) ? instr_4: (instr_5[29:27] == 3'b001 && instr_5[2:0] == 3'b011) ? instr_5: (instr_6[29:27] == 3'b001 && instr_6[2:0] == 3'b011) ? instr_6: (instr_7[29:27] == 3'b001 && instr_7[2:0] == 3'b011) ? instr_7: (instr_8[29:27] == 3'b001 && instr_8[2:0] == 3'b011) ? instr_8: 0);
@@ -307,7 +319,7 @@ module v_sequencer #(
         else begin
         //write/issue
             if (fifo_full == 0 && base_instr != 0 && is_vector == 1 && is_vconfig ==  0) begin
-                instr_status_table[fifo_count] = {sel_dest, vsew, lmul, sel_op_A, sel_op_B, op, op_instr, src_A, src_B, dest, imm, 3'b010};
+                instr_status_table[fifo_count] = {x_reg_data_1, x_reg_data_2, sel_dest, vsew, lmul, sel_op_A, sel_op_B, op, op_instr, src_A, src_B, dest, imm, 3'b010};
             end
         //read 
             if (instr_read != 0) begin
@@ -506,7 +518,7 @@ module v_sequencer #(
                         lmul_sldu = instr_read[35:34];
                     end
                     3'b101: begin
-                        optype_read = instr_read[29:27];
+                        //optype_read = instr_read[29:27];
                         sel_dest_red = instr_read[39:38];
                         Fj_red =  instr_read[22:18];
                         Fk_red = instr_read[17:13];
@@ -520,7 +532,10 @@ module v_sequencer #(
                     end
                     default: optype_read = 0;
                 endcase
+                xdata_1 = instr_read[103:72];
+                xdata_2 = instr_read[71:40];
                 optype_read = instr_read[29:27];
+                
             end        
 
     // ******************EXECUTE******************
