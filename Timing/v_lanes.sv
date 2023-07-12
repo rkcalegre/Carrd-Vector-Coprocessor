@@ -98,7 +98,7 @@ module v_lanes(
     );
     
     counter temp2_c (
-        .clk(valu_clk && is_mul == 1),
+        .clk(vmul_clk && is_mul == 1),
         .nrst(nrst_ctr_mul),
         .lanes(lanes),
         .lmul(mul_lmul),
@@ -106,8 +106,8 @@ module v_lanes(
     );    
 
     
-    assign done_valu = ((step_alu == 3'd5) && (op_instr_alu inside {[1:15]}) && (valu_clk == 1))? 1:0;
-    assign done_vmul = ((step_mul == 3'd5) && (is_mul == 1) && (vmul_clk == 1))? 1:0;
+    assign done_valu = ((step_alu == 3'd5) && (op_instr_alu inside {[1:15]}))? 1:0;
+    assign done_vmul = ((step_mul == 3'd5) && (is_mul == 1))? 1:0;
 
     initial begin
         result_valu_1 <= 0 ;
