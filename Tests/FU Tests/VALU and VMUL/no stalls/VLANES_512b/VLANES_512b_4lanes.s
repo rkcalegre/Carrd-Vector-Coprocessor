@@ -32,8 +32,10 @@ ADDI x1, x1, 16
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v16, x1          # m[x1 = 8] = v16 = 25
 ADDI x1, x1, 16
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
@@ -52,8 +54,10 @@ ADDI x1, x1, 16
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v16, x1          # m[x1 = 16] = v12
 ADDI x1, x1, 16
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
@@ -76,13 +80,16 @@ ADDI x1, x1, 16
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v16, x1          # m[x1 = 4] = v12
 ADDI x1, x1, 16
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v20, x1          # m[x1 = 8] = v16
 ADDI x1, x1, 16
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
@@ -105,13 +112,16 @@ ADDI x1, x1, 16
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v16, x1          # m[x1 = 4] = v12
 ADDI x1, x1, 16
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v20, x1          # m[x1 = 8] = v16
 ADDI x1, x1, 16
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
@@ -134,13 +144,16 @@ ADDI x1, x1, 16
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v16, x1          # m[x1 = 4] = v12
 ADDI x1, x1, 16
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v20, x1          # m[x1 = 8] = v16
 ADDI x1, x1, 16
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
@@ -168,13 +181,16 @@ ADDI x1, x1, 16
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v16, x1          # m[x1 = 4] = v12
 ADDI x1, x1, 16
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v20, x1          # m[x1 = 8] = v16
 ADDI x1, x1, 16
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
@@ -197,13 +213,16 @@ ADDI x1, x1, 16
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v16, x1          # m[x1 = 4] = v12
 ADDI x1, x1, 16
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v20, x1          # m[x1 = 8] = v16
 ADDI x1, x1, 16
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
@@ -226,13 +245,16 @@ ADDI x1, x1, 16
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v16, x1          # m[x1 = 4] = v12
 ADDI x1, x1, 16
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v20, x1          # m[x1 = 8] = v16
 ADDI x1, x1, 16
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
@@ -251,8 +273,10 @@ ADDI x1, x1, 16
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v16, x1          # m[x1 = 4] = v12
 ADDI x1, x1, 16
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
@@ -271,8 +295,10 @@ ADDI x1, x1, 16
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v16, x1          # m[x1 = 4] = v12
 ADDI x1, x1, 16
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
@@ -299,13 +325,16 @@ ADDI x1, x1, 16
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v16, x1
 ADDI x1, x1, 16
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v20, x1
 ADDI x1, x1, 16
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
@@ -328,13 +357,16 @@ ADDI x1, x1, 16
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v16, x1
 ADDI x1, x1, 16
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v20, x1
 ADDI x1, x1, 16
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
@@ -353,8 +385,10 @@ ADDI x1, x1, 16
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v16, x1
 ADDI x1, x1, 16
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
@@ -377,13 +411,16 @@ ADDI x1, x1, 16
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v16, x1
 ADDI x1, x1, 16
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v20, x1
 ADDI x1, x1, 16
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
@@ -402,8 +439,13 @@ ADDI x1, x1, 16
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
+addi x0, x0, 0
 vse32.v v16, x1
 ADDI x1, x1, 16
+addi x0, x0, 0
+addi x0, x0, 0
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
@@ -411,7 +453,12 @@ addi x0, x0, 0
 ################### VMUL TESTS ######################
 # VMUL
 ADDI x3, x0, 2
+addi x0, x0, 0
+addi x0, x0, 0
+addi x0, x0, 0
+addi x0, x0, 0
 vadd.vi v20, v0, 2
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
@@ -419,12 +466,15 @@ vmul.vv v12, v8, v20
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
+addi x0, x0, 0
 vmul.vx v16, v4, x3
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 vse32.v v12, x1          # m[x1 = 0] = v8
 ADDI x1, x1, 16
+addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
 addi x0, x0, 0
