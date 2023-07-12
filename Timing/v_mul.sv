@@ -1,5 +1,6 @@
 `timescale 1ns / 1ps
 
+
 module v_mul
 (
 	
@@ -17,25 +18,39 @@ module v_mul
 	logic [15:0] mult_16_0_out;
 	logic [7:0] mult_8_0_out;
 	logic [7:0] mult_8_1_out;
+    logic [31:0] opA_32;
+    logic [31:0] opB_32;
 
 	assign mult_32_0 = 1'b1;
 	assign mult_16_0 = (sew == 3'b000 || sew == 2'b001) ? 1'b1:1'b0;
-	assign mult_8_0 = (sew==3'b000) ? 1'b1:1'b0;
-	assign mult_8_1 = (sew==3'b000) ? 1'b1:1'b0;
+	assign mult_8_0 = (sew == 3'b000) ? 1'b1:1'b0;
+	assign mult_8_1 = (sew == 3'b000) ? 1'b1:1'b0;
 
 
-
+    always_comb begin
+        case (sew)  
+            3'b000: begin
+                opA_32 = {{24{op_A[7]}},{op_A[7:0]}};
+                opB_32 =  {{24{op_B[7]}},{op_B[7:0]}};
+            end
+            3'b001: begin
+                opA_32 = {{16{op_A[15]}},{op_A[15:0]}};
+                opB_32 =  {{16{op_B[15]}},{op_B[15:0]}};
+            end
+            default: begin
+                opA_32 = op_A;
+                opB_32 = op_B;
+            end
+        endcase
+    end
 	mult_gen_32 mult_gen_32_00(
 		.CLK(clk),
 		.CE(mult_32_0),
-		.A((sew==3'b000) ? {{24{op_A[7]}},{op_A[7:0]}}: ((sew==3'b001) ? {{16{op_A[15]}},{op_A[15:0]}}:(op_A[31:0]))),
-		.B(((sew==3'b000) ? {{24{op_B[7]}},{op_B[7:0]}}: ((sew==3'b001) ? {{16{op_B[15]}},{op_B[15:0]}}:(op_B[31:0])))),
+		.A(opA_32),
+		.B(opB_32),
 		.P(mult_32_0_out)
 	);
-
-	
 	///////
-	
 	mult_gen_16 mult_gen_16_00(
 		.CLK(clk),
 		.CE(mult_16_0),
@@ -43,9 +58,7 @@ module v_mul
 		.B(((sew==3'b000) ? {{8{op_B[15]}},{op_B[15:8]}}: op_B[31:16])),
 		.P(mult_16_0_out)
 	);
-	
 	/// 
-	
 	mult_gen_8 mult_gen_8_00(
 		.CLK(clk),
 		.CE(mult_8_0),
