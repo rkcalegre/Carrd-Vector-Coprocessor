@@ -52,7 +52,7 @@ module v_lsu #(
 
     import v_pkg::*;
 
-    logic [511:0] storedata;
+    logic [127:0] storedata;
     logic [4:0] elem_per_vreg;
     logic [2:0] instr_vsew;                 //based on instruction vsew
     logic [2:0] num_reg;                    // # of registers to be stored
@@ -61,6 +61,7 @@ module v_lsu #(
     wire [1:0] s_cc;
     logic [`DATAMEM_BITS-1:0] temp_addr, temp_addr_load;
     logic [6:0] strided_cc;
+    logic [6:0] out_ctr;
     logic nrst_ctr;
 
 
@@ -72,7 +73,7 @@ module v_lsu #(
     assign dm_v_write = (v_lsu_op inside {[7:12]}) ? 1 : 0;
 
     // load signals
-    logic [127:0] temp_data;
+    logic [511:0] temp_data;
     logic [127:0] temp_data_load;
     logic [511:0] loaddata;
     logic [6:0] max_cc; 	
