@@ -1,32 +1,33 @@
+`timescale 1ns / 1ps
 
 module v_red (
     input clk,
     input nrst,
-    input logic [5:0] op_instr,
+    input logic [2:0] op_instr,
     input logic [1:0] sew,
     input logic [1:0] lmul,
     input logic [511:0] vec_regB,
     input logic [31:0] vec_regA,
-    input logic red_mode,
     output logic done,
     output logic [31:0] result
 );
-    
+
+import v_pkg::*;
 
 logic [255:0] current_reg = 0;
 logic [2:0] step = 1;
+logic temp = 0;
 
-    assign done = (temp && clk)? 1:0;
+assign done = (temp && clk)? 1:0;
 
-    logic temp = 0;
     
-    always@(negedge clk) begin
-        if ((temp==0) && (step == 7) && (red_mode == 1)) begin
-            temp <= 1;
-        end else begin
-            temp <= 0;
-        end
+always@(negedge clk) begin
+    if ((temp==0) && (step == 7) && (op_instr != 0)) begin
+        temp <= 1;
+    end else begin
+        temp <= 0;
     end
+end
 
 always@(posedge clk) begin
 if (!nrst)
@@ -37,8 +38,9 @@ end
 else
 begin
     
-    case(red_mode)
-    1'b0:
+    case(op_instr)
+    default: step <= 3'b001;
+    VRED_VREDSUM:
     begin
         case(step)
         default: begin
@@ -259,7 +261,7 @@ begin
             2'b01:
             begin
                 current_reg[15:0] <= current_reg[15:0] + current_reg[31:16];
-                step <= 3'b110;
+                step <= 3'b111;
                 //done <= 1;
             end
             default: begin
@@ -302,7 +304,7 @@ begin
             endcase
         endcase
     end
-    1'b1:
+    VRED_VREDMAX:
     begin
         case(step)
         default: begin
@@ -539,7 +541,7 @@ begin
                     step <= 1;
                 end
                 2'b10: begin 
-                    result[31:0] <= ($signed(vec_regA[15:0]) >= $signed(current_reg[15:0])) ? vec_regA[15:0]:current_reg[15:0];
+                    result[31:0] <= ($signed(vec_regA[31:0]) >= $signed(current_reg[31:0])) ? vec_regA[31:0]:current_reg[31:0];
 //                    done <= 1;
                     step <= 1;
                 end 
@@ -556,4 +558,3 @@ begin
 end
 end
 endmodule
-
