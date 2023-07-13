@@ -54,7 +54,7 @@ module v_sldu #(
     end
 
 
-    always@(posedge clk) begin
+always@(posedge clk or negedge nrst) begin
         if (!nrst) begin
             result <= 0;
             temp_done <= 0;
