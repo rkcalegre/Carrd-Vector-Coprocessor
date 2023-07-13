@@ -46,7 +46,7 @@ module vcsr (
     // [5:3]  -----  vsew [2:0]   -----   selected element width (SEW) setting
     // [2:0]  -----  vlmul[2:0]   -----   vector register group multiplier (LMUL) setting
     // ====================================================================================
-    always @(negedge clk) begin
+    always @(negedge clk or negedge nrst) begin
         if (!nrst) begin
             vl <= 0;
             vtype <= 0;
