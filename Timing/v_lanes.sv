@@ -502,7 +502,7 @@ module v_lanes(
          end
     end
 
-    always @(posedge valu_clk) begin
+	always @(posedge valu_clk or negedge nrst) begin
         if (!nrst) begin
             result_valu_1 <= 0 ;
             result_valu_2 <= 0 ;
@@ -569,7 +569,7 @@ module v_lanes(
         end
     end
 
-    always @(posedge vmul_clk) begin
+	always @(posedge vmul_clk or negedge nrst) begin
        if (!nrst) begin
             result_vmul_1 <= 0 ;
             result_vmul_2 <= 0 ;
