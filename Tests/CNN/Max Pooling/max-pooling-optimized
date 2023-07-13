@@ -97,20 +97,20 @@ store_ans:
 
 
 end:
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0

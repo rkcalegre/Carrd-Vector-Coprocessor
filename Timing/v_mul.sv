@@ -118,4 +118,8 @@ module v_mul
             result = 0;
         end
 	end
+<<<<<<< HEAD
 endmodule
+=======
+endmodule
+>>>>>>> 9fccacd621278d1ef24b30d9d6d4347df5c86c4a
