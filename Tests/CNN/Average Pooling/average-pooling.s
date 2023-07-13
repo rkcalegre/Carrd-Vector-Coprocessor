@@ -18,11 +18,9 @@ load_input:
     addi x0, x0, 0
     addi x0, x0, 0
     addi x0, x0, 0
-    addi x0, x0, 0
     vslideup.vi v20, v0, 0      # copy row data into kernel vector reg
     vle32.v v4, x21             # Loads the succeeding 32-element row
     addi x21, x21, 16
-    addi x0, x0, 0
     addi x0, x0, 0
     addi x0, x0, 0
     addi x0, x0, 0
@@ -33,12 +31,10 @@ load_input:
     addi x0, x0, 0
     addi x0, x0, 0
     addi x0, x0, 0
-    addi x0, x0, 0
     vslidedown.vi v4, v4, 4     # drop first 4 elements of row2
     vslideup.vi v20, v8, 8      # place first 4 elements of row3 next to the first 4 elements of row2
     vle32.v v12, x21            # Loads the succeeding 32-element row
     addi x21, x21, 16
-    addi x0, x0, 0
     addi x0, x0, 0
     addi x0, x0, 0
     addi x0, x0, 0
@@ -93,6 +89,7 @@ average_pool:
 
 
 store_ans:
+    addi x0, x0, 0
     vsetivli x20, x5, 8         # 16-bit elements, 128-bit vector
     vse32.v v28, x30            # store answer in mem
     addi x30, x30, 4
@@ -103,20 +100,20 @@ store_ans:
 
 
 end:
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
