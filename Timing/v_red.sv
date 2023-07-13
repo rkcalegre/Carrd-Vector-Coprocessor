@@ -29,7 +29,7 @@ always@(negedge clk) begin
     end
 end
 
-always@(posedge clk) begin
+always@(posedge clk or negedge nrst) begin
 if (!nrst)
 begin
     step <= 1;
