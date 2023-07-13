@@ -15,31 +15,36 @@ parametric_relu:                # f(x) = max(ax , x)
     addi x0, x0, 0
     addi x0, x0, 0
     addi x0, x0, 0
+    addi x0, x0, 0
     vmul.vx v8, v4, x18         # v8 = ax
     addi x0, x0, 0
+    addi x0, x0, 0
     vmax.vv v12, v4, v8         # v12 = max(v8, v4) = max(ax, x)
+    addi x0, x0, 0
     addi x0, x0, 0
     vse32.v v12, x28
     addi x29, x29, 1            # loop_iter++
     addi x28, x28, 16           # address++
+    addi x0, x0, 0
+    addi x0, x0, 0
     jal, x0, parametric_relu
 
 
 end:
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0

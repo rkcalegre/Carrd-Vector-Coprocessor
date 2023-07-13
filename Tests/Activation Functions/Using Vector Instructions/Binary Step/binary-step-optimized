@@ -14,31 +14,36 @@ binary_step:                  # f(x) = 0: x < 0, 1: x >= 0
     addi x0, x0, 0
     addi x0, x0, 0
     addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
     vsrl.vi v8, v4, 15
     addi x0, x0, 0
+    addi x0, x0, 0
     vxor.vi v8, v8, 1
-    addi x0, x0, 0    
+    addi x0, x0, 0
+    addi x0, x0, 0
     vse32.v v8, x28
     addi x29, x29, 1            # loop_iter++
     addi x28, x28, 16           # address++
+    addi x0, x0, 0
+    addi x0, x0, 0
     jal, x0, binary_step
 
 
 end:
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0

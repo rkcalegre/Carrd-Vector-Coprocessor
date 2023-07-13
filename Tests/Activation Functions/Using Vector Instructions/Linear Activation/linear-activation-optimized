@@ -13,30 +13,33 @@ linear_activation:              # f(x) = x
     addi x0, x0, 0
     addi x0, x0, 0
     addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
     vadd.vi v8, v4, 0
     addi x0, x0, 0
     addi x0, x0, 0
     vse32.v v8, x28
     addi x29, x29, 1            # loop_iter++
     addi x28, x28, 16           # address++
+    addi x0, x0, 0
+    addi x0, x0, 0
     jal, x0, linear_activation
 
 
 end:
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
-    C.NOP
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
+    addi x0, x0, 0
