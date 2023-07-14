@@ -15,17 +15,14 @@ addi x17, x0, 4                 # loop 4 max counter - number of elements in a s
 jal, x0, loop_row
 
 loop_row:                       # next row of input array with stride = 2
-    addi x0, 0, 0
     addi x10, x10, 1            # increment looper1
     bne x10, x14, loop_kernel
-    addi x0, x0, 0
     jal x0, end
 
 loop_kernel:
     addi x8, x31, 0            # reset load address
     addi x23, x0, 0            # x23 = max number holder
     bne x31, x15, loop_kernel_elem
-    addi x0, x0, 0
     addi x31, x31, 192
     addi x31, x31, 192
     addi x27, x0, 1 
@@ -47,7 +44,6 @@ loop_kernel_elem:
     jal x0, max
 
 max:
-    addi x0, x0, 0
     beq x13, x17, loop_kernel_elem
     addi x13, x13, 1            # increment looper4
     slt x22, x23, x24           # set x22 if x18 < x19
