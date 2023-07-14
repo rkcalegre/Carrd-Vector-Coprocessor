@@ -13,17 +13,14 @@ addi x16, x0, 4                 # loop 3 max counter - number of rows in a singl
 jal, x0, loop_row
 
 loop_row:                       # next row of input array with stride = 2
-    addi x0, 0, 0
     addi x10, x10, 1            # increment looper1
     bne x10, x14, loop_kernel
-    addi x0, x0, 0
     jal x0, end
 
 loop_kernel:
     addi x8, x31, 0            # reset load address
     addi x23, x0, 0            # holder of sum of all elements in a kernel
     bne x31, x15, loop_kernel_elem
-    addi x0, x0, 0
     addi x31, x31, 192
     addi x31, x31, 192
     addi x27, x0, 1 
