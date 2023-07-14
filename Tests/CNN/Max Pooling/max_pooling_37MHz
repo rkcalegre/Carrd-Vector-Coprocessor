@@ -53,21 +53,22 @@ load_input:
     addi x10, x10, 1            # loop1 counter++
     addi x0, x0, 0
     vsetivli x20, x5, 9         # 16-bit elements, 256-bit vector 
-    vredmax.vs v20, v20, v20    # write answer to v20
+    vredmax.vs v20, v20, v16    # sum elements
     addi x0, x0, 0
     addi x0, x0, 0
     addi x0, x0, 0
+    addi x0, x0, 0         
     vslideup.vx v28, v20, x31   # shift contents of answer vector
-    addi x31, x31, 1            # increment shift answer
-    vsetivli x20, x5, 10        # 16-bit elements, 512-bit vector 
-    jal, x0, max_pool
+    vsetivli x20, x5, 10        # 16-bit elements, 512-bit vector
+    addi x31, x31, 1            # write answer to v20
+    jal, x0, average_pool
 
-max_pool:
+average_pool:
     addi x0, x0, 0
     beq x11, x9, store_ans
     vsetivli x20, x5, 10        # 16-bit elements, 512-bit vector
     addi x11, x11, 1            # loop2 counter++
-    vslideup.vi v20, v0, 0    # place first 4 elements of row1 in kernel
+    vslideup.vi v20, v0, 0      # place first 4 elements of row1 in kernel
     addi x0, x0, 0
     addi x0, x0, 0
     vslidedown.vi v0, v0, 4     # drop first 4 elements of row1
@@ -88,16 +89,18 @@ max_pool:
     vslidedown.vi v12, v12, 4   # drop first 4 elements of row4
     addi x0, x0, 0
     vsetivli x20, x5, 9         # 16-bit elements, 256-bit vector 
-    vredmax.vs v20, v20, v20    # write answer to v20 (overwrite)
+    vredmax.vs v20, v20, v16    # # write answer to v20 (overwrite)
     addi x0, x0, 0
     addi x0, x0, 0
+    addi x0, x0, 0              
     vslideup.vx v28, v20, x31   # shift contents of answer vector
-    addi x31, x31, 1            # increment shift answer
     vsetivli x20, x5, 10        # 16-bit elements, 512-bit vector
-    jal, x0, max_pool
+    addi x31, x31, 1            # increment shift answer
+    jal, x0, average_pool
 
 
 store_ans:
+    addi x0, x0, 0
     vsetivli x20, x5, 8         # 16-bit elements, 128-bit vector
     vse32.v v28, x30            # store answer in mem
     addi x0, x0, 0
