@@ -15,6 +15,7 @@ relu:                           # f(x) = max(0 , x)
     addi x0, x0, 0
     addi x0, x0, 0
     addi x0, x0, 0
+    addi x0, x0, 0
     vmax.vv v8, v0, v4
     addi x0, x0, 0
     addi x0, x0, 0

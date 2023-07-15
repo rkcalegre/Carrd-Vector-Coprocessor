@@ -16,6 +16,7 @@ parametric_relu:                # f(x) = max(ax , x)
     addi x0, x0, 0
     addi x0, x0, 0
     addi x0, x0, 0
+    addi x0, x0, 0
     vmul.vx v8, v4, x18         # v8 = ax
     addi x0, x0, 0
     addi x0, x0, 0
